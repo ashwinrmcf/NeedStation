@@ -43,7 +43,15 @@ import FAQ from "./pages/FAQ/FAQ.jsx";
 
 // Hindi components
 import HindiHome from "./pages/Hindi/Home.jsx";
-// We'll create more Hindi components as needed
+import HindiAboutUs from "./pages/Hindi/AboutUs.jsx";
+import HindiLogin from "./pages/Hindi/Login.jsx";
+import HindiSignup from "./pages/Hindi/Signup.jsx";
+import HindiWorkerLogin from "./pages/Hindi/WorkerLogin.jsx";
+import HindiContactUs from "./pages/Hindi/ContactUs.jsx";
+import HindiHowItWorks from "./pages/Hindi/HowItWorks.jsx";
+import HindiFAQ from "./pages/Hindi/FAQ.jsx";
+import HindiPrivacyPolicy from "./pages/Hindi/PrivacyPolicy.jsx";
+import HindiTermsAndServices from "./pages/Hindi/TermsAndServices.jsx";
 
 
 const router = createBrowserRouter([
@@ -104,9 +112,20 @@ const router = createBrowserRouter([
     element: <HindiApp />,
     children: [
       { path: "", element: <HindiHome /> },
-      // Additional Hindi routes can be added here as needed
+      { path: "language-settings", element: <TranslationCenter /> },
+      { path: "about-us", element: <HindiAboutUs /> },
+      { path: "contact-us", element: <HindiContactUs /> },
+      { path: "how-it-works", element: <HindiHowItWorks /> },
+      { path: "faq", element: <HindiFAQ /> },
+      { path: "privacy-policy", element: <HindiPrivacyPolicy /> },
+      { path: "terms-and-services", element: <HindiTermsAndServices /> },
     ],
   },
+
+  // Standalone Hindi auth pages (without header/footer)
+  { path: "/hi/login", element: <HindiLogin /> },
+  { path: "/hi/signup", element: <HindiSignup /> },
+  { path: "/hi/worker-login", element: <HindiWorkerLogin /> },
   
 ]);
 

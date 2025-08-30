@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import styles from "./TranslationCenter.module.css";
 import translationService from "../../services/TranslationService";
 
 // We'll use image backgrounds for better visual appeal and language representation
 
 export default function TranslationCenter() {
+  const location = useLocation();
+  const isHindiRoute = location.pathname.startsWith('/hi');
+  
   // Initialize with translation service language preference
   const [targetLang, setTargetLang] = useState(() => {
     return translationService.getCurrentLanguage();
@@ -12,7 +16,7 @@ export default function TranslationCenter() {
   const [translating, setTranslating] = useState(false);
 
   // Languages available for translation
-  const languages = [
+  const languagesEn = [
     { code: "en", name: "English", flag: "🇺🇸", description: "United States", bgClass: "englishBg" },
     { code: "hi", name: "Hindi", flag: "🇮🇳", description: "India", bgClass: "hindiBg" },
     { code: "ta", name: "Tamil", flag: "🇮🇳", description: "India", bgClass: "tamilBg" },
@@ -22,6 +26,49 @@ export default function TranslationCenter() {
     { code: "kn", name: "Kannada", flag: "🇮🇳", description: "India", bgClass: "kannadaBg" },
     { code: "gu", name: "Gujarati", flag: "🇮🇳", description: "India", bgClass: "gujaratiBg" },
   ];
+
+  const languagesHi = [
+    { code: "en", name: "अंग्रेजी", flag: "🇺🇸", description: "संयुक्त राज्य अमेरिका", bgClass: "englishBg" },
+    { code: "hi", name: "हिंदी", flag: "🇮🇳", description: "भारत", bgClass: "hindiBg" },
+    { code: "ta", name: "तमिल", flag: "🇮🇳", description: "भारत", bgClass: "tamilBg" },
+    { code: "bn", name: "बंगाली", flag: "🇮🇳", description: "भारत", bgClass: "bengaliBg" },
+    { code: "ml", name: "मलयालम", flag: "🇮🇳", description: "भारत", bgClass: "malayalamBg" },
+    { code: "te", name: "तेलुगु", flag: "🇮🇳", description: "भारत", bgClass: "teluguBg" },
+    { code: "kn", name: "कन्नड़", flag: "🇮🇳", description: "भारत", bgClass: "kannadaBg" },
+    { code: "gu", name: "गुजराती", flag: "🇮🇳", description: "भारत", bgClass: "gujaratiBg" },
+  ];
+
+  const languages = isHindiRoute ? languagesHi : languagesEn;
+
+  // Content translations
+  const content = {
+    en: {
+      title: "Language Settings",
+      subtitle: "Select your preferred language to translate our entire website.",
+      translating: "Translating content to",
+      waitMessage: "This may take a moment. Please wait...",
+      selected: "Selected",
+      select: "Select",
+      whyTranslateTitle: "Why Translate?",
+      whyTranslateText: "We believe in making our services accessible to everyone. Our translation feature allows you to view our entire website in your preferred language, making it easier to navigate and understand our offerings.",
+      noteTitle: "Please Note",
+      noteText: "Our translation service uses Google Translate API. While we strive for accuracy, some translations may not be perfect."
+    },
+    hi: {
+      title: "भाषा सेटिंग्स",
+      subtitle: "हमारी पूरी वेबसाइट का अनुवाद करने के लिए अपनी पसंदीदा भाषा चुनें।",
+      translating: "सामग्री का अनुवाद किया जा रहा है",
+      waitMessage: "इसमें कुछ समय लग सकता है। कृपया प्रतीक्षा करें...",
+      selected: "चयनित",
+      select: "चुनें",
+      whyTranslateTitle: "अनुवाद क्यों करें?",
+      whyTranslateText: "हम अपनी सेवाओं को सभी के लिए सुलभ बनाने में विश्वास करते हैं। हमारी अनुवाद सुविधा आपको अपनी पसंदीदा भाषा में हमारी पूरी वेबसाइट देखने की अनुमति देती है, जिससे हमारी पेशकशों को नेविगेट करना और समझना आसान हो जाता है।",
+      noteTitle: "कृपया ध्यान दें",
+      noteText: "हमारी अनुवाद सेवा Google Translate API का उपयोग करती है। जबकि हम सटीकता के लिए प्रयास करते हैं, कुछ अनुवाद पूर्ण नहीं हो सकते हैं।"
+    }
+  };
+
+  const currentContent = isHindiRoute ? content.hi : content.en;
 
   // Use translation service on component mount
   useEffect(() => {
@@ -184,16 +231,16 @@ export default function TranslationCenter() {
   return (
     <div className="container page-content-spacing">
       <div className={styles.translationHeader}>
-        <h1 className="text-4xl font-bold mb-2 text-white">Language <span className="text-teal-400">Settings</span></h1>
-        <p className="text-lg mb-5 text-white">Select your preferred language to translate our entire website.</p>
+        <h1 className="text-4xl font-bold mb-2 text-white">{isHindiRoute ? 'भाषा' : 'Language'} <span className="text-teal-400">{isHindiRoute ? 'सेटिंग्स' : 'Settings'}</span></h1>
+        <p className="text-lg mb-5 text-white">{currentContent.subtitle}</p>
         <div className={styles.headerAccent}></div>
       </div>
 
       {translating && (
         <div className={styles.loadingOverlay}>
           <div className={styles.spinner}></div>
-          <p>Translating content to {languages.find(l => l.code === targetLang)?.name}...</p>
-          <p className={styles.smallNote}>This may take a moment. Please wait...</p>
+          <p>{currentContent.translating} {languages.find(l => l.code === targetLang)?.name}...</p>
+          <p className={styles.smallNote}>{currentContent.waitMessage}</p>
         </div>
       )}
 
@@ -216,7 +263,7 @@ export default function TranslationCenter() {
               }}
             >
               {targetLang === lang.code && (
-                <div className={styles.statusBadge}>Selected</div>
+                <div className={styles.statusBadge}>{currentContent.selected}</div>
               )}
               {/* No overlay - using clear cards with high visibility */}
               
@@ -236,7 +283,7 @@ export default function TranslationCenter() {
                   handleTranslate(lang.code);
                 }}
               >
-                {targetLang === lang.code ? 'Selected' : 'Select'}
+                {targetLang === lang.code ? currentContent.selected : currentContent.select}
               </button>
             </div>
           ))}
@@ -246,15 +293,15 @@ export default function TranslationCenter() {
 
       <div className={styles.infoSection}>
         <div className={styles.infoHeader}>
-          <h2 className="font-bold">Why <span className="text-teal-400">Translate</span>?</h2>
+          <h2 className="font-bold">{isHindiRoute ? 'अनुवाद' : 'Why'} <span className="text-teal-400">{isHindiRoute ? 'क्यों करें?' : 'Translate?'}</span></h2>
         </div>
-        <p className={styles.infoParagraph}>We believe in making our services accessible to everyone. Our translation feature allows you to view our entire website in your preferred language, making it easier to navigate and understand our offerings.</p>
+        <p className={styles.infoParagraph}>{currentContent.whyTranslateText}</p>
         
         <div className={styles.note}>
           <div className={styles.noteIcon}>ℹ️</div>
           <div>
-            <h3 className="font-bold text-lg">Please Note</h3>
-            <p className="text-white">Our translation service uses Google Translate API. While we strive for accuracy, some translations may not be perfect.</p>
+            <h3 className="font-bold text-lg">{currentContent.noteTitle}</h3>
+            <p className="text-white">{currentContent.noteText}</p>
           </div>
         </div>
       </div>

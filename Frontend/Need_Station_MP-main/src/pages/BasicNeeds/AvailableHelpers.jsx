@@ -2,6 +2,7 @@ import styles from './AvailableHelpers.module.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import availableHelpersData from '../../data/AvailableHelperData.js';
+import { FaStar, FaRupeeSign, FaBriefcase, FaFilter } from 'react-icons/fa';
 
 const AvailableHelpers = () => {
     const location = useLocation();
@@ -114,37 +115,27 @@ const AvailableHelpers = () => {
 
             <div className={styles["container2"]}>
                 <div className={styles['rectangle']}>
-                    {/* Date Section */}
-                    <div className={styles['date-group']}>
-                        <h2>Date</h2>
-                        <div className={styles['date-options']}>
-                            <button>Today</button>
-                            <button>Within 2 Days</button>
-                            <button>Within 2 Weeks</button>
-                            <button>Choose Dates</button>
-                        </div>
+                    {/* Rating Filter Section */}
+                    <div className={styles['rating-group']}>
+                        <h2>Rating</h2>
+                        <select className={styles['filter-dropdown']}>
+                            <option value="">All Ratings</option>
+                            <option value="4.5">4.5+ Stars</option>
+                            <option value="4.0">4.0+ Stars</option>
+                            <option value="3.5">3.5+ Stars</option>
+                        </select>
                     </div>
 
-                    {/* Time of the Day Section */}
-                    <div className={styles['time-group']}>
-                        <h2>Time Of The Day</h2>
-                        <div className={styles['time-options']}>
-                            <label>
-                                <input type="checkbox" /> Morning (8am - 12pm)
-                            </label>
-                            <label>
-                                <input type="checkbox" /> Afternoon (12pm - 5pm)
-                            </label>
-                            <label>
-                                <input type="checkbox" /> Evening (5pm - 9:30pm)
-                            </label>
-                        </div>
-                    </div>
-
-                    {/* Price Section */}
+                    {/* Price Filter Section */}
                     <div className={styles['price-group']}>
-                        <h2>Price</h2>
-                        <p>The Average Hourly Rate For {serviceName} Is $$$</p>
+                        <h2>Price Range</h2>
+                        <select className={styles['filter-dropdown']}>
+                            <option value="">All Prices</option>
+                            <option value="200-400">₹200-400/hr</option>
+                            <option value="400-600">₹400-600/hr</option>
+                            <option value="600-800">₹600-800/hr</option>
+                            <option value="800+">₹800+/hr</option>
+                        </select>
                     </div>
                 </div>
 

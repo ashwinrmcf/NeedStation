@@ -43,7 +43,7 @@ const HindiHeader = () => {
             >
               सेवाएं
             </button>
-            <NavLink to="/language-settings" className={({isActive}) => isActive ? styles.active : undefined}>भाषाएँ</NavLink>
+            <NavLink to="/hi/language-settings" className={({isActive}) => isActive ? styles.active : undefined}>भाषाएँ</NavLink>
             <NavLink to="/hi/about-us" className={({isActive}) => isActive ? styles.active : undefined}>हमारे बारे में</NavLink>
           </nav>
           <div className={styles.authButtons}>
@@ -56,10 +56,10 @@ const HindiHeader = () => {
               </>
             ) : (
               <>
-                <Link to="/login">
+                <Link to="/hi/login">
                   <button className={styles.login}>लॉग इन</button>
                 </Link>
-                <Link to="/signup">
+                <Link to="/hi/signup">
                   <button className={styles.signup}>साइन अप</button>
                 </Link>
                 <div 

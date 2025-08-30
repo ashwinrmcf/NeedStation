@@ -75,154 +75,146 @@
 
 
 .rectangle {
-  width: 80vw; /* Use viewport width for responsiveness */
-  max-width: 100vw;
+  width: 80vw;
+  max-width: 1200px;
   height: auto;
-  padding: 2vw;
+  padding: 30px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: flex-start;
-  border-radius: 20px;
-  border: 3px solid #7DE7EB;
-  background: rgba(21, 17, 29, 0.3); /* Semi-transparent background */
-  gap: 1.5vw;
+  border-radius: 25px;
+  border: 2px solid #5CE1E6;
+  background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+  gap: 40px;
   position: relative;
   color: #FFFFFF;
+  margin: 0 auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(92, 225, 230, 0.1);
+  backdrop-filter: blur(20px);
 }
 
 .container2{
-  margin-left: 10vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
   margin-bottom: 2vh;
+  width: 100%;
 }
 
 /* Vertical Lines */
-.rectangle::before,
-.rectangle::after {
+.rectangle::before {
   content: "";
   position: absolute;
-  top: 5%;
-  bottom: 5%;
+  top: 15%;
+  bottom: 15%;
   width: 1px;
-  background: #7DE7EB;
+  background: rgba(92, 225, 230, 0.3);
+  left: 50%;
 }
 
-.rectangle::before {
-  left: 33%; /* Place the first vertical line */
-}
-
-.rectangle::after {
-  left: 66%; /* Place the second vertical line */
-}
-
-/* Date Section */
-.date-group {
-  width: 30%;
+/* Rating Section */
+.rating-group {
+  width: 45%;
   height: auto;
-
-  border-radius: 20px;
-  padding: 1.5vw;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 1vw;
+  gap: 15px;
 }
 
-.date-group h2 {
-  font-size: 1.5vw;
-  font-weight: 500;
-  line-height: 36px;
+.rating-group h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #5CE1E6;
   text-align: left;
-  text-decoration: underline;
+  margin: 0 0 15px 0;
+  text-shadow: 0 0 10px rgba(92, 225, 230, 0.3);
 }
 
-.date-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1vw;
-}
-
-.date-options button {
-  width: 47%; /* Adjust button size dynamically */
-  padding: 0.8vw;
-  font-size: 1vw;
-  font-weight: 500;
-  border: 1px solid #7DE7EB;
-  border-radius: 20px;
-  background: transparent;
+.filter-dropdown {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid rgba(92, 225, 230, 0.3);
+  border-radius: 12px;
+  background: rgba(26, 26, 26, 0.8);
   color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
 }
 
-.date-options button:hover {
-  background: #7DE7EB;
-  color: #15111D;
+.filter-dropdown:hover {
+  border-color: #5CE1E6;
+  box-shadow: 0 0 15px rgba(92, 225, 230, 0.2);
 }
 
-/* Time of the Day Section */
-.time-group {
+.filter-dropdown:focus {
+  border-color: #5CE1E6;
+  box-shadow: 0 0 20px rgba(92, 225, 230, 0.3);
+}
+
+.filter-dropdown option {
+  background: #1a1a1a;
+  color: #FFFFFF;
+  padding: 8px;
+}
+
+/* Experience Section */
+.experience-group {
   width: 30%;
   height: auto;
-  padding: 1.5vw;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 1vw;
+  gap: 15px;
 }
 
-.time-group h2 {
-  font-size: 1.5vw;
-  font-weight: 500;
+.experience-group h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #5CE1E6;
   text-align: left;
-  line-height: 36px;
-}
-
-.time-options label {
-  display: flex;
-  align-items: center;
-  gap: 0.8vw;
-  font-size: 1vw;
-}
-
-.time-options input[type="checkbox"] {
-  width: 1.2vw;
-  height: 1.2vw;
-  cursor: pointer;
+  margin: 0 0 15px 0;
+  text-shadow: 0 0 10px rgba(92, 225, 230, 0.3);
 }
 
 /* Price Section */
 .price-group {
-  width: 30%;
+  width: 45%;
   height: auto;
-  padding: 1.5vw;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 1vw;
+  gap: 15px;
 }
 
 .price-group h2 {
-  font-size: 1.5vw;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 600;
+  color: #5CE1E6;
   text-align: left;
-  line-height: 36px;
-}
-
-.price-group p {
-  font-size: 1vw;
-  line-height: 1.5;
+  margin: 0 0 15px 0;
+  text-shadow: 0 0 10px rgba(92, 225, 230, 0.3);
 }
 /* Container Styling */
 .tasker-profile {
-  display: flex ;
+  display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 2vw;
+  padding: 30px;
   width: 80vw;
   max-width: 1200px;
-  background: rgba(21, 17, 29, 0.3);
-  border: 3px solid #7DE7EB;
-  border-radius: 20px;
+  background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+  border: 2px solid #5CE1E6;
+  border-radius: 25px;
   color: #FFFFFF;
-  gap: 2vw;
-  margin-top: 2vh;
+  gap: 30px;
+  margin: 20px auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(92, 225, 230, 0.1);
+  backdrop-filter: blur(20px);
 }
 
 /* Profile Section Styling */

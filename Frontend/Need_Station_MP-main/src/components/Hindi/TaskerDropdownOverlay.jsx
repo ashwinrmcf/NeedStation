@@ -35,7 +35,7 @@ const TaskerDropdownOverlay = ({ isVisible, onClose }) => {
         
         <div className="divider"></div>
         
-        <Link to="/worker-login" className="dropdown-link">
+        <Link to="/hi/worker-login" className="dropdown-link">
           हेल्पर के रूप में लॉग इन करें
         </Link>
         

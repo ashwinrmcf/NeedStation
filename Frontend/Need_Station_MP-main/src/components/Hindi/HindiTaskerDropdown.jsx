@@ -53,7 +53,7 @@ const HindiTaskerDropdown = ({ isVisible }) => {
         
         <div className="dropdown-divider"></div>
         
-        <Link to="/worker-login" className="dropdown-item">
+        <Link to="/hi/worker-login" className="dropdown-item">
           <LogIn size={18} />
           <span>हेल्पर लॉगिन</span>
         </Link>

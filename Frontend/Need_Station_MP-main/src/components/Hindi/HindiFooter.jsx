@@ -30,9 +30,9 @@ const HindiFooter = () => {
               <h3>उपयोगी लिंक</h3>
               <ul>
                 <li><Link to="/hi/contact-us">संपर्क करें</Link></li>
-                <li>यह कैसे काम करता है</li>
-                <li>अक्सर पूछे जाने वाले प्रश्न</li>
-                <li>गोपनीयता नीति</li>
+                <li><Link to="/hi/how-it-works">यह कैसे काम करता है</Link></li>
+                <li><Link to="/hi/faq">अक्सर पूछे जाने वाले प्रश्न</Link></li>
+                <li><Link to="/hi/privacy-policy">गोपनीयता नीति</Link></li>
                 <li><Link to="/hi/terms-and-services">नियम और सेवाएं</Link></li>
               </ul>
             </div>
