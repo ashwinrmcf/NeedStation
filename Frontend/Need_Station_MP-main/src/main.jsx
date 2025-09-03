@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./routes/App.jsx";
 import HindiApp from "./routes/HindiApp.jsx";
 import { AuthProvider } from "./store/AuthContext.jsx";
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/HomePage/Home.jsx";
@@ -40,6 +41,7 @@ import WhyBecomeHelper from "./pages/WhyBecomeHelper/WhyBecomeHelper.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
 import HowItWorks from "./pages/HowItWorks/HowItWorks.jsx";
 import FAQ from "./pages/FAQ/FAQ.jsx";
+import Cart from "./pages/Cart/Cart.jsx";
 
 // Hindi components
 import HindiHome from "./pages/Hindi/Home.jsx";
@@ -74,6 +76,7 @@ const router = createBrowserRouter([
       { path: "/postnatal-care", element: <PostnatalCare /> },
       { path: "/health-checkup", element: <HealthCheckup /> },
       {path: "/helper-registration", element: <HelperRegistration/>},
+      {path: "/worker-registration", element: <HelperRegistration/>},
       {path: "/contact-us", element: <ContactUs/>},
       {path: "/about-us", element: <AboutUs/>},
       {path: "/how-it-works", element: <HowItWorks/>},
@@ -94,6 +97,7 @@ const router = createBrowserRouter([
   },
   { path: "/payment-gateway", element: <PaymentGateway /> },
   { path: "/available-helpers", element: <AvailableHelpers /> },
+  { path: "/cart", element: <Cart /> },
   {
     path: "/helper",
     element: <HelperLayout />,
@@ -131,8 +135,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ErrorBoundary>
   </StrictMode>
 );

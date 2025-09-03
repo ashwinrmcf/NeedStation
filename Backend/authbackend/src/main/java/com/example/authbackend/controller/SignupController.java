@@ -132,6 +132,8 @@ public class SignupController {
             user.setPassword(request.getPassword()); // Will be encoded by AuthService
             user.setFirstName(userData.get("firstName"));
             user.setLastName(userData.get("lastName"));
+            // Set full name as concatenation of first and last name
+            user.setFullName(userData.get("firstName") + " " + userData.get("lastName"));
             // Generate unique username from email (part before @)
             String baseUsername = request.getEmail().split("@")[0];
             String username = baseUsername;

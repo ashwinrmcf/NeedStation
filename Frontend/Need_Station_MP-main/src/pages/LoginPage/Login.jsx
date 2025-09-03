@@ -155,7 +155,7 @@ const Login = () => {
           type="text"
           name="emailOrContact"
           className={styles["input-box"]}
-          placeholder="Email or Contact Number"
+          placeholder="Email"
           value={formData.emailOrContact}
           onChange={handleChange}
         />

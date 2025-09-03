@@ -1,7 +1,7 @@
 package com.example.authbackend.service;
 
-import org.cloudinary.json.JSONArray;
-import org.cloudinary.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpEntity;

@@ -6,9 +6,9 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
   if (!workerId) {
     console.error("Worker ID is required for this step");
   }
-  // State for form data
+  // State for form data - initialize with data from parent
   const [formData, setFormData] = useState({
-    services: {
+    services: data.services || {
       cleaning: false,
       electrician: false,
       plumbing: false,
@@ -18,9 +18,9 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
       cooking: false,
       babysitting: false
     },
-    experience: '',
-    workType: '',
-    availability: {
+    experience: data.experience || '',
+    workType: data.workType || '',
+    availability: data.availability || {
       monday: false,
       tuesday: false,
       wednesday: false,
@@ -29,12 +29,12 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
       saturday: false,
       sunday: false
     },
-    timeSlots: {
+    timeSlots: data.timeSlots || {
       morning: false,
       afternoon: false,
       evening: false
     },
-    languages: {
+    languages: data.languages || {
       english: false,
       hindi: false,
       tamil: false,
@@ -45,6 +45,20 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
       marathi: false
     }
   });
+
+  // Update local state when parent data changes (for navigation)
+  useEffect(() => {
+    if (data.services || data.experience || data.workType || data.availability || data.languages) {
+      setFormData({
+        services: data.services || formData.services,
+        experience: data.experience || formData.experience,
+        workType: data.workType || formData.workType,
+        availability: data.availability || formData.availability,
+        timeSlots: data.timeSlots || formData.timeSlots,
+        languages: data.languages || formData.languages
+      });
+    }
+  }, [data]);
 
   // Handle checkbox changes
   const handleCheckboxChange = (category, item) => {
@@ -107,7 +121,10 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
         services: JSON.stringify(formData.services),
         experience: formData.experience,
         workType: formData.workType,
-        availability: JSON.stringify(formData.availability),
+        availability: JSON.stringify({
+          ...formData.availability,
+          ...formData.timeSlots
+        }),
         languages: JSON.stringify(formData.languages)
       };
       

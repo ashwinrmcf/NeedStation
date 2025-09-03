@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 
@@ -14,12 +14,56 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
   const [certificates, setCertificates] = useState([]);
   const [idProof, setIdProof] = useState(null);
   const [selfieWithId, setSelfieWithId] = useState(null);
+  const [idProofPreview, setIdProofPreview] = useState(null);
+  const [selfiePreview, setSelfiePreview] = useState(null);
+  const [certificatePreviews, setCertificatePreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Restore image previews when component mounts or data changes
+  useEffect(() => {
+    // Check if we have a workerId (indicating an active session)
+    // If no workerId, clear any stale localStorage items
+    if (!workerId) {
+      localStorage.removeItem('tempIdProofUrl');
+      localStorage.removeItem('tempSelfieUrl');
+      localStorage.removeItem('tempCertificateUrls');
+      return;
+    }
+    
+    // Restore ID proof preview only if workerId exists
+    const savedIdProofUrl = localStorage.getItem('tempIdProofUrl');
+    if (savedIdProofUrl) {
+      setIdProofPreview(savedIdProofUrl);
+    }
+    
+    // Restore selfie preview only if workerId exists
+    const savedSelfieUrl = localStorage.getItem('tempSelfieUrl');
+    if (savedSelfieUrl) {
+      setSelfiePreview(savedSelfieUrl);
+    }
+    
+    // Restore certificate previews only if workerId exists
+    const savedCertUrls = localStorage.getItem('tempCertificateUrls');
+    if (savedCertUrls) {
+      try {
+        const urls = JSON.parse(savedCertUrls);
+        setCertificatePreviews(urls);
+      } catch (e) {
+        console.error('Error parsing certificate URLs:', e);
+      }
+    }
+  }, [workerId]);
 
   const handleCertificateUpload = (e) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
       setCertificates([...certificates, ...newFiles]);
+      
+      // Create preview URLs for new files
+      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+      const updatedPreviews = [...certificatePreviews, ...newPreviews];
+      setCertificatePreviews(updatedPreviews);
+      localStorage.setItem('tempCertificateUrls', JSON.stringify(updatedPreviews));
     }
   };
 
@@ -38,13 +82,21 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
 
   const handleIdProofUpload = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setIdProof(e.target.files[0]);
+      const file = e.target.files[0];
+      setIdProof(file);
+      const previewUrl = URL.createObjectURL(file);
+      setIdProofPreview(previewUrl);
+      localStorage.setItem('tempIdProofUrl', previewUrl);
     }
   };
 
   const handleSelfieUpload = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setSelfieWithId(e.target.files[0]);
+      const file = e.target.files[0];
+      setSelfieWithId(file);
+      const previewUrl = URL.createObjectURL(file);
+      setSelfiePreview(previewUrl);
+      localStorage.setItem('tempSelfieUrl', previewUrl);
     }
   };
 
@@ -52,6 +104,12 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
     const updatedCertificates = [...certificates];
     updatedCertificates.splice(index, 1);
     setCertificates(updatedCertificates);
+    
+    // Also remove the corresponding preview
+    const updatedPreviews = [...certificatePreviews];
+    updatedPreviews.splice(index, 1);
+    setCertificatePreviews(updatedPreviews);
+    localStorage.setItem('tempCertificateUrls', JSON.stringify(updatedPreviews));
   };
 
   const handleSubmit = async (e) => {
@@ -206,21 +264,59 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
                 </div>
               </div>
 
-              {certificates.length > 0 && (
+              {(certificates.length > 0 || certificatePreviews.length > 0) && (
                 <div className="mt-2">
                   <p className="font-medium mb-1">Uploaded Certificates:</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {certificates.map((file, index) => (
-                      <div key={index} className="bg-gray-800 rounded-md p-3 flex items-center justify-between">
-                        <span className="truncate">{file.name}</span>
-                        <button
-                          onClick={() => removeCertificate(index)}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ))}
+                    {certificates.length > 0 ? (
+                      certificates.map((file, index) => (
+                        <div key={index} className="bg-gray-800 rounded-md p-3">
+                          {certificatePreviews[index] && (
+                            <div className="mb-2">
+                              <img 
+                                src={certificatePreviews[index]} 
+                                alt={`Certificate ${index + 1}`} 
+                                className="w-20 h-20 object-cover rounded border border-teal-500"
+                              />
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between">
+                            <span className="truncate">{file.name}</span>
+                            <button
+                              onClick={() => removeCertificate(index)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      certificatePreviews.map((previewUrl, index) => (
+                        <div key={index} className="bg-gray-800 rounded-md p-3">
+                          <div className="mb-2">
+                            <img 
+                              src={previewUrl} 
+                              alt={`Certificate ${index + 1}`} 
+                              className="w-20 h-20 object-cover rounded border border-teal-500"
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="truncate">Certificate {index + 1}</span>
+                            <button
+                              onClick={() => {
+                                const updatedPreviews = certificatePreviews.filter((_, i) => i !== index);
+                                setCertificatePreviews(updatedPreviews);
+                                localStorage.setItem('tempCertificateUrls', JSON.stringify(updatedPreviews));
+                              }}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
@@ -249,15 +345,30 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
                 </div>
               </div>
 
-              {idProof && (
-                <div className="mt-2 bg-gray-800 p-2 rounded flex justify-between items-center">
-                  <span className="truncate">{idProof.name}</span>
-                  <button
-                    onClick={() => setIdProof(null)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    Remove
-                  </button>
+              {(idProof || idProofPreview) && (
+                <div className="mt-2">
+                  {idProofPreview && (
+                    <div className="mb-2">
+                      <img 
+                        src={idProofPreview} 
+                        alt="ID Proof Preview" 
+                        className="w-32 h-32 object-cover rounded border-2 border-teal-500"
+                      />
+                    </div>
+                  )}
+                  <div className="bg-gray-800 p-2 rounded flex justify-between items-center">
+                    <span className="truncate">{idProof ? idProof.name : 'ID Proof uploaded'}</span>
+                    <button
+                      onClick={() => {
+                        setIdProof(null);
+                        setIdProofPreview(null);
+                        localStorage.removeItem('tempIdProofUrl');
+                      }}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -285,15 +396,30 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
                 </div>
               </div>
 
-              {selfieWithId && (
-                <div className="mt-2 bg-gray-800 p-2 rounded flex justify-between items-center">
-                  <span className="truncate">{selfieWithId.name}</span>
-                  <button
-                    onClick={() => setSelfieWithId(null)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    Remove
-                  </button>
+              {(selfieWithId || selfiePreview) && (
+                <div className="mt-2">
+                  {selfiePreview && (
+                    <div className="mb-2">
+                      <img 
+                        src={selfiePreview} 
+                        alt="Selfie Preview" 
+                        className="w-32 h-32 object-cover rounded border-2 border-teal-500"
+                      />
+                    </div>
+                  )}
+                  <div className="bg-gray-800 p-2 rounded flex justify-between items-center">
+                    <span className="truncate">{selfieWithId ? selfieWithId.name : 'Selfie uploaded'}</span>
+                    <button
+                      onClick={() => {
+                        setSelfieWithId(null);
+                        setSelfiePreview(null);
+                        localStorage.removeItem('tempSelfieUrl');
+                      }}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

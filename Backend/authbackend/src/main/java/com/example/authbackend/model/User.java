@@ -24,6 +24,8 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "full_name")
+    private String fullName;
 
     @Column(name = "auth_provider")
     private String provider;
@@ -71,6 +73,32 @@ public class User {
 
     @Column(name = "location_address")
     private String locationAddress;
+
+    // Form data fields
+    @Column(name = "address", columnDefinition = "TEXT")
+    private String address;
+
+    @Column(name = "landmark")
+    private String landmark;
+
+    @Column(name = "pincode")
+    private String pincode;
+
+    @Column(name = "contact_number")
+    private String contactNumber;
+
+    @Column(name = "alternate_contact")
+    private String alternateContact;
+
+    @Column(name = "preferred_date")
+    private String preferredDate;
+
+    @Column(name = "preferred_time")
+    private String preferredTime;
+
+    @Column(name = "work_details", columnDefinition = "TEXT")
+    private String workDetails;
+
     public void setLocationLat(Double locationLat) {
         this.locationLat = locationLat;
     }
@@ -127,4 +155,78 @@ public class User {
     public String getLocationAddress() {
         return locationAddress;
     }
+
+    // Getters and setters for form data fields
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
+    public String getAlternateContact() {
+        return alternateContact;
+    }
+
+    public void setAlternateContact(String alternateContact) {
+        this.alternateContact = alternateContact;
+    }
+
+    public String getPreferredDate() {
+        return preferredDate;
+    }
+
+    public void setPreferredDate(String preferredDate) {
+        this.preferredDate = preferredDate;
+    }
+
+    public String getPreferredTime() {
+        return preferredTime;
+    }
+
+    public void setPreferredTime(String preferredTime) {
+        this.preferredTime = preferredTime;
+    }
+
+    public String getWorkDetails() {
+        return workDetails;
+    }
+
+    public void setWorkDetails(String workDetails) {
+        this.workDetails = workDetails;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLandmark() {
+        return landmark;
+    }
+
+    public void setLandmark(String landmark) {
+        this.landmark = landmark;
+    }
+
+    public String getPincode() {
+        return pincode;
+    }
+
+    public void setPincode(String pincode) {
+        this.pincode = pincode;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
 }

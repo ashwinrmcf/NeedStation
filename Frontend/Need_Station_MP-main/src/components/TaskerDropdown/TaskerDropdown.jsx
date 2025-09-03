@@ -71,7 +71,7 @@ const TaskerDropdown = ({ isVisible }) => {
         </motion.div>
         
         <motion.div variants={itemVariants}>
-          <Link to="/helper-registration" className={styles.dropdownItem}>
+          <Link to="/worker-registration" state={{ fromHeader: true }} className={styles.dropdownItem}>
             <UserPlus size={18} />
             <span>Register as Helper</span>
           </Link>

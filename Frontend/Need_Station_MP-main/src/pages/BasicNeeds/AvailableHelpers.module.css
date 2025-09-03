@@ -110,12 +110,22 @@
   bottom: 15%;
   width: 1px;
   background: rgba(92, 225, 230, 0.3);
-  left: 50%;
+  left: 33.33%;
+}
+
+.rectangle::after {
+  content: "";
+  position: absolute;
+  top: 15%;
+  bottom: 15%;
+  width: 1px;
+  background: rgba(92, 225, 230, 0.3);
+  left: 66.66%;
 }
 
 /* Rating Section */
 .rating-group {
-  width: 45%;
+  width: 30%;
   height: auto;
   padding: 20px;
   display: flex;
@@ -183,7 +193,7 @@
 
 /* Price Section */
 .price-group {
-  width: 45%;
+  width: 30%;
   height: auto;
   padding: 20px;
   display: flex;
@@ -192,6 +202,25 @@
 }
 
 .price-group h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #5CE1E6;
+  text-align: left;
+  margin: 0 0 15px 0;
+  text-shadow: 0 0 10px rgba(92, 225, 230, 0.3);
+}
+
+/* Urgency Section */
+.urgency-group {
+  width: 30%;
+  height: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.urgency-group h2 {
   font-size: 20px;
   font-weight: 600;
   color: #5CE1E6;

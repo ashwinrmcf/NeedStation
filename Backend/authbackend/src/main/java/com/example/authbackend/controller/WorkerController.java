@@ -99,6 +99,27 @@ public class WorkerController {
         this.workerService = workerService;
     }
 
+    // Delete worker data endpoint for registration cleanup
+    @DeleteMapping("/delete/{workerId}")
+    public ResponseEntity<?> deleteWorkerData(@PathVariable Long workerId) {
+        try {
+            boolean deleted = workerService.deleteWorkerById(workerId);
+            if (deleted) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "Worker data deleted successfully");
+                response.put("workerId", workerId);
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to delete worker data");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
     // Step 1: Basic Information
     @PostMapping(value = "/register/step1", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> registerStep1(
@@ -108,9 +129,19 @@ public class WorkerController {
         try {
             // Parse the JSON string directly
             WorkerRegistrationDTO dto = objectMapper.readValue(data, WorkerRegistrationDTO.class);
+            System.out.println("=== STEP 1 CONTROLLER DEBUG ===");
             System.out.println("Received Step 1 registration request - Worker ID: " + workerId);
             System.out.println("DTO Data: fullName=" + dto.getFullName() + ", phone=" + dto.getPhone());
-            System.out.println("Profile Picture: " + (profilePicture != null ? "Provided (" + profilePicture.getSize() + " bytes)" : "Not provided"));
+            System.out.println("Profile Picture received: " + (profilePicture != null));
+            if (profilePicture != null) {
+                System.out.println("Profile Picture details:");
+                System.out.println("  - Size: " + profilePicture.getSize() + " bytes");
+                System.out.println("  - Original filename: " + profilePicture.getOriginalFilename());
+                System.out.println("  - Content type: " + profilePicture.getContentType());
+                System.out.println("  - Is empty: " + profilePicture.isEmpty());
+            } else {
+                System.out.println("Profile Picture is NULL - not received by controller");
+            }
             Worker worker = workerService.updateBasicInfo(workerId, dto, profilePicture);
             Map<String, Object> response = new HashMap<>();
             response.put("workerId", worker.getId());
@@ -301,6 +332,27 @@ public class WorkerController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Registration failed: " + e.getMessage());
+        }
+    }
+
+    // Test endpoint for direct Backblaze B2 upload
+    @PostMapping("/test-upload")
+    public ResponseEntity<?> testUpload(@RequestPart("file") MultipartFile file) {
+        try {
+            System.out.println("Test upload endpoint called with file: " + file.getOriginalFilename());
+            String imageUrl = workerService.uploadImage(file);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("imageUrl", imageUrl);
+            response.put("message", "File uploaded successfully to Backblaze B2");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("Test upload failed: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 }

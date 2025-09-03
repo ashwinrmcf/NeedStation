@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";  // Added useLocation to access route state
 import styles from "./BasicNeedsServiceUserDescription.module.css";
 import ScrollToTop from "../../hooks/ScrollToTop";
-import MapPicker from "../../components/Map/MapPicker.jsx";
+import LeafletMapPicker from "../../components/Map/LeafletMapPicker.jsx";
 import { FaMapMarkerAlt, FaPhone, FaClock, FaClipboardList, FaCheckCircle, FaStar } from "react-icons/fa";
 import { HiLocationMarker } from "react-icons/hi";
 import { MdAccessTime, MdContactPhone } from "react-icons/md";
@@ -13,13 +13,16 @@ const BasicNeedsServiceUserDescription = () => {
   const [submitMessage, setSubmitMessage] = useState("");
   const [formData, setFormData] = useState({
     address: "",
+    landmark: "",
+    pincode: "",
     contactNumber: "",
     alternateContact: "",
-    preferredDate: "",
-    preferredTime: "",
-    workDetails: "",
-    urgency: "normal"
   });
+  const [dateError, setDateError] = useState("");
+
+  // Local storage keys for persistence across reloads
+  const FORM_DATA_KEY = 'needstation_form_data';
+  const LOCATION_DATA_KEY = 'needstation_location_data';
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,50 +31,144 @@ const BasicNeedsServiceUserDescription = () => {
   const serviceInfo = location.state || {};
   const { service, description, serviceType } = serviceInfo;
 
+  // Calculate date limits for booking (today to 3 days ahead)
+  const today = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(today.getDate() + 3);
+  
+  const formatDateForInput = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+  
+  const minDateString = formatDateForInput(today);
+  const maxDateString = formatDateForInput(maxDate);
+
+  // Load data from localStorage on component mount and add beforeunload warning
+  useEffect(() => {
+    const savedFormData = localStorage.getItem(FORM_DATA_KEY);
+    const savedLocationData = localStorage.getItem(LOCATION_DATA_KEY);
+    
+    if (savedFormData) {
+      try {
+        const parsedFormData = JSON.parse(savedFormData);
+        setFormData(parsedFormData);
+      } catch (error) {
+        console.error('Error parsing saved form data:', error);
+      }
+    }
+    
+    if (savedLocationData) {
+      try {
+        const parsedLocationData = JSON.parse(savedLocationData);
+        setSelectedLocation(parsedLocationData);
+      } catch (error) {
+        console.error('Error parsing saved location data:', error);
+      }
+    }
+
+    // Add beforeunload warning for page reload - clears data after warning
+    const handleBeforeUnload = (e) => {
+      if (formData.address || formData.contactNumber || selectedLocation) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to reload? This will clear your form data.';
+        // Clear localStorage when user reloads
+        localStorage.removeItem(FORM_DATA_KEY);
+        localStorage.removeItem(LOCATION_DATA_KEY);
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [formData, selectedLocation]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    
+    const updatedFormData = {
+      ...formData,
       [name]: value
-    }));
+    };
+    setFormData(updatedFormData);
+    
+    // Save to localStorage
+    localStorage.setItem(FORM_DATA_KEY, JSON.stringify(updatedFormData));
+  };
+
+  const validateDate = (value) => {
+    if (!value) {
+      setDateError("");
+      return;
+    }
+    
+    const selectedDate = new Date(value);
+    const today = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 3);
+    
+    // Reset time to compare only dates
+    today.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0);
+    maxDate.setHours(0, 0, 0, 0);
+    
+    if (selectedDate < today || selectedDate > maxDate) {
+      setDateError("Booking is only available for the next 3 days from today.");
+    } else {
+      setDateError("");
+    }
   };
 
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
     setSubmitMessage("");
+    
+    // Save location to localStorage
+    localStorage.setItem(LOCATION_DATA_KEY, JSON.stringify(location));
   };
 
-  const submitLocationToDatabase = async () => {
+  const submitFormToDatabase = async () => {
     if (!selectedLocation) {
       setSubmitMessage("❗ Please select a location first");
       return;
     }
 
-    const username = localStorage.getItem("username");  // ✅ Correct way to get email
+    const userEmail = localStorage.getItem("userEmail");
+    const username = localStorage.getItem("username");
 
-    if (!username) {
-      setSubmitMessage("❗ User email not found. Please login again.");
+    if (!userEmail && !username) {
+      setSubmitMessage("❗ User not found. Please login again.");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:8080/api/user/update-location', {
+      const response = await fetch('http://localhost:8080/api/user/update-form-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: username,                 // ✅ Correct email coming from localStorage
-          address: selectedLocation.address,
-          lat: selectedLocation.lat,
-          lng: selectedLocation.lng
+          userIdentifier: userEmail || username,
+          address: formData.address,
+          landmark: formData.landmark,
+          pincode: formData.pincode,
+          contactNumber: formData.contactNumber,
+          alternateContact: formData.alternateContact,
+          locationLat: selectedLocation.lat,
+          locationLng: selectedLocation.lng,
+          locationAddress: selectedLocation.address,
         }),
       });
 
       if (response.ok) {
-        setSubmitMessage("✅ Location successfully saved!"); // ✅ navigate only after success
+        setSubmitMessage("✅ Location saved successfully!"); 
+        // Don't clear localStorage after successful save to maintain session persistence
+        // localStorage.removeItem(FORM_DATA_KEY);
+        // localStorage.removeItem(LOCATION_DATA_KEY);
       } else {
         const errorData = await response.json().catch(() => null);
         console.error("Server error:", errorData);
@@ -88,7 +185,26 @@ const BasicNeedsServiceUserDescription = () => {
     <>
       <ScrollToTop />
       <div className={styles["header"]}>
-        <Link to="/">
+        <Link 
+          to="/"
+          onClick={(e) => {
+            // Check if there's unsaved data
+            const hasUnsavedData = Object.values(formData).some(value => value.trim() !== '') || selectedLocation;
+            
+            if (hasUnsavedData) {
+              const confirmNavigation = window.confirm(
+                "You have unsaved changes. Are you sure you want to leave this page? Your data will be lost."
+              );
+              if (confirmNavigation) {
+                // Clear localStorage when user confirms navigation back to services
+                localStorage.removeItem(FORM_DATA_KEY);
+                localStorage.removeItem(LOCATION_DATA_KEY);
+              } else {
+                e.preventDefault();
+              }
+            }
+          }}
+        >
           <div className={styles["logo"]}>
             Need<span style={{ color: "#5CE1E6" }}>Station</span>
           </div>
@@ -98,7 +214,7 @@ const BasicNeedsServiceUserDescription = () => {
             <div className={styles["circle"]}></div>
           </div>{" "}
           <div className={styles["line1"]}></div>{" "}
-          <span className={styles["describe-task"]}>Describe your Task</span>
+          <span className={styles["helper-list"]}>Describe your Task</span>
           <div className={styles["line1"]}></div>
           <div className={styles["step"]}>
             <div className={styles["circle"]}></div>
@@ -152,7 +268,7 @@ const BasicNeedsServiceUserDescription = () => {
             Your Task Location
           </h1>
           <div style={{ marginTop: "20px", position: "relative" }}>
-            <MapPicker onLocationSelect={handleLocationSelect} />
+            <LeafletMapPicker onLocationSelect={handleLocationSelect} />
             
             {/* Display location details including lat/long */}
             {selectedLocation && (
@@ -171,9 +287,9 @@ const BasicNeedsServiceUserDescription = () => {
               </div>
             )}
             
-            {/* Location submit button positioned at bottom right */}
+            {/* Form submit button positioned at bottom right */}
             <button 
-              onClick={submitLocationToDatabase}
+              onClick={submitFormToDatabase}
               disabled={isSubmitting || !selectedLocation}
               style={{
                 position: "absolute",
@@ -296,6 +412,8 @@ const BasicNeedsServiceUserDescription = () => {
                 <input
                   type="text"
                   name="landmark"
+                  value={formData.landmark}
+                  onChange={handleInputChange}
                   placeholder="Nearby landmark"
                   style={{
                     width: "100%",
@@ -331,12 +449,14 @@ const BasicNeedsServiceUserDescription = () => {
                   marginBottom: "12px",
                   textShadow: "0 0 10px rgba(92, 225, 230, 0.3)"
                 }}>
-                  Pincode
+                  Pincode *
                 </label>
                 <input
                   type="text"
                   name="pincode"
-                  placeholder="Area pincode"
+                  value={formData.pincode}
+                  onChange={handleInputChange}
+                  placeholder="Enter pincode"
                   style={{
                     width: "100%",
                     padding: "18px 20px",
@@ -416,7 +536,7 @@ const BasicNeedsServiceUserDescription = () => {
                 name="contactNumber"
                 value={formData.contactNumber}
                 onChange={handleInputChange}
-                placeholder="+91 9876543210"
+                placeholder="Enter contact number"
                 style={{
                   width: "100%",
                   padding: "18px 20px",
@@ -458,7 +578,7 @@ const BasicNeedsServiceUserDescription = () => {
                 name="alternateContact"
                 value={formData.alternateContact}
                 onChange={handleInputChange}
-                placeholder="+91 9876543210"
+                placeholder="Enter contact number"
                 style={{
                   width: "100%",
                   padding: "18px 20px",
@@ -487,7 +607,6 @@ const BasicNeedsServiceUserDescription = () => {
           </div>
         </div>
 
-        {/* Booking Slot */}
         <div className={styles["box"]} style={{
           background: "linear-gradient(145deg, #1e1e1e, #2a2a2a)",
           borderRadius: "20px",
@@ -520,6 +639,22 @@ const BasicNeedsServiceUserDescription = () => {
             <MdAccessTime style={{ color: "#5CE1E6", marginRight: "15px", fontSize: "28px" }} />
             Preferred Booking Slot
           </h1>
+          {dateError && (
+            <div style={{
+              color: "#ff4757",
+              fontSize: "16px",
+              marginBottom: "20px",
+              padding: "12px 16px",
+              backgroundColor: "rgba(255, 71, 87, 0.1)",
+              border: "1px solid rgba(255, 71, 87, 0.3)",
+              borderRadius: "12px",
+              display: "flex",
+              alignItems: "center",
+              fontWeight: "500"
+            }}>
+              ⚠️ {dateError}
+            </div>
+          )}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" }}>
             <div>
               <label style={{ 
@@ -537,7 +672,8 @@ const BasicNeedsServiceUserDescription = () => {
                 name="preferredDate"
                 value={formData.preferredDate}
                 onChange={handleInputChange}
-                min={new Date().toISOString().split('T')[0]}
+                min={minDateString}
+                max={maxDateString}
                 style={{
                   width: "100%",
                   padding: "18px 20px",
@@ -558,6 +694,7 @@ const BasicNeedsServiceUserDescription = () => {
                   e.target.style.transform = "translateY(-2px)";
                 }}
                 onBlur={(e) => {
+                  validateDate(e.target.value);
                   e.target.style.borderColor = "rgba(92, 225, 230, 0.2)";
                   e.target.style.boxShadow = "inset 0 2px 10px rgba(0,0,0,0.3)";
                   e.target.style.transform = "translateY(0)";
@@ -612,155 +749,8 @@ const BasicNeedsServiceUserDescription = () => {
               </select>
             </div>
           </div>
-          <div style={{ marginTop: "25px" }}>
-            <label style={{ 
-              color: "#5CE1E6", 
-              fontSize: "16px", 
-              fontWeight: "600", 
-              display: "block", 
-              marginBottom: "15px",
-              textShadow: "0 0 10px rgba(92, 225, 230, 0.3)"
-            }}>
-              Urgency Level
-            </label>
-            <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
-              {["normal", "urgent", "emergency"].map((level) => (
-                <label key={level} style={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  cursor: "pointer", 
-                  padding: "12px 20px",
-                  borderRadius: "12px",
-                  border: `2px solid ${formData.urgency === level ? "#5CE1E6" : "rgba(92, 225, 230, 0.2)"}`,
-                  backgroundColor: formData.urgency === level ? "rgba(92, 225, 230, 0.1)" : "rgba(26, 26, 26, 0.5)",
-                  transition: "all 0.3s ease",
-                  backdropFilter: "blur(10px)",
-                  boxShadow: formData.urgency === level ? "0 0 20px rgba(92, 225, 230, 0.3)" : "none"
-                }}>
-                  <input
-                    type="radio"
-                    name="urgency"
-                    value={level}
-                    checked={formData.urgency === level}
-                    onChange={handleInputChange}
-                    style={{ 
-                      marginRight: "12px", 
-                      accentColor: "#5CE1E6",
-                      width: "18px",
-                      height: "18px"
-                    }}
-                  />
-                  <span style={{ 
-                    textTransform: "capitalize", 
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    color: formData.urgency === level ? "#5CE1E6" : "white"
-                  }}>
-                    {level}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Work Details */}
-        <div className={styles["box"]} style={{
-          background: "linear-gradient(145deg, #1e1e1e, #2a2a2a)",
-          borderRadius: "20px",
-          padding: "30px",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(92, 225, 230, 0.1)",
-          border: "1px solid rgba(92, 225, 230, 0.2)",
-          marginBottom: "30px",
-          position: "relative",
-          overflow: "hidden"
-        }}>
-          <div style={{
-            position: "absolute",
-            top: "0",
-            left: "0",
-            right: "0",
-            height: "4px",
-            background: "linear-gradient(90deg, #5CE1E6, #00d4ff, #5CE1E6)",
-            borderRadius: "20px 20px 0 0"
-          }}></div>
-          <h1 style={{ 
-            fontSize: "28px", 
-            fontWeight: "700",
-            background: "linear-gradient(135deg, #5CE1E6, #00d4ff)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            marginBottom: "25px",
-            display: "flex",
-            alignItems: "center"
-          }}>
-            <FaClipboardList style={{ color: "#5CE1E6", marginRight: "15px", fontSize: "28px" }} />
-            Work Details
-          </h1>
-          <div style={{ marginTop: "20px" }}>
-            <label style={{ 
-              color: "#5CE1E6", 
-              fontSize: "16px", 
-              fontWeight: "600", 
-              display: "block", 
-              marginBottom: "12px",
-              textShadow: "0 0 10px rgba(92, 225, 230, 0.3)"
-            }}>
-              Describe your requirements (Optional)
-            </label>
-            <textarea
-              name="workDetails"
-              value={formData.workDetails}
-              onChange={handleInputChange}
-              placeholder={service 
-                ? `I need a professional ${service} service. Please provide details about the work required, any specific instructions, materials needed, etc.` 
-                : "Please describe the work you need done, any specific requirements, materials needed, and any other important details..."}
-              style={{
-                width: "100%",
-                height: "160px",
-                padding: "20px",
-                fontSize: "16px",
-                border: "2px solid rgba(92, 225, 230, 0.2)",
-                borderRadius: "15px",
-                backgroundColor: "rgba(26, 26, 26, 0.8)",
-                color: "white",
-                outline: "none",
-                transition: "all 0.3s ease",
-                resize: "vertical",
-                fontFamily: "inherit",
-                backdropFilter: "blur(10px)",
-                boxShadow: "inset 0 2px 10px rgba(0,0,0,0.3)",
-                lineHeight: "1.6"
-              }}
-              className={styles["work-details-textarea"]}
-              onFocus={(e) => {
-                e.target.style.borderColor = "#5CE1E6";
-                e.target.style.boxShadow = "inset 0 2px 10px rgba(0,0,0,0.3), 0 0 20px rgba(92, 225, 230, 0.3)";
-                e.target.style.transform = "translateY(-2px)";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "rgba(92, 225, 230, 0.2)";
-                e.target.style.boxShadow = "inset 0 2px 10px rgba(0,0,0,0.3)";
-                e.target.style.transform = "translateY(0)";
-              }}
-            />
-            <div style={{ 
-              display: "flex", 
-              justifyContent: "flex-end", 
-              alignItems: "center", 
-              marginTop: "15px",
-              fontSize: "14px",
-              color: "#888"
-            }}>
-              <span style={{ 
-                color: formData.workDetails.length > 450 ? "#ff5c5c" : "#5CE1E6",
-                fontWeight: "600"
-              }}>
-                {formData.workDetails.length}/500
-              </span>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className={styles["button-container"]} style={{
@@ -770,27 +760,44 @@ const BasicNeedsServiceUserDescription = () => {
         alignItems: "center",
         background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
-        <Link 
-          to="/available-helpers"
-          state={{ 
-            service: service || serviceType || 'General Service',
-            description: description,
-            serviceType: serviceType,
-            bookingDetails: {
-              ...formData,
-              selectedLocation: selectedLocation
-            }
-          }}
-          style={{ textDecoration: "none" }}
-        >
           <button 
             className={styles["button"]}
-            disabled={!formData.address || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime}
+            disabled={!formData.address || !formData.pincode || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime}
+            onClick={async (e) => {
+              e.preventDefault();
+              
+              // Validate required fields
+              if (!formData.address || !formData.pincode || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) {
+                alert("Please fill in all required fields");
+                return;
+              }
+              
+              if (!selectedLocation) {
+                alert("Please select a location on the map");
+                return;
+              }
+              
+              // Submit form data to backend first
+              await submitFormToDatabase();
+              
+              // Then navigate to helpers page
+              navigate("/available-helpers", {
+                state: { 
+                  service: service || serviceType || 'General Service',
+                  description: description,
+                  serviceType: serviceType,
+                  bookingDetails: {
+                    ...formData,
+                    selectedLocation: selectedLocation
+                  }
+                }
+              });
+            }}
             style={{
-              background: (!formData.address || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) 
+              background: (!formData.address || !formData.pincode || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) 
                 ? "linear-gradient(135deg, #666, #888)" 
                 : "linear-gradient(135deg, #5CE1E6, #00d4ff)",
-              color: (!formData.address || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) 
+              color: (!formData.address || !formData.pincode || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) 
                 ? "#ccc" 
                 : "#000",
               border: "none",
@@ -798,9 +805,9 @@ const BasicNeedsServiceUserDescription = () => {
               padding: "18px 40px",
               fontSize: "18px",
               fontWeight: "700",
-              cursor: (!formData.address || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) ? 'not-allowed' : 'pointer',
+              cursor: (!formData.address || !formData.pincode || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) ? 'not-allowed' : 'pointer',
               transition: "all 0.3s ease",
-              boxShadow: (!formData.address || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) 
+              boxShadow: (!formData.address || !formData.pincode || !formData.contactNumber || !formData.preferredDate || !formData.preferredTime) 
                 ? "none" 
                 : "0 10px 30px rgba(92, 225, 230, 0.4), 0 0 0 1px rgba(92, 225, 230, 0.2)",
               textTransform: "uppercase",
@@ -823,7 +830,6 @@ const BasicNeedsServiceUserDescription = () => {
             <FaStar style={{ marginRight: "10px" }} />
             See Taskers
           </button>
-        </Link>
       </div>
     </>
   );

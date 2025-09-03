@@ -5,6 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext.jsx";
 import HindiTaskerDropdown from "./HindiTaskerDropdown.jsx";
 import HindiHeaderDropdown from "./HindiHeaderDropdown.jsx";
+import PortalModal from "../common/PortalModal.jsx";
 import styles from "../Header/Header.module.css";
 
 // Hindi version of the Header component with pre-translated content
@@ -12,10 +13,19 @@ const HindiHeader = () => {
   const { user, logout } = useAuth();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isTaskerDropdownOpen, setTaskerDropdownOpen] = useState(false);
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const taskerButtonRef = useRef(null);
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
+  };
+
+  const initiateLogout = () => {
+    setShowLogoutConfirmation(true);
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   const location = useLocation();
@@ -50,7 +60,7 @@ const HindiHeader = () => {
             {user ? (
               <>
                 <span className={styles.greeting}>नमस्ते, {user.username}</span>
-                <button className={styles.logout} onClick={logout}>
+                <button className={styles.logout} onClick={initiateLogout}>
                   लॉगआउट
                 </button>
               </>
@@ -82,6 +92,17 @@ const HindiHeader = () => {
         </header>
         {isDropdownOpen && <HindiHeaderDropdown />}
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <PortalModal
+        isOpen={showLogoutConfirmation}
+        onClose={() => setShowLogoutConfirmation(false)}
+        onConfirm={handleLogout}
+        title="लॉगआउट की पुष्टि करें"
+        message="क्या आप वाकई लॉगआउट करना चाहते हैं? आप अपने खाते से लॉगआउट हो जाएंगे।"
+        confirmText="हाँ, लॉगआउट करें"
+        cancelText="लॉग इन रहें"
+      />
     </>
   );
 };

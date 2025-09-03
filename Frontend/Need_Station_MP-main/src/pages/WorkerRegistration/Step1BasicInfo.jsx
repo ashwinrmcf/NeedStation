@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import Translator from '../../components/Translator';
 
-export default function Step1BasicInfo({ data, updateForm, next, workerId, updateWorkerId }) {
+export default function Step1BasicInfo({ data, updateForm, next, workerId, updateWorkerId, onNavigationAttempt, clearRegistrationData }) {
   const [profilePicture, setProfilePicture] = useState(null);
   const [profilePictureURL, setProfilePictureURL] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -17,20 +17,56 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
   const [otpError, setOtpError] = useState('');
   const [verifiedWorkerId, setVerifiedWorkerId] = useState(null);
 
-  // Check session storage for OTP verification status
+  // Restore form state when component mounts or data changes
   useEffect(() => {
-    const sessionOtpVerified = sessionStorage.getItem('otpVerified');
-    const sessionWorkerId = sessionStorage.getItem('sessionWorkerId');
+    // Restore saved state from session
+    const savedOtpVerified = sessionStorage.getItem('otpVerified');
+    const savedWorkerId = sessionStorage.getItem('sessionWorkerId');
     
-    if (sessionOtpVerified === 'true') {
+    if (savedOtpVerified === 'true') {
       setOtpVerified(true);
       setOtpSent(true);
     }
     
-    if (sessionWorkerId) {
-      setVerifiedWorkerId(Number(sessionWorkerId));
+    if (savedWorkerId) {
+      setVerifiedWorkerId(Number(savedWorkerId));
     }
-  }, []);
+  }, [data]);
+
+  useEffect(() => {
+    // Clean up any existing blob URLs first
+    if (profilePictureURL && profilePictureURL.startsWith('blob:')) {
+      URL.revokeObjectURL(profilePictureURL);
+    }
+    
+    // If we have a profilePicture file in form data, create new blob URL
+    if (data.profilePicture && data.profilePicture instanceof File) {
+      const localUrl = URL.createObjectURL(data.profilePicture);
+      setProfilePictureURL(localUrl);
+      // Store in localStorage for Step 6 preview
+      localStorage.setItem('tempProfileImageUrl', localUrl);
+      console.log('Profile image restored and stored in localStorage:', localUrl);
+    } else if (typeof data.profilePicture === 'string') {
+      // If it's already a URL string, use it directly
+      setProfilePictureURL(data.profilePicture);
+      // Store in localStorage for Step 6 preview
+      localStorage.setItem('tempProfileImageUrl', data.profilePicture);
+      console.log('Profile image URL stored in localStorage:', data.profilePicture);
+    } else {
+      // No profile picture, clear the preview and localStorage
+      setProfilePictureURL(null);
+      localStorage.removeItem('tempProfileImageUrl');
+    }
+  }, [data.profilePicture]);
+
+  // Cleanup blob URLs on component unmount
+  useEffect(() => {
+    return () => {
+      if (profilePictureURL && profilePictureURL.startsWith('blob:')) {
+        URL.revokeObjectURL(profilePictureURL);
+      }
+    };
+  }, [profilePictureURL]);
 
   // Backend API URL - update this to your actual backend URL
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
@@ -288,12 +324,18 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
           lastModified: Date.now()
         });
         
+        // Clean up any existing blob URL before creating new one
+        if (profilePictureURL && profilePictureURL.startsWith('blob:')) {
+          URL.revokeObjectURL(profilePictureURL);
+        }
+        
         setProfilePicture(compressedFile);
         const localUrl = URL.createObjectURL(compressedFile);
         setProfilePictureURL(localUrl);
         
-        // Store local image URL in localStorage for temporary access
+        // Store the image URL in localStorage for Step 6 preview
         localStorage.setItem('tempProfileImageUrl', localUrl);
+        console.log('Profile image stored in localStorage for Step 6 preview:', localUrl);
         
         // Also update parent form data with the compressed file
         updateForm({
@@ -337,6 +379,14 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
       return;
     }
     
+    // If phone is verified but we have a profile picture, we still need to upload it
+    if (otpVerified && verifiedWorkerId && !profilePicture) {
+      console.log("Phone already verified and no profile picture, skipping API call");
+      sessionStorage.setItem('step1Completed', 'true');
+      next();
+      return;
+    }
+    
     // Update the form with profile picture before sending to server
     updateForm({ 
       profilePicture,
@@ -346,9 +396,17 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
     // Create FormData object
     const formData = new FormData();
     
-    // Add profile picture
+    // Add profile picture - debug logging
     if (profilePicture) {
+      console.log("=== FRONTEND PROFILE PICTURE DEBUG ===");
+      console.log("Profile picture exists:", !!profilePicture);
+      console.log("Profile picture type:", profilePicture.type);
+      console.log("Profile picture size:", profilePicture.size);
+      console.log("Profile picture name:", profilePicture.name);
       formData.append("profilePicture", profilePicture);
+      console.log("Profile picture appended to FormData");
+    } else {
+      console.log("WARNING: No profile picture to upload");
     }
     
     // Create DTO for worker registration with explicit non-null values
@@ -380,10 +438,11 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
       
       setLoading(true);
       console.log("Sending request to URL:", url);
-      // Don't set Content-Type header manually, axios will set the correct boundary
+      // Ensure proper multipart/form-data content type
       const response = await axios.post(url, formData, {
-        // Let axios set the Content-Type with the proper boundary
-        headers: {}
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
       
       // Update workerId if it's a new registration
@@ -553,22 +612,6 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
           </div>
         </div>
 
-        {/* Date of Birth */}
-        <div>
-          <label htmlFor="dob" className="block text-lg font-medium mb-2">
-            Date of Birth
-          </label>
-          <input
-            type="date"
-            id="dob"
-            name="dob"
-            value={data.dob || ''}
-            onChange={handleInputChange}
-            className="w-full p-3 bg-gray-900 border border-gray-700 rounded-md"
-            required
-          />
-        </div>
-
         {/* Email and WhatsApp (Optional) */}
         <div>
           <label htmlFor="email" className="block text-lg font-medium mb-2">Email (Optional)</label>
@@ -680,6 +723,33 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
               </div>
             </div>
           )}
+          
+          {/* Change mobile number option */}
+          {otpVerified && (
+            <div className="mt-4 p-4 border border-green-700 rounded-md bg-green-900/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <CheckCircle className="text-green-500 mr-2" size={20} />
+                  <span className="text-green-400 font-medium">Mobile verified: {data.phone}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOtpVerified(false);
+                    setOtpSent(false);
+                    setOtpCode('');
+                    sessionStorage.removeItem('otpVerified');
+                    sessionStorage.removeItem('mobileVerified');
+                    updateForm({ otpVerified: false, otpSent: false });
+                  }}
+                  className="text-blue-400 text-sm hover:text-blue-300 flex items-center"
+                >
+                  <RefreshCw size={14} className="mr-1" />
+                  Change Number
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mb-8 space-y-4">
@@ -698,15 +768,16 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
             )}
           </button>
           
-          {/* Mobile version of already registered link */}
+          {/* Navigation warning for home page */}
           <div className="text-center block md:hidden mt-6">
-            <Link 
-              to="/worker-login" 
+            <button
+              type="button"
+              onClick={() => onNavigationAttempt && onNavigationAttempt('/worker-login')}
               className="font-medium transition-colors hover:text-teal-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400"
               style={{ color: '#00E0B8' }}
             >
               Already registered? Login
-            </Link>
+            </button>
           </div>
         </div>
       </div>

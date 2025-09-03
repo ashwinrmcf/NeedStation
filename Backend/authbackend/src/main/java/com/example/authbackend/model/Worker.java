@@ -23,6 +23,7 @@ public class Worker {
     @Column(nullable = false)
     private LocalDate dob = LocalDate.now();
 
+    @Column(length = 500)
     private String profileImageUrl = "";
 
     @Column(unique = true, nullable = false)
@@ -60,7 +61,9 @@ public class Worker {
     // Step 4: Verification
     private String aadharNumber = "";
     private String policeVerificationStatus = "PENDING";
+    @Column(length = 500)
     private String idProofUrl = "";
+    @Column(length = 500)
     private String selfieWithIdUrl = "";
     
     @Column(columnDefinition = "TEXT")
@@ -410,6 +413,47 @@ public class Worker {
 
     public void setOtpAttempts(Integer otpAttempts) {
         this.otpAttempts = otpAttempts;
+    }
+
+    // Missing getter/setter methods for WorkerService compatibility
+    public String getAddress() {
+        return permanentAddress;
+    }
+
+    public void setAddress(String address) {
+        this.permanentAddress = address;
+    }
+
+    public String getState() {
+        return ""; // Add state field if needed
+    }
+
+    public void setState(String state) {
+        // Add state field if needed
+    }
+
+    public String getLocality() {
+        return ""; // Add locality field if needed
+    }
+
+    public void setLocality(String locality) {
+        // Add locality field if needed
+    }
+
+    public String getWorkExperience() {
+        return experience;
+    }
+
+    public void setWorkExperience(String workExperience) {
+        this.experience = workExperience;
+    }
+
+    public String getEducation() {
+        return ""; // Add education field if needed
+    }
+
+    public void setEducation(String education) {
+        // Add education field if needed
     }
 
     public Worker() {

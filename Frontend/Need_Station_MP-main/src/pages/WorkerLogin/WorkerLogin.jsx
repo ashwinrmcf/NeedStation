@@ -241,7 +241,7 @@ const WorkerLogin = () => {
             Need<span>Station</span>
           </div>
         </Link>
-        <Link to="/worker-registration">
+        <Link to="/helper-registration">
           <div className={styles["account-text"]}>
             Not registered yet?{" "}
             <span className={styles["login-link"]}>Register as Helper</span>
@@ -353,18 +353,6 @@ const WorkerLogin = () => {
           Don't have an account? <Link to="/helper-registration">Register here</Link>
         </div>
 
-        <div className={styles["separator"]}>
-          <span className={styles["line"]}>
-            <hr />
-          </span>
-          or
-          <span className={styles["line"]}>
-            <hr />
-          </span>
-        </div>
-        <button className={`${styles["social-btn"]} ${styles["google-btn"]}`}>
-          Continue with Google
-        </button>
       </div>
     </>
   );

@@ -137,11 +137,22 @@ const AvailableHelpers = () => {
                             <option value="800+">₹800+/hr</option>
                         </select>
                     </div>
+
+                    {/* Urgency Filter Section */}
+                    <div className={styles['urgency-group']}>
+                        <h2>Urgency Level</h2>
+                        <select className={styles['filter-dropdown']}>
+                            <option value="">All Urgency</option>
+                            <option value="normal">Normal</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="emergency">Emergency</option>
+                        </select>
+                    </div>
                 </div>
 
                 {/* Tasker Profiles */}
                 {helpers.map((tasker, index) => (
-                    <Link to="/payment-gateway" key={tasker.id}>
+                    <Link to="/cart" key={tasker.id}>
                         <div className={styles['tasker-profile']}>
                             {/* Profile Section */}
                             <div className={styles['profile-section']}>

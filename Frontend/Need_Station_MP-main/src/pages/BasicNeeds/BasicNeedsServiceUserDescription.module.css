@@ -62,6 +62,10 @@
   margin: 0 5px;
 }
 
+.helper-list{
+  font-size: small;
+}
+
 .describe-task{
   color: #ffffff;
 }

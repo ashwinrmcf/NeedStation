@@ -6,6 +6,7 @@ import HeaderDropdown from "../HeaderDropdown/HeaderDropdown.jsx";
 import TaskerDropdown from "../TaskerDropdown/TaskerDropdown.jsx";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext.jsx";
+import PortalModal from "../common/PortalModal.jsx";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -14,6 +15,7 @@ const Header = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isTaskerDropdownOpen, setTaskerDropdownOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const taskerButtonRef = useRef(null);
   
   // Check current language on mount and when localStorage changes
@@ -36,6 +38,14 @@ const Header = () => {
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
+  };
+
+  const initiateLogout = () => {
+    setShowLogoutConfirmation(true);
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   const location = useLocation(); 
@@ -70,7 +80,7 @@ const Header = () => {
             {user ? (
               <>
                 <span className={styles.greeting}>Hello, {user.username}</span>
-                <button className={styles.logout} onClick={logout}>
+                <button className={styles.logout} onClick={initiateLogout}>
                   Logout
                 </button>
               </>
@@ -103,6 +113,17 @@ const Header = () => {
         </header>
         {isDropdownOpen && <HeaderDropdown />}
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <PortalModal
+        isOpen={showLogoutConfirmation}
+        onClose={() => setShowLogoutConfirmation(false)}
+        onConfirm={handleLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to log out? You will be logged out from your account."
+        confirmText="Yes, log out"
+        cancelText="Stay logged in"
+      />
     </>
   );
 };

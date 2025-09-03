@@ -1,0 +1,166 @@
+{
+  "info": {
+    "name": "NeedStation Worker Registration API Tests",
+    "description": "Test collection for worker registration endpoints with file uploads",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Step 1 - Basic Info with Profile Picture",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\"fullName\":\"Test Worker\",\"gender\":\"Male\",\"dob\":\"1990-01-01\",\"phone\":\"9876543210\",\"email\":\"test@example.com\",\"whatsappNumber\":\"9876543210\"}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "profilePicture",
+              "type": "file",
+              "src": "path/to/test-image.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/worker/register/step1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "worker", "register", "step1"]
+        },
+        "description": "Test Step 1 registration with profile picture upload to Backblaze B2"
+      },
+      "response": []
+    },
+    {
+      "name": "Step 4 - Verification with File Uploads",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "data",
+              "value": "{\"aadharNumber\":\"123456789012\",\"policeVerificationStatus\":\"Applied\"}",
+              "type": "text",
+              "contentType": "application/json"
+            },
+            {
+              "key": "idProof",
+              "type": "file",
+              "src": "path/to/id-proof.jpg"
+            },
+            {
+              "key": "selfieWithId",
+              "type": "file",
+              "src": "path/to/selfie-with-id.jpg"
+            },
+            {
+              "key": "certificates",
+              "type": "file",
+              "src": "path/to/certificate1.pdf"
+            },
+            {
+              "key": "certificates",
+              "type": "file",
+              "src": "path/to/certificate2.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/worker/register/step4?workerId={{workerId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "worker", "register", "step4"],
+          "query": [
+            {
+              "key": "workerId",
+              "value": "{{workerId}}"
+            }
+          ]
+        },
+        "description": "Test Step 4 verification with ID proof, selfie, and certificates upload to Backblaze B2"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Worker Details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/worker/details/{{workerId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "worker", "details", "{{workerId}}"]
+        },
+        "description": "Retrieve worker details to verify Backblaze B2 URLs are stored"
+      },
+      "response": []
+    },
+    {
+      "name": "Test Backblaze B2 Upload Direct",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "path/to/test-image.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/worker/test-upload",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "worker", "test-upload"]
+        },
+        "description": "Direct test of Backblaze B2 upload functionality"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "workerId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    }
+  ]
+}

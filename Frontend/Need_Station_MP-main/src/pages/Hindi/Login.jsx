@@ -155,7 +155,7 @@ const HindiLogin = () => {
           type="text"
           name="emailOrContact"
           className={styles["input-box"]}
-          placeholder="ईमेल या संपर्क नंबर"
+          placeholder="ईमेल"
           value={formData.emailOrContact}
           onChange={handleChange}
         />

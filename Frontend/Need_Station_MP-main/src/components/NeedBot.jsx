@@ -36,28 +36,93 @@ const NeedBot = () => {
     }]);
   }, []);
 
-  // Rule-based navigation patterns
+  // Rule-based navigation patterns (English and Hindi)
   const navigationPatterns = {
     // Home and main pages
-    home: { keywords: ['home', 'main', 'start', 'beginning'], route: '/', description: 'home page' },
+    home: { 
+      keywords: ['home', 'main', 'start', 'beginning', 'होम', 'घर', 'मुख्य', 'शुरुआत'], 
+      route: '/', 
+      description: 'home page',
+      hindiDescription: 'होम पेज'
+    },
     
     // Services
-    electrician: { keywords: ['electrician', 'electrical', 'wiring', 'electricity', 'power'], route: '/electrician', description: 'electrician services' },
-    plumber: { keywords: ['plumber', 'plumbing', 'water', 'pipe', 'leak', 'tap', 'faucet'], route: '/plumber', description: 'plumbing services' },
-    maid: { keywords: ['maid', 'cleaning', 'housekeeping', 'clean'], route: '/maid-services', description: 'maid services' },
-    babysitter: { keywords: ['babysitter', 'baby', 'child', 'kids', 'nanny'], route: '/babysitter', description: 'babysitting services' },
-    caretaker: { keywords: ['caretaker', 'care', 'elderly', 'senior'], route: '/caretaker', description: 'caretaker services' },
-    nurse: { keywords: ['nurse', 'medical', 'health', 'healthcare'], route: '/nurse', description: 'nursing services' },
+    electrician: { 
+      keywords: ['electrician', 'electrical', 'wiring', 'electricity', 'power', 'इलेक्ट्रीशियन', 'बिजली', 'तार'], 
+      route: '/electrician', 
+      description: 'electrician services',
+      hindiDescription: 'इलेक्ट्रीशियन सेवाएं'
+    },
+    plumber: { 
+      keywords: ['plumber', 'plumbing', 'water', 'pipe', 'leak', 'tap', 'faucet', 'प्लंबर', 'पानी', 'पाइप', 'नल'], 
+      route: '/plumber', 
+      description: 'plumbing services',
+      hindiDescription: 'प्लंबर सेवाएं'
+    },
+    maid: { 
+      keywords: ['maid', 'cleaning', 'housekeeping', 'clean', 'सफाई', 'मेड', 'घर की सफाई'], 
+      route: '/maid-services', 
+      description: 'maid services',
+      hindiDescription: 'सफाई सेवाएं'
+    },
+    babysitter: { 
+      keywords: ['babysitter', 'baby', 'child', 'kids', 'nanny', 'बेबीसिटर', 'बच्चा', 'बच्चे', 'आया'], 
+      route: '/babysitter', 
+      description: 'babysitting services',
+      hindiDescription: 'बेबीसिटिंग सेवाएं'
+    },
+    caretaker: { 
+      keywords: ['caretaker', 'care', 'elderly', 'senior', 'देखभाल', 'बुजुर्ग', 'वृद्ध'], 
+      route: '/caretaker', 
+      description: 'caretaker services',
+      hindiDescription: 'देखभाल सेवाएं'
+    },
+    nurse: { 
+      keywords: ['nurse', 'medical', 'health', 'healthcare', 'नर्स', 'चिकित्सा', 'स्वास्थ्य'], 
+      route: '/nurse', 
+      description: 'nursing services',
+      hindiDescription: 'नर्सिंग सेवाएं'
+    },
     
     // Other pages
-    login: { keywords: ['login', 'sign in', 'log in'], route: '/login', description: 'login page' },
-    signup: { keywords: ['signup', 'register', 'sign up', 'create account'], route: '/signup', description: 'registration page' },
-    contact: { keywords: ['contact', 'support', 'help', 'reach'], route: '/contact-us', description: 'contact us page' },
-    about: { keywords: ['about', 'info', 'information'], route: '/about-us', description: 'about us page' },
-    helper: { keywords: ['become helper', 'work', 'job', 'earn'], route: '/why-become-helper', description: 'become a helper page' },
+    login: { 
+      keywords: ['login', 'sign in', 'log in', 'लॉगिन', 'साइन इन'], 
+      route: '/login', 
+      description: 'login page',
+      hindiDescription: 'लॉगिन पेज'
+    },
+    signup: { 
+      keywords: ['signup', 'register', 'sign up', 'create account', 'साइन अप', 'रजिस्टर', 'खाता बनाएं'], 
+      route: '/signup', 
+      description: 'registration page',
+      hindiDescription: 'रजिस्ट्रेशन पेज'
+    },
+    contact: { 
+      keywords: ['contact', 'support', 'help', 'reach', 'संपर्क', 'सहायता', 'मदद'], 
+      route: '/contact-us', 
+      description: 'contact us page',
+      hindiDescription: 'संपर्क पेज'
+    },
+    about: { 
+      keywords: ['about', 'info', 'information', 'के बारे में', 'जानकारी'], 
+      route: '/about-us', 
+      description: 'about us page',
+      hindiDescription: 'हमारे बारे में पेज'
+    },
+    helper: { 
+      keywords: ['become helper', 'work', 'job', 'earn', 'हेल्पर बनें', 'काम', 'नौकरी', 'कमाई'], 
+      route: '/why-become-helper', 
+      description: 'become a helper page',
+      hindiDescription: 'हेल्पर बनने का पेज'
+    },
     
     // Language settings
-    language: { keywords: ['language', 'translate', 'translation', 'hindi', 'tamil', 'bengali'], route: '/language-settings', description: 'language settings' }
+    language: { 
+      keywords: ['language', 'translate', 'translation', 'hindi', 'tamil', 'bengali', 'भाषा', 'अनुवाद'], 
+      route: '/language-settings', 
+      description: 'language settings',
+      hindiDescription: 'भाषा सेटिंग्स'
+    }
   };
 
   // Language mapping
@@ -156,39 +221,84 @@ const NeedBot = () => {
     return languageNames[code] || code;
   };
 
+  // Detect if input is in Hindi
+  const isHindiInput = (text) => {
+    const hindiPattern = /[\u0900-\u097F]/;
+    return hindiPattern.test(text);
+  };
+
   // Main processing function
   const processUserInput = (userInput) => {
     const input = userInput.toLowerCase().trim();
+    const isHindi = isHindiInput(userInput);
     
-    // Check for greetings
-    if (/^(hi|hello|hey|good morning|good afternoon|good evening)/.test(input)) {
+    // Check for greetings (English and Hindi)
+    if (/^(hi|hello|hey|good morning|good afternoon|good evening|नमस्ते|नमस्कार|हैलो|हाय)/.test(input)) {
       return {
         type: 'response',
-        message: responses.greeting[Math.floor(Math.random() * responses.greeting.length)]
+        message: isHindi 
+          ? "नमस्ते! मैं नीडबॉट हूं, आपका स्मार्ट सहायक। मैं आपकी कैसे मदद कर सकता हूं?"
+          : currentLanguage === 'hi'
+            ? "नमस्ते! मैं नीडबॉट हूं, आपका स्मार्ट सहायक। मैं आपकी कैसे मदद कर सकता हूं?"
+            : responses.greeting[Math.floor(Math.random() * responses.greeting.length)]
       };
     }
 
-    // Check for help requests
-    if (/help|what can you do|commands|options|मदद|উতवी|সাহায্য|സഹായം|సహాయం|ಸಹಾಯ|મદદ/.test(input)) {
+    // Check for help requests (English and Hindi)
+    if (/help|what can you do|commands|options|मदद|सहायता|क्या कर सकते हो|कैसे मदद/.test(input)) {
       return {
         type: 'response',
-        message: currentLanguage === 'hi' 
+        message: isHindi 
           ? "मैं आपको नेविगेट करने, सेवाएं खोजने और भाषा बदलने में मदद कर सकता हूं। आपको क्या चाहिए?"
-          : "I can help you navigate, find services, and change languages. What do you need?"
+          : currentLanguage === 'hi'
+            ? "मैं आपको नेविगेट करने, सेवाएं खोजने और भाषा बदलने में मदद कर सकता हूं। आपको क्या चाहिए?"
+            : "I can help you navigate, find services, and change languages. What do you need?"
       };
     }
 
-    // Check for language change requests
-    const languageMatch = input.match(/change language to (\w+)|switch to (\w+)|(\w+) language/);
+    // Check for language change requests - enhanced to handle "translate to" patterns and Hindi
+    const languageMatch = input.match(/change language to (\w+)|switch to (\w+)|translate to (\w+)|(\w+) language|हिंदी में बदलें|अंग्रेजी में बदलें|भाषा बदलें/);
     if (languageMatch) {
-      const requestedLang = (languageMatch[1] || languageMatch[2] || languageMatch[3]).toLowerCase();
+      const requestedLang = (languageMatch[1] || languageMatch[2] || languageMatch[3] || languageMatch[4]).toLowerCase();
       const langCode = languages[requestedLang];
       
       if (langCode) {
+        const languageName = requestedLang.charAt(0).toUpperCase() + requestedLang.slice(1);
         return {
-          type: 'language_change',
+          type: 'language_change_with_button',
           langCode: langCode,
-          message: `Changing language to ${requestedLang.charAt(0).toUpperCase() + requestedLang.slice(1)}...`
+          languageName: languageName,
+          message: isHindi 
+            ? `जी हां! मैं पूरी वेबसाइट को ${languageName === 'Hindi' ? 'हिंदी' : languageName} में बदल सकता हूं।`
+            : currentLanguage === 'hi'
+              ? `जी हां! मैं पूरी वेबसाइट को ${languageName === 'Hindi' ? 'हिंदी' : languageName} में बदल सकता हूं।`
+              : `Sure! I can switch the entire website to ${languageName} for you.`,
+          buttonText: isHindi 
+            ? `${languageName === 'Hindi' ? 'हिंदी' : languageName} में बदलें`
+            : currentLanguage === 'hi'
+              ? `${languageName === 'Hindi' ? 'हिंदी' : languageName} में बदलें`
+              : `Switch to ${languageName}`
+        };
+      }
+    }
+    
+    // Handle Hindi-specific language change requests
+    if (/हिंदी में|अंग्रेजी में|भाषा बदल/.test(input)) {
+      if (input.includes('हिंदी')) {
+        return {
+          type: 'language_change_with_button',
+          langCode: 'hi',
+          languageName: 'Hindi',
+          message: "जी हां! मैं पूरी वेबसाइट को हिंदी में बदल सकता हूं।",
+          buttonText: "हिंदी में बदलें"
+        };
+      } else if (input.includes('अंग्रेजी')) {
+        return {
+          type: 'language_change_with_button',
+          langCode: 'en',
+          languageName: 'English',
+          message: "जी हां! मैं पूरी वेबसाइट को अंग्रेजी में बदल सकता हूं।",
+          buttonText: "अंग्रेजी में बदलें"
         };
       }
     }
@@ -209,36 +319,58 @@ const NeedBot = () => {
         return {
           type: 'navigation',
           route: pattern.route,
-          message: `I'll take you to the ${pattern.description}!`,
-          buttonText: `Go to ${pattern.description}`
+          message: isHindi 
+            ? `मैं आपको ${pattern.hindiDescription} पर ले जाऊंगा!`
+            : currentLanguage === 'hi'
+              ? `मैं आपको ${pattern.hindiDescription} पर ले जाऊंगा!`
+              : `I'll take you to the ${pattern.description}!`,
+          buttonText: isHindi 
+            ? `${pattern.hindiDescription} पर जाएं`
+            : currentLanguage === 'hi'
+              ? `${pattern.hindiDescription} पर जाएं`
+              : `Go to ${pattern.description}`
         };
       }
     }
 
-    // Check for general service inquiry
-    if (/service|services|what do you offer|available|सेवा|சேவை|সেবা|സേവന|సేవ|ಸೇವೆ|સેવા/.test(input)) {
+    // Check for general service inquiry (English and Hindi)
+    if (/service|services|what do you offer|available|सेवा|सेवाएं|क्या सेवाएं हैं|उपलब्ध/.test(input)) {
       return {
         type: 'response',
-        message: currentLanguage === 'hi' 
+        message: isHindi 
           ? "नीडस्टेशन इलेक्ट्रीशियन, प्लंबर, सफाई, बेबीसिटिंग, देखभाल और नर्सिंग सेवाएं प्रदान करता है। कौन सी सेवा में आपकी रुचि है?"
-          : "NeedStation offers electrician, plumber, maid, babysitting, caretaking, and nursing services. Which service interests you?"
+          : currentLanguage === 'hi'
+            ? "नीडस्टेशन इलेक्ट्रीशियन, प्लंबर, सफाई, बेबीसिटिंग, देखभाल और नर्सिंग सेवाएं प्रदान करता है। कौन सी सेवा में आपकी रुचि है?"
+            : "NeedStation offers electrician, plumber, maid, babysitting, caretaking, and nursing services. Which service interests you?"
       };
     }
 
-    // Check for specific questions about NeedStation
-    if (/what is needstation|about needstation|tell me about/.test(input)) {
+    // Check for specific questions about NeedStation (English and Hindi)
+    if (/what is needstation|about needstation|tell me about|नीडस्टेशन क्या है|नीडस्टेशन के बारे में|बताइए/.test(input)) {
       return {
         type: 'navigation',
         route: '/about-us',
-        message: "NeedStation is a platform connecting you with reliable service providers. Let me show you more information!",
-        buttonText: "Learn more about NeedStation"
+        message: isHindi 
+          ? "नीडस्टेशन एक प्लेटफॉर्म है जो आपको विश्वसनीय सेवा प्रदाताओं से जोड़ता है। मैं आपको और जानकारी दिखाता हूं!"
+          : currentLanguage === 'hi'
+            ? "नीडस्टेशन एक प्लेटफॉर्म है जो आपको विश्वसनीय सेवा प्रदाताओं से जोड़ता है। मैं आपको और जानकारी दिखाता हूं!"
+            : "NeedStation is a platform connecting you with reliable service providers. Let me show you more information!",
+        buttonText: isHindi 
+          ? "नीडस्टेशन के बारे में और जानें"
+          : currentLanguage === 'hi'
+            ? "नीडस्टेशन के बारे में और जानें"
+            : "Learn more about NeedStation"
       };
     }
 
-    // Default response with suggestions
+    // Default response with suggestions (English and Hindi)
     return {
       type: 'response',
-      message: responses.default
+      message: isHindi 
+        ? "मुझे समझ नहीं आया कि आप क्या खोज रहे हैं। कृपया अधिक स्पष्ट रूप से बताएं। आप मुझसे पूछ सकते हैं:\n• किसी विशिष्ट पेज पर जाने के लिए\n• भाषा बदलने के लिए\n• कोई सेवा खोजने के लिए\n• नेवीगेशन में मदद के लिए"
+        : currentLanguage === 'hi'
+          ? "मुझे समझ नहीं आया कि आप क्या खोज रहे हैं। कृपया अधिक स्पष्ट रूप से बताएं। आप मुझसे पूछ सकते हैं:\n• किसी विशिष्ट पेज पर जाने के लिए\n• भाषा बदलने के लिए\n• कोई सेवा खोजने के लिए\n• नेवीगेशन में मदद के लिए"
+          : responses.default
     };
   };
 
@@ -265,6 +397,16 @@ const NeedBot = () => {
           sender: 'bot'
         }]);
         changeLanguage(result.langCode);
+      } else if (result.type === 'language_change_with_button') {
+        setMessages(prev => [...prev, { 
+          text: result.message, 
+          sender: 'bot',
+          languageAction: {
+            langCode: result.langCode,
+            buttonText: result.buttonText,
+            languageName: result.languageName
+          }
+        }]);
       } else if (result.type === 'navigation') {
         setMessages(prev => [...prev, { 
           text: result.message, 
@@ -338,6 +480,18 @@ const NeedBot = () => {
                       }}
                     >
                       {message.redirectButtonText} <FiArrowRight />
+                    </button>
+                  )}
+                  
+                  {/* Language change button */}
+                  {message.languageAction && (
+                    <button 
+                      className="language-switch-button"
+                      onClick={() => {
+                        changeLanguage(message.languageAction.langCode);
+                      }}
+                    >
+                      {message.languageAction.buttonText} <FiGlobe />
                     </button>
                   )}
                 </div>

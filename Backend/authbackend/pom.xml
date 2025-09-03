@@ -57,10 +57,12 @@
 			<version>9.15.0</version>
 		</dependency>
 
+
+		<!-- JSON Library for Google Translate Service -->
 		<dependency>
-			<groupId>com.cloudinary</groupId>
-			<artifactId>cloudinary-http44</artifactId>
-			<version>1.36.0</version>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20230227</version>
 		</dependency>
 
 		<dependency>

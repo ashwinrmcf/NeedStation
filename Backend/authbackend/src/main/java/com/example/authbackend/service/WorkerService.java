@@ -1,7 +1,5 @@
 package com.example.authbackend.service;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.example.authbackend.config.TwilioConfig;
 import com.example.authbackend.dto.WorkerDTO;
 import com.example.authbackend.dto.WorkerRegistrationDTO;
@@ -11,19 +9,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.rest.verify.v2.service.Verification;
 import com.twilio.rest.verify.v2.service.VerificationCheck;
 import org.springframework.beans.factory.annotation.Value;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class WorkerService {
@@ -38,131 +32,56 @@ public class WorkerService {
         if (email == null || phone == null) return Optional.empty();
         return repo.findByEmailIgnoreCaseAndPhone(email.trim(), phone.trim());
     }
+    
+    /**
+     * Delete a worker by ID for registration cleanup
+     * @param workerId The worker's ID
+     * @return boolean indicating if deletion was successful
+     */
+    public boolean deleteWorkerById(Long workerId) {
+        try {
+            if (repo.existsById(workerId)) {
+                repo.deleteById(workerId);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete worker: " + e.getMessage(), e);
+        }
+    }
 
     private final WorkerRepository repo;
-    private final Cloudinary cloudinary;
+    private final BackblazeB2Service backblazeB2Service;
     private final ObjectMapper objectMapper;
     private final TwilioConfig twilioConfig;
     private final FreeOtpService freeOtpService;
     private final TwoFactorOtpService twoFactorOtpService;
-
+    
     @Value("${use-free-otp:false}")
     private boolean useFreeOtp;
-
+    
     @Value("${sms.default-provider:2factor}")
     private String smsProvider;
 
-    public WorkerService(WorkerRepository repo, Cloudinary cloudinary, ObjectMapper objectMapper,
-                         TwilioConfig twilioConfig, FreeOtpService freeOtpService,
-                         TwoFactorOtpService twoFactorOtpService) {
+    public WorkerService(WorkerRepository repo, BackblazeB2Service backblazeB2Service, ObjectMapper objectMapper, 
+                       TwilioConfig twilioConfig, FreeOtpService freeOtpService, 
+                       TwoFactorOtpService twoFactorOtpService) {
         this.repo = repo;
-        this.cloudinary = cloudinary;
+        this.backblazeB2Service = backblazeB2Service;
         this.objectMapper = objectMapper;
         this.twilioConfig = twilioConfig;
         this.freeOtpService = freeOtpService;
         this.twoFactorOtpService = twoFactorOtpService;
     }
 
-    // Method to upload image to Cloudinary and return the image URL
+    // Method to upload image to Backblaze B2 and return the image URL
     public String uploadImage(MultipartFile file) throws IOException {
-        try {
-            if (file == null || file.isEmpty()) {
-                System.out.println("Upload image called with null or empty file");
-                return null;
-            }
-
-            System.out.println("Uploading image to Cloudinary. File size: " + file.getSize() + ", Content Type: " + file.getContentType());
-
-            // Create optimized upload options for profile pictures based on Cloudinary documentation
-            Map<String, Object> options = new HashMap<>();
-
-            // Basic upload settings
-            options.put("resource_type", "auto");
-            options.put("folder", "worker_profiles");
-            options.put("unique_filename", true);
-            options.put("overwrite", false);
-            options.put("use_filename", true);
-
-            // For displaying in Media Library with better organization
-            String displayName = "Worker Profile - " + (System.currentTimeMillis() / 1000);
-            options.put("display_name", displayName);
-
-            // Add structured metadata to help with organization and search
-            Map<String, Object> context = new HashMap<>();
-            context.put("alt", "Worker Profile Picture");
-            context.put("caption", "Need Station Worker Profile");
-            context.put("category", "profile_images");
-            options.put("context", context);
-
-            // Enable quality analysis to ensure high-quality profile pictures
-            options.put("quality_analysis", true);
-
-            // Create transformation array for advanced options
-            List<Map<String, Object>> transformations = new ArrayList<>();
-
-            // First transformation: Crop to square with face detection
-            Map<String, Object> cropTransformation = new HashMap<>();
-            cropTransformation.put("width", 400);
-            cropTransformation.put("height", 400);
-            cropTransformation.put("crop", "fill");
-            cropTransformation.put("gravity", "face"); // Face detection for better cropping
-            transformations.add(cropTransformation);
-
-            // Second transformation: Quality and format optimization
-            Map<String, Object> qualityTransformation = new HashMap<>();
-            qualityTransformation.put("quality", "auto:good"); // Auto quality with good balance
-            qualityTransformation.put("fetch_format", "auto");  // Auto select best format
-            qualityTransformation.put("flags", "progressive");  // Progressive loading
-            transformations.add(qualityTransformation);
-
-            // Add transformations to options
-            options.put("transformation", transformations);
-
-            // Convert file to byte array
-            byte[] fileData = file.getBytes();
-            if (fileData.length == 0) {
-                System.err.println("File data is empty despite having size: " + file.getSize());
-                return null;
-            }
-
-            // Upload to Cloudinary
-            System.out.println("Starting Cloudinary upload with options: " + options);
-            Map uploadResult = cloudinary.uploader().upload(fileData, options);
-
-            // Print entire result for debugging
-            System.out.println("Cloudinary upload response: " + uploadResult.toString());
-
-            if (uploadResult.containsKey("secure_url")) {
-                String secureUrl = uploadResult.get("secure_url").toString();
-                System.out.println("Image uploaded successfully. Secure URL: " + secureUrl);
-                return secureUrl;  // Returns the secure URL of the uploaded image
-            } else {
-                System.err.println("No secure_url found in Cloudinary response");
-                return null;
-            }
-        } catch (Exception e) {
-            // Log the error but don't throw it
-            System.err.println("Error uploading to Cloudinary: " + e.getMessage());
-            e.printStackTrace();
-            return null; // Return null instead of throwing exception
-        }
+        return backblazeB2Service.uploadImage(file);
     }
 
     // Upload multiple files and return a map of file names to URLs
     public Map<String, String> uploadMultipleFiles(Map<String, MultipartFile> files) throws IOException {
-        Map<String, String> uploadedUrls = new HashMap<>();
-
-        for (Map.Entry<String, MultipartFile> entry : files.entrySet()) {
-            String key = entry.getKey();
-            MultipartFile file = entry.getValue();
-
-            if (file != null && !file.isEmpty()) {
-                String url = uploadImage(file);
-                uploadedUrls.put(key, url);
-            }
-        }
-
-        return uploadedUrls;
+        return backblazeB2Service.uploadMultipleFiles(files);
     }
 
     // Method to save Worker details in the database (Step 1)
@@ -177,25 +96,19 @@ public class WorkerService {
         worker.setProfileImageUrl(imageUrl); // Saves the profile image URL
         worker.setRegistrationDate(LocalDate.now());
         worker.setRegistrationStatus("INCOMPLETE");
-
+        
         // Initialize OTP fields
-        worker.setPhoneVerified(false); // Explicitly set to false
-        worker.setOtpAttempts(0);       // Initialize attempts counter
-
-        // Save worker first to get an ID
-        worker = repo.save(worker);
-
-        // Generate and send OTP for phone verification
-        generateAndSendOtp(worker);
-
-        return worker;  // Return the saved worker
+        worker.setOtpAttempts(0);
+        worker.setPhoneVerified(false);
+        
+        return repo.save(worker);  // Return the saved worker
     }
-
+    
     // Set this to false to use actual Twilio services
     private static final boolean TRIAL_MODE = false;
     // Fixed test OTP for trial mode - in production, this would come from Twilio
     private static final String TEST_OTP = "123456";
-
+    
     /**
      * Sends an OTP verification to the worker's phone number using Twilio Verify API
      * @param worker The worker to send the OTP to
@@ -203,7 +116,7 @@ public class WorkerService {
      */
     public boolean generateAndSendOtp(Worker worker) {
         String phoneNumber = worker.getPhone();
-
+        
         try {
             // Format phone number if needed
             // E.164 format: +[country code][phone number without leading 0]
@@ -212,7 +125,7 @@ public class WorkerService {
                 phoneNumber = "+91" + phoneNumber;
                 System.out.println("Formatted phone number to: " + phoneNumber);
             }
-
+            
             // Check if 2Factor API is the default provider
             if ("2factor".equalsIgnoreCase(smsProvider)) {
                 System.out.println("Using 2Factor API for phone: " + phoneNumber);
@@ -241,13 +154,13 @@ public class WorkerService {
                     // Fall back to trial mode if free OTP API fails
                     System.out.println("Free OTP API failed, falling back to trial mode");
                     worker.setPhoneVerificationOtp(TEST_OTP);
-
+                    
                     LocalDateTime now = LocalDateTime.now();
                     worker.setOtpCreatedAt(now);
                     worker.setOtpExpiresAt(now.plusMinutes(10));
                     worker.setOtpAttempts(0);
                     repo.save(worker);
-
+                    
                     System.out.println("Fallback mode: OTP " + TEST_OTP + " set for " + phoneNumber);
                     return true;
                 }
@@ -255,51 +168,51 @@ public class WorkerService {
                 // In trial mode, we don't actually send an SMS
                 // Instead, we generate a fixed OTP and save it
                 worker.setPhoneVerificationOtp(TEST_OTP);
-
+                
                 // Set OTP expiration time (10 minutes from now)
                 LocalDateTime now = LocalDateTime.now();
                 worker.setOtpCreatedAt(now);
                 worker.setOtpExpiresAt(now.plusMinutes(10));
-
+                
                 // Reset OTP attempts
                 worker.setOtpAttempts(0);
-
+                
                 // Save the worker with the new OTP
                 repo.save(worker);
-
+                
                 System.out.println("Trial mode: OTP " + TEST_OTP + " set for " + phoneNumber);
                 return true;
             } else {
                 // In production mode, use Twilio to send an OTP
                 System.out.println("Attempting to send OTP via Twilio to: " + phoneNumber);
                 System.out.println("Using Verify Service SID: " + twilioConfig.getVerifyServiceSid());
-
+                
                 try {
                     Verification verification = Verification.creator(
-                                    twilioConfig.getVerifyServiceSid(),  // Verify Service SID
-                                    phoneNumber,                         // To (phone number)
-                                    "sms")                               // Channel type
-                            .create();
-
+                        twilioConfig.getVerifyServiceSid(),  // Verify Service SID
+                        phoneNumber,                         // To (phone number)
+                        "sms")                               // Channel type
+                        .create();
+                    
                     // Successfully sent OTP
                     System.out.println("Sent OTP to " + phoneNumber + " with status: " + verification.getStatus());
-
+                    
                     // Set OTP expiration time (10 minutes from now)
                     LocalDateTime now = LocalDateTime.now();
                     worker.setOtpCreatedAt(now);
                     worker.setOtpExpiresAt(now.plusMinutes(10));
-
+                    
                     // Reset OTP attempts
                     worker.setOtpAttempts(0);
-
+                    
                     // Save the worker
                     repo.save(worker);
-
+                    
                     return true;
                 } catch (Exception e) {
                     System.err.println("Twilio API Error: " + e.getMessage());
                     e.printStackTrace();
-
+                    
                     // Try using Free OTP API as fallback if enabled
                     if (useFreeOtp) {
                         System.out.println("Falling back to Free OTP API due to Twilio error");
@@ -310,17 +223,17 @@ public class WorkerService {
                             return true;
                         }
                     }
-
+                    
                     // Try using trial mode as last resort fallback
                     System.out.println("Falling back to trial mode due to errors");
                     worker.setPhoneVerificationOtp(TEST_OTP);
-
+                    
                     LocalDateTime now = LocalDateTime.now();
                     worker.setOtpCreatedAt(now);
                     worker.setOtpExpiresAt(now.plusMinutes(10));
                     worker.setOtpAttempts(0);
                     repo.save(worker);
-
+                    
                     System.out.println("Fallback mode: OTP " + TEST_OTP + " set for " + phoneNumber);
                     return true;
                 }
@@ -330,9 +243,10 @@ public class WorkerService {
             e.printStackTrace();
             return false;
         }
-    return false;
+        
+        return false; // Default return if no method succeeds
     }
-
+    
     /**
      * Verifies an OTP for a worker using Twilio Verify API
      * @param workerId The worker ID
@@ -344,20 +258,20 @@ public class WorkerService {
         if (workerOpt.isEmpty()) {
             return false;
         }
-
+        
         Worker worker = workerOpt.get();
-
+        
         // Check if worker already verified
         Boolean verified = worker.getPhoneVerified();
         if (verified != null && verified) {
             return true;
         }
-
+        
         // Check if max attempts reached (5 attempts)
         if (worker.getOtpAttempts() >= 5) {
             return false;
         }
-
+        
         try {
             // Check if 2Factor API is the default provider
             if ("2factor".equalsIgnoreCase(smsProvider)) {
@@ -369,7 +283,7 @@ public class WorkerService {
                     repo.save(worker);
                     return false;
                 }
-
+                
                 boolean verified_otp = twoFactorOtpService.verifyOtp(worker, otp);
                 if (verified_otp) {
                     worker.setPhoneVerified(true);
@@ -395,7 +309,7 @@ public class WorkerService {
                     repo.save(worker);
                     return false;
                 }
-
+                
                 boolean verified_otp = freeOtpService.verifyOtp(worker, otp);
                 if (verified_otp) {
                     worker.setPhoneVerified(true);
@@ -419,7 +333,7 @@ public class WorkerService {
                     repo.save(worker);
                     return false;
                 }
-
+                
                 // Check if the OTP matches the test OTP
                 if (TEST_OTP.equals(otp) || (worker.getPhoneVerificationOtp() != null && worker.getPhoneVerificationOtp().equals(otp))) {
                     // OTP is correct
@@ -438,18 +352,18 @@ public class WorkerService {
             } else {
                 // Production mode - use actual Twilio Verify API
                 String phoneNumber = formatPhoneNumber(worker.getPhone());
-
+                
                 try {
                     // Verify the code with Twilio Verify API
                     VerificationCheck verificationCheck = VerificationCheck.creator(
-                                    twilioConfig.getVerifyServiceSid())  // Verify Service SID
+                            twilioConfig.getVerifyServiceSid())  // Verify Service SID
                             .setTo(phoneNumber)                  // Phone number
                             .setCode(otp)                        // Code entered by user
                             .create();
-
+                    
                     System.out.println("Verification check SID: " + verificationCheck.getSid());
                     System.out.println("Status: " + verificationCheck.getStatus());
-
+                    
                     if ("approved".equals(verificationCheck.getStatus())) {
                         // OTP is correct
                         worker.setPhoneVerified(true);
@@ -468,267 +382,320 @@ public class WorkerService {
                     repo.save(worker);
                     return false;
                 }
-
-                // No verification method worked
-                // (Unreachable duplicate removed)
             }
         } catch (Exception e) {
-            System.err.println("Error checking verification: " + e.getMessage());
+            System.err.println("Error during OTP verification: " + e.getMessage());
             e.printStackTrace();
-
-            // Increment failed attempts
             worker.setOtpAttempts(worker.getOtpAttempts() + 1);
             repo.save(worker);
             return false;
         }
-}
-
-/**
- * Formats a phone number to the E.164 international format
- * @param phoneNumber The phone number to format
- * @return The formatted phone number
- */
-private String formatPhoneNumber(String phoneNumber) {
-    if (phoneNumber == null || phoneNumber.isEmpty()) {
-        return phoneNumber;
+    }
+    
+    /**
+     * Formats a phone number to the E.164 international format
+     * @param phoneNumber The phone number to format
+     * @return The formatted phone number
+     */
+    private String formatPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null) {
+            return null;
+        }
+        
+        // Clean the phone number, removing spaces, dashes, etc.
+        String cleaned = phoneNumber.replaceAll("[\\s\\-()]", "");
+        
+        // If it doesn't start with +, assume it's an Indian number and add +91
+        if (!cleaned.startsWith("+")) {
+            // If it starts with a 0, remove it (common for local format)
+            if (cleaned.startsWith("0")) {
+                cleaned = cleaned.substring(1);
+            }
+            
+            // Add country code
+            cleaned = "+91" + cleaned;
+        }
+        
+        return cleaned;
+    }
+    
+    // Get worker by ID
+    public Optional<Worker> getWorkerById(Long id) {
+        return repo.findById(id);
     }
 
-    // Format phone number to E.164 format if not already
-    String formattedNumber = phoneNumber;
-    if (!phoneNumber.startsWith("+")) {
-        // Assuming Indian numbers, adapt as needed for other countries
-        formattedNumber = "+91" + phoneNumber.replaceAll("[\\s-]", "");
+    // Find worker by phone number
+    public Optional<Worker> findWorkerByPhone(String phone) {
+        try {
+            if (phone == null || phone.trim().isEmpty()) {
+                System.out.println("Attempt to find worker with null/empty phone number");
+                return Optional.empty();
+            }
+            
+            // Format the phone number if needed
+            String formattedPhone = phone.trim();
+            
+            // Try to find the worker
+            Optional<Worker> worker = repo.findByPhone(formattedPhone);
+            if (worker.isPresent()) {
+                return worker;
+            }
+            
+            // If not found, try without formatting
+            return repo.findByPhone(phone);
+        } catch (Exception e) {
+            System.err.println("Error finding worker by phone: " + e.getMessage());
+            return Optional.empty();
+        }
     }
-
-    return formattedNumber;
-}
-
-// Get worker by ID
-public Optional<Worker> getWorkerById(Long id) {
-    return repo.findById(id);
-}
-
-// Find worker by phone number
-public java.util.Optional<Worker> findWorkerByPhone(String phone) {
-    // Format phone number if needed (to handle +91 prefix variations)
-    if (phone.startsWith("+91")) {
-        phone = phone.substring(3); // Remove +91 prefix
-    }
-
-    // Find by raw phone number first
-    java.util.Optional<Worker> worker = repo.findByPhone(phone);
-
-    if (!worker.isPresent() && !phone.startsWith("+")) {
-        // Try with +91 prefix
-        worker = repo.findByPhone("+91" + phone);
-    }
-
-    return worker;
-}
-
-// Multi-step registration methods
-
-// Step 1: Update basic information
-public Worker updateBasicInfo(Long workerId, WorkerRegistrationDTO dto, MultipartFile profilePicture) throws IOException {
-    System.out.println("Updating basic info: " + dto.toString());
-
-    try {
-        // Log the DTO data received from frontend
-        System.out.println("===== Worker DTO Data Received =====");
-        System.out.println("FullName: " + dto.getFullName());
-        System.out.println("Gender: " + dto.getGender());
-        System.out.println("DOB: " + dto.getDob());
-        System.out.println("Phone: " + dto.getPhone());
-        System.out.println("Email: " + dto.getEmail());
-        System.out.println("WhatsApp: " + dto.getWhatsappNumber());
-        System.out.println("====================================");
-
-        // Backend validation for required fields
-        if (dto.getFullName() == null || dto.getFullName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Full name is required");
-        }
-        if (dto.getGender() == null || dto.getGender().trim().isEmpty()) {
-            throw new IllegalArgumentException("Gender is required");
-        }
-        if (dto.getDob() == null || dto.getDob().trim().isEmpty()) {
-            throw new IllegalArgumentException("Date of birth is required");
-        }
-        if (dto.getPhone() == null || dto.getPhone().trim().isEmpty()) {
-            throw new IllegalArgumentException("Phone number is required");
-        }
-
-        // Get or create worker
+    
+    // Step 1: Update basic information
+    public Worker updateBasicInfo(Long workerId, WorkerRegistrationDTO dto, MultipartFile profilePicture) throws IOException {
         Worker worker = getOrCreateWorker(workerId);
-
-        // Update basic info fields with trimmed values to remove whitespace
-        worker.setFullName(dto.getFullName().trim());
-        worker.setGender(dto.getGender().trim());
-        worker.setDob(LocalDate.parse(dto.getDob().trim()));
-        worker.setPhone(dto.getPhone().trim());
-        worker.setEmail(dto.getEmail() != null ? dto.getEmail().trim() : "");
-        worker.setWhatsappNumber(dto.getWhatsappNumber() != null ? dto.getWhatsappNumber().trim() : "");
-
-        // Upload profile picture if provided, but handle errors gracefully
+        
+        // Update fields
+        if (dto.getFullName() != null) {
+            worker.setFullName(dto.getFullName());
+        }
+        
+        if (dto.getGender() != null) {
+            worker.setGender(dto.getGender());
+        }
+        
+        if (dto.getDob() != null) {
+            worker.setDob(LocalDate.parse(dto.getDob()));
+        }
+        
+        if (dto.getPhone() != null) {
+            worker.setPhone(dto.getPhone());
+        }
+        
+        if (dto.getEmail() != null) {
+            worker.setEmail(dto.getEmail());
+        }
+        
+        if (dto.getWhatsappNumber() != null) {
+            worker.setWhatsappNumber(dto.getWhatsappNumber());
+        }
+        
+        // Handle profile picture upload
         if (profilePicture != null && !profilePicture.isEmpty()) {
             try {
-                System.out.println("Processing profile picture upload. File size: " + profilePicture.getSize() + " bytes, Content type: " + profilePicture.getContentType());
-                String imageUrl = uploadImage(profilePicture);
-
-                // Detailed logging for debugging
-                if (imageUrl != null) {
-                    System.out.println("Successfully uploaded image to Cloudinary. URL: " + imageUrl);
+                System.out.println("=== PROFILE PICTURE UPLOAD DEBUG ===");
+                System.out.println("Worker ID: " + workerId);
+                System.out.println("Worker Name: " + worker.getFullName());
+                System.out.println("File size: " + profilePicture.getSize());
+                System.out.println("File type: " + profilePicture.getContentType());
+                System.out.println("Original filename: " + profilePicture.getOriginalFilename());
+                
+                String imageUrl = backblazeB2Service.uploadImage(profilePicture, worker.getFullName(), worker.getId());
+                System.out.println("Backblaze upload result: " + imageUrl);
+                
+                if (imageUrl != null && !imageUrl.isEmpty()) {
                     worker.setProfileImageUrl(imageUrl);
-                    System.out.println("Set profileImageUrl on worker entity. About to save.");
+                    System.out.println("SUCCESS: Profile image URL set in worker entity: " + imageUrl);
+                    
+                    // Force save immediately to verify database update
+                    Worker savedWorker = repo.save(worker);
+                    System.out.println("VERIFICATION: Profile URL in saved worker: " + savedWorker.getProfileImageUrl());
                 } else {
-                    System.err.println("Image upload returned null URL - possible Cloudinary issue");
+                    System.err.println("ERROR: Backblaze upload returned null or empty URL");
+                    System.err.println("This means the upload to Backblaze B2 failed");
                 }
             } catch (Exception e) {
-                // Log the error but continue with registration
-                System.err.println("Error processing profile picture: " + e.getMessage());
+                System.err.println("EXCEPTION during profile picture upload:");
+                System.err.println("Error message: " + e.getMessage());
+                System.err.println("Error class: " + e.getClass().getSimpleName());
                 e.printStackTrace();
-                // We'll still save the worker without the profile picture
+                // Continue without updating the profile picture
             }
         } else {
-            System.out.println("No profile picture provided or file is empty");
-        }
-
-        System.out.println("Saving worker to database. Worker ID: " + worker.getId() + ", Profile image URL: " + worker.getProfileImageUrl());
-        Worker savedWorker = repo.save(worker);
-        System.out.println("Worker saved successfully. Worker ID: " + savedWorker.getId() + ", Profile image URL: " + savedWorker.getProfileImageUrl());
-        return savedWorker;
-    } catch (Exception e) {
-        // Log the complete error for debugging
-        System.err.println("Error in updateBasicInfo: " + e.getMessage());
-        e.printStackTrace();
-        throw new RuntimeException("Failed to save worker information: " + e.getMessage(), e);
-    }
-}
-
-// Step 2: Update contact information
-public Worker updateContactInfo(Long workerId, WorkerRegistrationDTO dto) {
-    Worker worker = getWorkerOrThrow(workerId);
-
-    worker.setPermanentAddress(dto.getPermanentAddress());
-    worker.setCurrentAddress(dto.getCurrentAddress());
-    worker.setCity(dto.getCity());
-    worker.setPincode(dto.getPincode());
-    worker.setServiceAreas(dto.getServiceAreas());
-    worker.setOpenToTravel(dto.getOpenToTravel());
-
-    return repo.save(worker);
-}
-
-// Step 3: Update professional details
-public Worker updateProfessionalDetails(Long workerId, WorkerRegistrationDTO dto) {
-    Worker worker = getWorkerOrThrow(workerId);
-
-    worker.setServices(dto.getServices());
-    worker.setExperience(dto.getExperience());
-    worker.setWorkType(dto.getWorkType());
-    worker.setAvailability(dto.getAvailability());
-    worker.setLanguages(dto.getLanguages());
-
-    return repo.save(worker);
-}
-
-// Step 4: Update verification details
-public Worker updateVerificationDetails(Long workerId, WorkerRegistrationDTO dto,
-                                        MultipartFile idProof, MultipartFile selfieWithId,
-                                        MultipartFile[] certificates) throws IOException {
-    Worker worker = getWorkerOrThrow(workerId);
-
-    worker.setAadharNumber(dto.getAadharNumber());
-    worker.setPoliceVerificationStatus(dto.getPoliceVerificationStatus());
-
-    // Upload ID proof if provided
-    if (idProof != null && !idProof.isEmpty()) {
-        String idProofUrl = uploadImage(idProof);
-        worker.setIdProofUrl(idProofUrl);
-    }
-
-    // Upload selfie with ID if provided
-    if (selfieWithId != null && !selfieWithId.isEmpty()) {
-        String selfieUrl = uploadImage(selfieWithId);
-        worker.setSelfieWithIdUrl(selfieUrl);
-    }
-
-    // Upload certificates if provided
-    if (certificates != null && certificates.length > 0) {
-        Map<String, String> certificateUrls = new HashMap<>();
-        for (int i = 0; i < certificates.length; i++) {
-            if (certificates[i] != null && !certificates[i].isEmpty()) {
-                String certUrl = uploadImage(certificates[i]);
-                certificateUrls.put("certificate_" + (i+1), certUrl);
+            System.out.println("WARNING: No profile picture provided in request");
+            System.out.println("profilePicture is null: " + (profilePicture == null));
+            if (profilePicture != null) {
+                System.out.println("profilePicture is empty: " + profilePicture.isEmpty());
             }
         }
-        worker.setCertificateUrls(objectMapper.writeValueAsString(certificateUrls));
-    }
-
-    return repo.save(worker);
-}
-
-// Step 5: Update payment information
-public Worker updatePaymentInfo(Long workerId, WorkerRegistrationDTO dto) {
-    Worker worker = getWorkerOrThrow(workerId);
-
-    worker.setPaymentMode(dto.getPaymentMode());
-    worker.setUpiId(dto.getUpiId());
-    worker.setBankName(dto.getBankName());
-    worker.setAccountNumber(dto.getAccountNumber());
-    worker.setIfscCode(dto.getIfscCode());
-    worker.setPanCard(dto.getPanCard());
-    worker.setEmergencyContactName(dto.getEmergencyContactName());
-    worker.setEmergencyContactNumber(dto.getEmergencyContactNumber());
-
-    // Update status to pending verification
-    worker.setRegistrationStatus("PENDING_VERIFICATION");
-
-    return repo.save(worker);
-}
-
-// Finalize worker registration
-public Worker finalizeRegistration(Long workerId) {
-    Worker worker = getWorkerOrThrow(workerId);
-    worker.setRegistrationStatus("VERIFIED"); // Or any other final status
-    return repo.save(worker);
-}
-
-// Helper methods
-private Worker getOrCreateWorker(Long workerId) {
-    Worker worker;
-    if (workerId != null) {
-        worker = repo.findById(workerId).orElse(null);
-        if (worker != null) {
-            return worker;
+        
+        // Update status
+        worker.setRegistrationStatus("STEP_1_COMPLETED");
+        
+        // Save worker and log the result
+        worker = repo.save(worker);
+        System.out.println("Worker saved to database. ID: " + worker.getId());
+        System.out.println("Profile image URL in saved worker: " + worker.getProfileImageUrl());
+        
+        // Attempt to send OTP
+        if (!worker.getPhoneVerified()) {
+            generateAndSendOtp(worker);
         }
+        
+        return worker;
     }
-
-    // Create a new worker with default values
-    worker = new Worker();
-    worker.setRegistrationDate(LocalDate.now());
-    worker.setRegistrationStatus("INCOMPLETE");
-
-    // Explicitly set all not-null fields to prevent database constraint violations
-    worker.setOpenToTravel(false);
-    worker.setFullName("");
-    worker.setGender("");
-    worker.setPhone("");
-    worker.setDob(LocalDate.now());
-
-    // Log that we're creating a new worker
-    System.out.println("Creating new worker record");
-
-    return worker;
-}
-
-private Worker getWorkerOrThrow(Long workerId) {
-    if (workerId == null) {
-        throw new IllegalArgumentException("Worker ID cannot be null");
+    
+    // Step 2: Update contact information
+    public Worker updateContactInfo(Long workerId, WorkerRegistrationDTO dto) {
+        Worker worker = getWorkerOrThrow(workerId);
+        
+        worker.setPermanentAddress(dto.getPermanentAddress());
+        worker.setCurrentAddress(dto.getCurrentAddress());
+        worker.setCity(dto.getCity());
+        // worker.setState(dto.getState()); // State field not implemented
+        worker.setPincode(dto.getPincode());
+        worker.setServiceAreas(dto.getServiceAreas());
+        worker.setOpenToTravel(dto.getOpenToTravel());
+        // worker.setLocality(dto.getLocality()); // Locality field not implemented
+        worker.setRegistrationStatus("STEP_2_COMPLETED");
+        
+        return repo.save(worker);
     }
-    return repo.findById(workerId)
+    
+    // Step 3: Update professional details
+    public Worker updateProfessionalDetails(Long workerId, WorkerRegistrationDTO dto) {
+        Worker worker = getWorkerOrThrow(workerId);
+        
+        worker.setServices(dto.getServices());
+        worker.setExperience(dto.getExperience());
+        // worker.setEducation(dto.getEducation()); // Education field not implemented
+        worker.setWorkType(dto.getWorkType());
+        worker.setAvailability(dto.getAvailability());
+        worker.setLanguages(dto.getLanguages());
+        worker.setRegistrationStatus("STEP_3_COMPLETED");
+        
+        return repo.save(worker);
+    }
+    
+    // Step 4: Update verification details
+    public Worker updateVerificationDetails(Long workerId, WorkerRegistrationDTO dto, 
+                                          MultipartFile idProof, MultipartFile selfieWithId,
+                                          MultipartFile[] certificates) throws IOException {
+        Worker worker = getWorkerOrThrow(workerId);
+        
+        worker.setAadharNumber(dto.getAadharNumber());
+        worker.setPoliceVerificationStatus(dto.getPoliceVerificationStatus());
+        
+        // Upload ID proof if provided
+        if (idProof != null && !idProof.isEmpty()) {
+            System.out.println("Uploading ID proof for worker ID: " + workerId);
+            String idProofUrl = backblazeB2Service.uploadImage(idProof, worker.getFullName(), worker.getId());
+            System.out.println("ID proof uploaded. URL: " + idProofUrl);
+            if (idProofUrl != null && !idProofUrl.isEmpty()) {
+                worker.setIdProofUrl(idProofUrl);
+                System.out.println("ID proof URL set in worker entity: " + idProofUrl);
+            } else {
+                System.err.println("ID proof upload returned null or empty URL");
+            }
+        }
+        
+        // Upload selfie with ID if provided
+        if (selfieWithId != null && !selfieWithId.isEmpty()) {
+            System.out.println("Uploading selfie with ID for worker ID: " + workerId);
+            String selfieUrl = backblazeB2Service.uploadImage(selfieWithId, worker.getFullName(), worker.getId());
+            System.out.println("Selfie uploaded. URL: " + selfieUrl);
+            if (selfieUrl != null && !selfieUrl.isEmpty()) {
+                worker.setSelfieWithIdUrl(selfieUrl);
+                System.out.println("Selfie URL set in worker entity: " + selfieUrl);
+            } else {
+                System.err.println("Selfie upload returned null or empty URL");
+            }
+        }
+        
+        // Upload certificates if provided
+        if (certificates != null && certificates.length > 0) {
+            System.out.println("Uploading " + certificates.length + " certificates for worker ID: " + workerId);
+            Map<String, String> certificateUrls = new HashMap<>();
+            for (int i = 0; i < certificates.length; i++) {
+                if (certificates[i] != null && !certificates[i].isEmpty()) {
+                    System.out.println("Uploading certificate " + (i+1));
+                    String certUrl = backblazeB2Service.uploadImage(certificates[i], worker.getFullName(), worker.getId());
+                    System.out.println("Certificate " + (i+1) + " uploaded. URL: " + certUrl);
+                    if (certUrl != null && !certUrl.isEmpty()) {
+                        certificateUrls.put("certificate_" + (i+1), certUrl);
+                    } else {
+                        System.err.println("Certificate " + (i+1) + " upload returned null or empty URL");
+                    }
+                }
+            }
+            if (!certificateUrls.isEmpty()) {
+                String certificateJson = objectMapper.writeValueAsString(certificateUrls);
+                worker.setCertificateUrls(certificateJson);
+                System.out.println("Certificate URLs JSON set: " + certificateJson);
+            }
+        }
+        
+        // Save worker and log verification details
+        Worker savedWorker = repo.save(worker);
+        System.out.println("Worker verification details saved. ID: " + savedWorker.getId());
+        System.out.println("ID proof URL in saved worker: " + savedWorker.getIdProofUrl());
+        System.out.println("Selfie URL in saved worker: " + savedWorker.getSelfieWithIdUrl());
+        System.out.println("Certificate URLs in saved worker: " + savedWorker.getCertificateUrls());
+        
+        return savedWorker;
+    }
+    
+    // Step 5: Update payment information
+    public Worker updatePaymentInfo(Long workerId, WorkerRegistrationDTO dto) {
+        Worker worker = getWorkerOrThrow(workerId);
+        
+        worker.setPaymentMode(dto.getPaymentMode());
+        worker.setUpiId(dto.getUpiId());
+        worker.setBankName(dto.getBankName());
+        worker.setAccountNumber(dto.getAccountNumber());
+        worker.setIfscCode(dto.getIfscCode());
+        worker.setPanCard(dto.getPanCard());
+        worker.setEmergencyContactName(dto.getEmergencyContactName());
+        worker.setEmergencyContactNumber(dto.getEmergencyContactNumber());
+        
+        // Update status to pending verification
+        worker.setRegistrationStatus("PENDING_VERIFICATION");
+        
+        return repo.save(worker);
+    }
+    
+    // Finalize worker registration
+    public Worker finalizeRegistration(Long workerId) {
+        Worker worker = getWorkerOrThrow(workerId);
+        worker.setRegistrationStatus("VERIFIED"); // Or any other final status
+        return repo.save(worker);
+    }
+    
+    // Helper methods
+    private Worker getOrCreateWorker(Long workerId) {
+        Worker worker;
+        if (workerId != null) {
+            worker = repo.findById(workerId).orElse(null);
+            if (worker != null) {
+                return worker;
+            }
+        }
+        
+        // Create a new worker with default values
+        worker = new Worker();
+        worker.setRegistrationDate(LocalDate.now());
+        worker.setRegistrationStatus("INCOMPLETE");
+        
+        // Explicitly set all not-null fields to prevent database constraint violations
+        worker.setOpenToTravel(false);
+        worker.setFullName("");
+        worker.setGender("");
+        worker.setPhone("");
+        worker.setDob(LocalDate.now());
+        
+        // Initialize phone verification to false for new workers
+        worker.setPhoneVerified(false);
+        worker.setOtpAttempts(0);
+        
+        // Log that we're creating a new worker
+        System.out.println("Creating new worker record");
+        
+        return worker;
+    }
+    
+    private Worker getWorkerOrThrow(Long workerId) {
+        if (workerId == null) {
+            throw new IllegalArgumentException("Worker ID cannot be null");
+        }
+        return repo.findById(workerId)
             .orElseThrow(() -> new RuntimeException("Worker not found with ID: " + workerId));
+    }
 }
-}
-
-
-

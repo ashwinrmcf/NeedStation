@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, MapPin, Briefcase, CheckCircle, DollarSign, ChevronLeft, ChevronRight, CheckSquare, AlertTriangle, Loader } from 'lucide-react';
 import axios from 'axios';
 
-export default function WorkerProfileSummary({ workerId, prev }) {
+export default function WorkerProfileSummary({ workerId, prev, data }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,35 +16,32 @@ export default function WorkerProfileSummary({ workerId, prev }) {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
   
   useEffect(() => {
-    if (!workerId) {
+    // Always fetch from API to get latest data, even if form data exists
+    if (workerId) {
+      const fetchWorkerDetails = async () => {
+        try {
+          console.log("Fetching worker details for ID:", workerId);
+          const response = await axios.get(`${API_URL}/worker/details/${workerId}`);
+          console.log("Worker details from API:", response.data);
+          setWorkerData(response.data);
+        } catch (error) {
+          console.error("Error fetching worker details:", error);
+          setError("Failed to load worker details. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchWorkerDetails();
+    } else if (data && Object.keys(data).length > 0) {
+      // Fallback to form data if no workerId
+      console.log("Using form data for Step6 review:", data);
+      setWorkerData(data);
+      setLoading(false);
+    } else {
       setError("Worker ID is required");
       setLoading(false);
-      return;
     }
-    
-    const fetchWorkerDetails = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/worker/details/${workerId}`);
-        setWorkerData(response.data);
-        console.log("Worker details:", response.data);
-        
-        // Detailed debug logging for profile image
-        console.log("Profile Image URL:", response.data.profileImageUrl);
-        console.log("All available fields:", Object.keys(response.data).join(', '));
-        console.log("Profile Image URL type:", typeof response.data.profileImageUrl);
-        
-        if (!response.data.profileImageUrl) {
-          console.warn("Profile image URL is missing or null");
-        }
-      } catch (error) {
-        console.error("Error fetching worker details:", error);
-        setError("Failed to load worker details. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchWorkerDetails();
   }, [workerId, API_URL]);
   
   const handleSubmit = async (e) => {
@@ -198,50 +195,29 @@ export default function WorkerProfileSummary({ workerId, prev }) {
                   <div>
                     <div className="mb-6 flex justify-center">
                       <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-teal-400">
-                        {/* Use the local image URL first, then fallback to server data */}
+                        {/* Use local device storage for profile image preview */}
                         {(() => {
-                          // Attempt to get local image URL from localStorage
+                          // Priority: Local stored image first (always works), server URL as backup info only
                           const localImageUrl = localStorage.getItem('tempProfileImageUrl');
                           
-                          if (localImageUrl) {
-                            console.log("Using local profile image URL:", localImageUrl);
+                          if (localImageUrl && localImageUrl.trim() !== '') {
+                            console.log("Using local profile image for preview:", localImageUrl);
                             return (
                               <img 
                                 src={localImageUrl} 
                                 alt="Profile" 
                                 className="w-full h-full object-cover"
+                                onLoad={() => console.log("Local profile image loaded successfully")}
                                 onError={(e) => {
-                                  console.error("Local image failed to load, trying server image");
-                                  e.target.onerror = null; // Prevent infinite error loop
-                                  
-                                  // Try loading from server URL instead
-                                  if (workerData?.profileImageUrl) {
-                                    e.target.src = workerData.profileImageUrl;
-                                  } else {
-                                    e.target.style.display = 'none';
-                                    e.target.parentNode.classList.add('fallback-icon-visible');
-                                  }
-                                }}
-                              />
-                            );
-                          } else if (workerData?.profileImageUrl || workerData?.profilePicture || workerData?.profileImage || workerData?.imageUrl) {
-                            const imageUrl = workerData.profileImageUrl || workerData.profilePicture || workerData.profileImage || workerData.imageUrl;
-                            console.log("Using server profile image URL:", imageUrl);
-                            return (
-                              <img 
-                                src={imageUrl} 
-                                alt="Profile" 
-                                className="w-full h-full object-cover" 
-                                onError={(e) => {
-                                  console.error("Server image failed to load");
-                                  e.target.onerror = null; // Prevent infinite error loop
-                                  e.target.src = ''; // Clear the src
-                                  e.target.style.display = 'none'; // Hide the img element
-                                  e.target.parentNode.classList.add('fallback-icon-visible'); // Show fallback icon
+                                  console.error("Local image failed to load:", localImageUrl);
+                                  console.log("Showing default user icon");
+                                  e.target.style.display = 'none';
+                                  e.target.parentNode.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
                                 }}
                               />
                             );
                           } else {
+                            console.log("No local profile image found, showing default icon");
                             return <User size={48} className="text-gray-400" />;
                           }
                         })()} {/* Self-executing function */}
@@ -302,7 +278,13 @@ export default function WorkerProfileSummary({ workerId, prev }) {
                 <div className="space-y-6">
                   <div>
                     <p className="text-gray-400">Current Address</p>
-                    <p className="text-white font-medium">{workerData?.currentAddress || 'Not provided'}</p>
+                    <p className="text-white font-medium">
+                      {workerData?.currentAddress && workerData.currentAddress.trim() !== '' 
+                        ? workerData.currentAddress 
+                        : workerData?.permanentAddress && workerData.permanentAddress.trim() !== ''
+                        ? workerData.permanentAddress
+                        : 'Not provided'}
+                    </p>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -597,32 +579,40 @@ export default function WorkerProfileSummary({ workerId, prev }) {
                   
                   <div>
                     <p className="text-gray-400">ID Proof</p>
-                    {workerData?.idProofUrl ? (
-                      <div className="mt-2">
-                        <img 
-                          src={workerData.idProofUrl} 
-                          alt="ID Proof" 
-                          className="h-32 object-contain rounded border border-gray-600" 
-                        />
-                      </div>
-                    ) : (
-                      <p className="text-white font-medium">Not uploaded</p>
-                    )}
+                    <p className="text-white font-medium">
+                      {workerData?.idProofUrl && workerData.idProofUrl.trim() !== '' ? 'Uploaded' : 'Not uploaded'}
+                    </p>
                   </div>
                   
                   <div>
                     <p className="text-gray-400">Selfie with ID</p>
-                    {workerData?.selfieWithIdUrl ? (
-                      <div className="mt-2">
-                        <img 
-                          src={workerData.selfieWithIdUrl} 
-                          alt="Selfie with ID" 
-                          className="h-32 object-contain rounded border border-gray-600" 
-                        />
-                      </div>
-                    ) : (
-                      <p className="text-white font-medium">Not uploaded</p>
-                    )}
+                    <p className="text-white font-medium">
+                      {workerData?.selfieWithIdUrl && workerData.selfieWithIdUrl.trim() !== '' ? 'Uploaded' : 'Not uploaded'}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-400">Certificates</p>
+                    <p className="text-white font-medium">
+                      {(() => {
+                        try {
+                          if (workerData?.certificateUrls) {
+                            const certUrls = typeof workerData.certificateUrls === 'string' ? 
+                              JSON.parse(workerData.certificateUrls) : workerData.certificateUrls;
+                            
+                            const validCerts = Object.entries(certUrls).filter(([key, url]) => url && url.trim() !== '');
+                            
+                            if (validCerts.length > 0) {
+                              return 'Uploaded';
+                            }
+                          }
+                          return 'Not uploaded';
+                        } catch (e) {
+                          console.error('Error parsing certificate URLs:', e);
+                          return 'Not uploaded';
+                        }
+                      })()}
+                    </p>
                   </div>
                   
                   <div>

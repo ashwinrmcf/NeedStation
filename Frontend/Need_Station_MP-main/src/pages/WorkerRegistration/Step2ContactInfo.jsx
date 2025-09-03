@@ -13,6 +13,26 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
     openToTravel: data.openToTravel || false
   });
   
+  // Update form data when parent data changes (for navigation back/forth)
+  useEffect(() => {
+    setFormData(prev => {
+      const newData = {
+        permanentAddress: data.permanentAddress || '',
+        currentAddress: data.currentAddress || '',
+        city: data.city || '',
+        pincode: data.pincode || '',
+        serviceAreas: data.serviceAreas ? data.serviceAreas.split(',') : [],
+        openToTravel: data.openToTravel || false
+      };
+      
+      // Only update if data has actually changed to prevent infinite loops
+      if (JSON.stringify(prev) !== JSON.stringify(newData)) {
+        return newData;
+      }
+      return prev;
+    });
+  }, [data]);
+  
   // Check for workerId in useEffect to avoid state updates during render
   useEffect(() => {
     if (!workerId) {
@@ -29,14 +49,18 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
     
-    setFormData(prev => ({
-      ...prev,
-      [name]: newValue
-    }));
-    
-    // Also update parent form data
-    updateForm({
-      [name]: newValue
+    setFormData(prev => {
+      const updatedData = {
+        ...prev,
+        [name]: newValue
+      };
+      
+      // Update parent form data immediately
+      updateForm({
+        [name]: newValue
+      });
+      
+      return updatedData;
     });
   };
 
@@ -50,7 +74,7 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
         updatedAreas = [...prev.serviceAreas, area];
       }
       
-      // Update parent form data
+      // Update parent form data immediately
       updateForm({
         serviceAreas: updatedAreas.join(',')
       });

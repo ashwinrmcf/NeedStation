@@ -1,6 +1,6 @@
 // src/pages/worker/WorkerRegistration.jsx
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Step1BasicInfo from './Step1BasicInfo';
 import Step2ContactInfo from './Step2ContactInfo';
 import Step3Address from './Step3Address';
@@ -14,23 +14,39 @@ const WorkerRegistration = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [workerId, setWorkerId] = useState(null);
+  const [showWarningDialog, setShowWarningDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Session-based data management
   useEffect(() => {
-    // Check if this is a fresh session (no session flag)
-    const sessionFlag = sessionStorage.getItem('workerRegistrationSession');
+    const isReload = performance.navigation?.type === 1 || performance.getEntriesByType('navigation')[0]?.type === 'reload';
+    const isDirectNavigation = location.state?.fromHeader || !location.state;
+    const otpVerified = sessionStorage.getItem('otpVerified') === 'true';
+    const currentStep = parseInt(sessionStorage.getItem('currentStep') || '1');
     
-    if (!sessionFlag) {
-      // Fresh session - clear all stored data
-      localStorage.removeItem('workerId');
-      localStorage.removeItem('workerFormData');
-      sessionStorage.removeItem('otpVerified');
-      sessionStorage.removeItem('stepCompleted');
-      sessionStorage.setItem('workerRegistrationSession', 'active');
-    } else {
-      // Existing session - restore data
+    // Handle fresh navigation from header or direct URL access
+    if (isDirectNavigation && !isReload) {
+      console.log('Fresh navigation detected - starting new registration session');
+      clearRegistrationData();
+      setStep(1);
+      return;
+    }
+    
+    // Handle page reload - always clear data and start fresh
+    if (isReload) {
+      console.log('Page reload detected - clearing all registration data');
+      clearRegistrationData();
+      setStep(1);
+      return;
+    }
+    
+    // Restore session data if OTP is verified and it's not a fresh navigation
+    if (otpVerified && !isDirectNavigation) {
       const savedWorkerId = localStorage.getItem('workerId');
       const savedFormData = localStorage.getItem('workerFormData');
+      const savedStep = sessionStorage.getItem('currentStep');
       
       if (savedWorkerId) {
         setWorkerId(Number(savedWorkerId));
@@ -44,8 +60,91 @@ const WorkerRegistration = () => {
           console.error('Error parsing saved form data:', e);
         }
       }
+      
+      if (savedStep && parseInt(savedStep) !== step) {
+        setStep(parseInt(savedStep));
+      }
     }
-  }, []);
+  }, [location]);
+  
+  // Handle beforeunload event for page refresh/close
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      // Only show warning if user has entered data or is in the middle of registration
+      const hasFormData = localStorage.getItem('workerFormData');
+      const hasWorkerId = localStorage.getItem('workerId');
+      const otpVerified = sessionStorage.getItem('otpVerified') === 'true';
+      
+      if ((step >= 1 && step <= 6) && (hasFormData || hasWorkerId || otpVerified)) {
+        e.preventDefault();
+        e.returnValue = 'All registration data will be lost. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [step]);
+  
+  // Clear all registration data
+  const clearRegistrationData = () => {
+    localStorage.removeItem('workerId');
+    localStorage.removeItem('workerFormData');
+    sessionStorage.removeItem('otpVerified');
+    sessionStorage.removeItem('currentStep');
+    sessionStorage.removeItem('mobileVerified');
+    
+    // Clear Step 4 image localStorage items
+    localStorage.removeItem('tempIdProofUrl');
+    localStorage.removeItem('tempSelfieUrl');
+    localStorage.removeItem('tempCertificateUrls');
+    
+    setWorkerId(null);
+    setFormData({
+      fullName: "", dob: "", gender: "", phone: "", email: "",
+      whatsappNumber: "", profilePicture: null, otpId: "", otpSent: false, otpVerified: false,
+      familyPhone: "", address: "", currentAddress: "", aadhaar: "", verification: "",
+      category: "", experience: "", emergencyContact: "", bankAccount: "", ifsc: "", upi: ""
+    });
+  };
+  
+  // Handle navigation attempts
+  const handleNavigationAttempt = (path) => {
+    if (step >= 1 && step <= 6) {
+      setPendingNavigation(path);
+      setShowWarningDialog(true);
+    } else {
+      navigate(path);
+    }
+  };
+  
+  // Confirm navigation with data loss
+  const confirmNavigation = async () => {
+    // Delete worker data from database if workerId exists
+    if (workerId) {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+        await axios.delete(`${API_URL}/worker/delete/${workerId}`);
+        console.log('Worker data deleted from database:', workerId);
+      } catch (error) {
+        console.error('Error deleting worker data from database:', error);
+        // Continue with frontend cleanup even if backend deletion fails
+      }
+    }
+    
+    clearRegistrationData();
+    setShowWarningDialog(false);
+    if (pendingNavigation) {
+      navigate(pendingNavigation);
+    }
+    setPendingNavigation(null);
+  };
+  
+  // Cancel navigation
+  const cancelNavigation = () => {
+    setShowWarningDialog(false);
+    setPendingNavigation(null);
+  };
 
   // State to store the local image preview URL
   const [localProfileImageUrl, setLocalProfileImageUrl] = useState(null);
@@ -77,8 +176,20 @@ const WorkerRegistration = () => {
     upi: ""
   });
 
-  const next = () => setStep(step + 1);
-  const prev = () => setStep(step - 1);
+  const next = () => {
+    const newStep = step + 1;
+    setStep(newStep);
+    sessionStorage.setItem('currentStep', newStep.toString());
+    // Scroll to top when moving to next step
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  const prev = () => {
+    const newStep = step - 1;
+    setStep(newStep);
+    sessionStorage.setItem('currentStep', newStep.toString());
+    // Scroll to top when moving to previous step
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const updateForm = (data) => {
     const updatedData = { ...formData, ...data };
@@ -86,6 +197,12 @@ const WorkerRegistration = () => {
     
     // Save to localStorage for session persistence
     localStorage.setItem('workerFormData', JSON.stringify(updatedData));
+    
+    // Mark OTP as verified if it's being set
+    if (data.otpVerified === true) {
+      sessionStorage.setItem('otpVerified', 'true');
+      sessionStorage.setItem('mobileVerified', 'true');
+    }
   };
 
   // Function to fetch worker data from backend
@@ -169,8 +286,7 @@ const WorkerRegistration = () => {
     localStorage.setItem('workerId', id);
   };
 
-  // Navigation hook for redirects
-  const navigate = useNavigate();
+  // Navigation hook for redirects (already declared above)
   
   // Final submission handler
   const handleFinalSubmit = async () => {
@@ -201,7 +317,9 @@ const WorkerRegistration = () => {
       updateForm={updateForm} 
       next={next} 
       workerId={workerId} 
-      updateWorkerId={updateWorkerId} 
+      updateWorkerId={updateWorkerId}
+      onNavigationAttempt={handleNavigationAttempt}
+      clearRegistrationData={clearRegistrationData}
     />,
     <Step2ContactInfo 
       data={formData} 
@@ -288,6 +406,40 @@ const WorkerRegistration = () => {
   return (
     <div className="min-h-screen text-white p-4 form-content-spacing">
       <div className="max-w-4xl mx-auto">
+        {/* Warning Dialog */}
+        {showWarningDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 p-6 rounded-lg max-w-md mx-4">
+              <div className="flex items-center mb-4">
+                <div className="bg-yellow-500 rounded-full p-2 mr-3">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white">Warning</h3>
+              </div>
+              <p className="text-gray-300 mb-6">
+                All registration data will be lost and mobile verification will be removed. 
+                All fields will be empty for this session. Are you sure you want to continue?
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={confirmNavigation}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors"
+                >
+                  Yes, Continue
+                </button>
+                <button
+                  onClick={cancelNavigation}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Show progress bar for all steps except final success page */}
         {step <= 6 && renderProgressBar()}
         
