@@ -7,6 +7,7 @@ import { useAuth } from "../../store/AuthContext.jsx";
 const Login = () => {
   const { login } = useAuth();
   const [formData, setFormData] = useState({ emailOrContact: "", password: "" });
+  const [contactType, setContactType] = useState("email"); // "email" or "phone"
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,10 +23,14 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
+      const loginData = {
+        ...formData,
+        contactType: contactType
+      };
       const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(loginData),
       });
       const data = await response.json();
       if (response.ok) {
@@ -151,11 +156,30 @@ const Login = () => {
 
       <div className={`${styles["form-container"]} signup-form-spacing`}>
         <h2>Login</h2>
+        
+        {/* Contact Type Toggle */}
+        <div className={styles["toggle-container"]}>
+          <button
+            type="button"
+            className={`${styles["toggle-btn"]} ${contactType === "email" ? styles["active"] : ""}`}
+            onClick={() => setContactType("email")}
+          >
+            Email
+          </button>
+          <button
+            type="button"
+            className={`${styles["toggle-btn"]} ${contactType === "phone" ? styles["active"] : ""}`}
+            onClick={() => setContactType("phone")}
+          >
+            Phone
+          </button>
+        </div>
+        
         <input
           type="text"
           name="emailOrContact"
           className={styles["input-box"]}
-          placeholder="Email"
+          placeholder={contactType === "email" ? "Email" : "Phone Number"}
           value={formData.emailOrContact}
           onChange={handleChange}
         />

@@ -25,9 +25,17 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody Map<String, String> request) {
         String emailOrContact = request.get("emailOrContact");
         String password = request.get("password");
+        String contactType = request.get("contactType"); // "email" or "phone"
 
-        // Try to find user by email first
-        Optional<User> userOptional = userRepository.findByEmail(emailOrContact);
+        Optional<User> userOptional;
+        
+        if ("phone".equals(contactType)) {
+            // Search by phone number
+            userOptional = userRepository.findByContactNumber(emailOrContact);
+        } else {
+            // Default to email search
+            userOptional = userRepository.findByEmail(emailOrContact);
+        }
         
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -57,13 +65,16 @@ public class AuthController {
                         "message", "Login successful",
                         "username", displayName,
                         "displayName", displayName,
-                        "email", user.getEmail(),
+                        "email", user.getEmail() != null ? user.getEmail() : "",
+                        "phone", user.getContactNumber() != null ? user.getContactNumber() : "",
                         "firstName", user.getFirstName() != null ? user.getFirstName() : "",
                         "lastName", user.getLastName() != null ? user.getLastName() : ""
                 ));
             }
         }
-        return ResponseEntity.status(401).body(Map.of("message", "Invalid email or password"));
+        String errorMessage = "phone".equals(contactType) ? 
+            "Invalid phone number or password" : "Invalid email or password";
+        return ResponseEntity.status(401).body(Map.of("message", errorMessage));
     }
     @PostMapping("/register")  // ✅ Ensure this matches the frontend request
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody Map<String, String> request) {

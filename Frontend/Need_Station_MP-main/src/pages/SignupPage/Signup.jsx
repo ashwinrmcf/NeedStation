@@ -11,10 +11,12 @@ const Signup = () => {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
     otp: ''
   });
+  const [contactType, setContactType] = useState('email'); // 'email' or 'phone'
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, feedback: '' });
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -69,8 +71,14 @@ const Signup = () => {
 
   // Step 1: Send OTP
   const handleStep1 = async () => {
-    if (!formData.firstName || !formData.lastName || !formData.email) {
+    const contactValue = contactType === 'email' ? formData.email : formData.phone;
+    if (!formData.firstName || !formData.lastName || !contactValue) {
       setMessage('Please fill in all fields');
+      return;
+    }
+
+    if (contactType === 'phone' && !/^[6-9]\d{9}$/.test(formData.phone)) {
+      setMessage('Please enter a valid 10-digit phone number');
       return;
     }
 
@@ -82,13 +90,15 @@ const Signup = () => {
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
-          email: formData.email
+          email: contactType === 'email' ? formData.email : null,
+          phone: contactType === 'phone' ? formData.phone : null,
+          contactType: contactType
         }),
       });
       const data = await response.json();
       
       if (response.ok && data.success) {
-        setMessage('OTP sent to your email!');
+        setMessage(`OTP sent to your ${contactType}!`);
         setStep(2);
       } else {
         setMessage(data.message || 'Failed to send OTP.');
@@ -113,14 +123,16 @@ const Signup = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: formData.email,
-          otp: formData.otp
+          email: contactType === 'email' ? formData.email : null,
+          phone: contactType === 'phone' ? formData.phone : null,
+          otp: formData.otp,
+          contactType: contactType
         }),
       });
       const data = await response.json();
       
       if (response.ok && data.success) {
-        setMessage('Email verified! Please set your password.');
+        setMessage(`${contactType === 'email' ? 'Email' : 'Phone'} verified! Please set your password.`);
         setStep(3);
       } else {
         setMessage(data.message || 'Invalid OTP.');
@@ -150,11 +162,13 @@ const Signup = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: formData.email,
+          email: contactType === 'email' ? formData.email : null,
+          phone: contactType === 'phone' ? formData.phone : null,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
           firstName: formData.firstName,
-          lastName: formData.lastName
+          lastName: formData.lastName,
+          contactType: contactType
         }),
       });
       const data = await response.json();
@@ -179,12 +193,16 @@ const Signup = () => {
       const response = await fetch('http://localhost:8080/api/auth/signup/resend-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email }),
+        body: JSON.stringify({ 
+          email: contactType === 'email' ? formData.email : null,
+          phone: contactType === 'phone' ? formData.phone : null,
+          contactType: contactType 
+        }),
       });
       const data = await response.json();
       
       if (response.ok && data.success) {
-        setMessage('OTP resent to your email!');
+        setMessage(`OTP resent to your ${contactType}!`);
       } else {
         setMessage(data.message || 'Failed to resend OTP.');
       }
@@ -282,15 +300,77 @@ const Signup = () => {
         onChange={handleChange}
         disabled={isLoading}
       />
-      <input
-        type="email"
-        name="email"
-        className={styles['input-box']}
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleChange}
-        disabled={isLoading}
-      />
+      
+      {/* Contact Type Toggle */}
+      <div style={{ marginBottom: '15px' }}>
+        <div style={{ 
+          display: 'flex', 
+          backgroundColor: '#f5f5f5', 
+          borderRadius: '8px', 
+          padding: '4px',
+          marginBottom: '10px'
+        }}>
+          <button
+            type="button"
+            onClick={() => setContactType('email')}
+            disabled={isLoading}
+            style={{
+              flex: 1,
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              backgroundColor: contactType === 'email' ? '#26D0CE' : 'transparent',
+              color: contactType === 'email' ? 'white' : '#666',
+              fontWeight: contactType === 'email' ? '500' : 'normal',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            Email
+          </button>
+          <button
+            type="button"
+            onClick={() => setContactType('phone')}
+            disabled={isLoading}
+            style={{
+              flex: 1,
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              backgroundColor: contactType === 'phone' ? '#26D0CE' : 'transparent',
+              color: contactType === 'phone' ? 'white' : '#666',
+              fontWeight: contactType === 'phone' ? '500' : 'normal',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            Phone
+          </button>
+        </div>
+        
+        {contactType === 'email' ? (
+          <input
+            type="email"
+            name="email"
+            className={styles['input-box']}
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            disabled={isLoading}
+          />
+        ) : (
+          <input
+            type="tel"
+            name="phone"
+            className={styles['input-box']}
+            placeholder="Phone Number (10 digits)"
+            value={formData.phone}
+            onChange={handleChange}
+            disabled={isLoading}
+            maxLength="10"
+          />
+        )}
+      </div>
       <button 
         className={styles['continue-btn']} 
         onClick={handleStep1}
@@ -335,7 +415,7 @@ const Signup = () => {
     <div className={`${styles['form-container']} signup-form-spacing`}>
       <h2>Verify your email</h2>
       <p style={{ color: '#888', marginBottom: '20px', textAlign: 'center' }}>
-        We sent a verification code to {formData.email}
+        We sent a verification code to {contactType === 'email' ? formData.email : formData.phone}
       </p>
       <input
         type="text"

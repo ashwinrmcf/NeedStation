@@ -7,6 +7,8 @@ import zainab from "../../assets/images/AboutUs/zainab.jpg";
 import yash from "../../assets/images/AboutUs/yash.png";
 import navneet from "../../assets/images/AboutUs/navneet.jpeg";
 import bairagi from "../../assets/images/AboutUs/bairagi.jpeg";
+import siddharth from "../../assets/images/AboutUs/siddharth.jpg";
+import divyaraj from "../../assets/images/AboutUs/divyaraj.png";
 import logo from "../../assets/images/AboutUs/logo.jpeg";
 
 const AboutUs = () => {
@@ -15,7 +17,7 @@ const AboutUs = () => {
       name: "Ashwin Soni",
       role: "Financial Operations",
       image: ashwin,
-      description: "Oversees financial planning, budgeting, and operational efficiency to ensure sustainable growth and resource optimization.",
+      description: "Leads financial structuring, business management, and revenue growth while overseeing legal, client, product, and security initiatives for holistic development.",
     },
     {
       name: "Zainab Ansari",
@@ -33,13 +35,13 @@ const AboutUs = () => {
       name: "Ajitesh Tripathi",
       role: "Operations Manager",
       image: ajitesh,
-      description: "Oversees recruitment, training, and performance of service providers to maintain consistent service excellence.",
+      description: "Bridges client relationships with internal execution, overseeing team tasks and ensuring timely, high-quality delivery that strengthens trust and efficiency.",
     },
     {
       name: "Navneet Chauhan",
-      role: "Strategic Partnership",
+      role: "Data & Marketing",
       image: navneet,
-      description: "Builds and maintains strong collaborations with service providers, ensuring reliable and high-quality service delivery.",
+      description: "Oversees database operations and drives social media marketing, merging analytics with creativity for efficient and impactful outreach.",
     },
     {
       name: "Aman Bairagi",
@@ -53,7 +55,18 @@ const AboutUs = () => {
       image: yash,
       description: "Drives innovation by designing, refining, and enhancing NeedStation’s services and digital platform, ensuring alignment with user needs and market trends.",
     },
-
+    {
+      name: "Siddharth Singh Rathore",
+      role: "Business Strategy",
+      image: siddharth, 
+      description: "Leads local market negotiations and brand campaigns, combining creative writing with strategic marketing and endorsements.",
+    },
+    {
+      name: "Divyaraj Singh Panwar",
+      role: "Media & Partnerships",
+      image: divyaraj, 
+      description: "Manages big client outreach and digital negotiations while directing creative content, YouTube strategy, and brand partnerships.",
+    },
   ];
 
   // Service categories

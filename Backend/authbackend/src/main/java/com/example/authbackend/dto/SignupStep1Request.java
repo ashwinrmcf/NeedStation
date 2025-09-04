@@ -1,6 +1,5 @@
 package com.example.authbackend.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -14,9 +13,11 @@ public class SignupStep1Request {
     @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
     private String lastName;
     
-    @NotBlank(message = "Email is required")
-    @Email(message = "Please provide a valid email address")
     private String email;
+    
+    private String phone;
+    
+    private String contactType; // "email" or "phone"
 
     // Default constructor
     public SignupStep1Request() {}
@@ -26,6 +27,15 @@ public class SignupStep1Request {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+    
+    // Constructor with phone
+    public SignupStep1Request(String firstName, String lastName, String email, String phone, String contactType) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.contactType = contactType;
     }
 
     // Getters and Setters
@@ -52,6 +62,22 @@ public class SignupStep1Request {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public String getPhone() {
+        return phone;
+    }
+    
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+    public String getContactType() {
+        return contactType;
+    }
+    
+    public void setContactType(String contactType) {
+        this.contactType = contactType;
+    }
 
     @Override
     public String toString() {
@@ -59,6 +85,8 @@ public class SignupStep1Request {
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", contactType='" + contactType + '\'' +
                 '}';
     }
 }

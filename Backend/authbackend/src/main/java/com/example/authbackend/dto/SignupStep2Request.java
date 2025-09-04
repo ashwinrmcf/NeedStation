@@ -2,11 +2,16 @@ package com.example.authbackend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
 
 public class SignupStep2Request {
     
-    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email address")
     private String email;
+    
+    private String phone;
+    
+    private String contactType; // "email" or "phone"
     
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
@@ -43,6 +48,22 @@ public class SignupStep2Request {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    public String getPhone() {
+        return phone;
+    }
+    
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+    public String getContactType() {
+        return contactType;
+    }
+    
+    public void setContactType(String contactType) {
+        this.contactType = contactType;
     }
 
     public String getPassword() {

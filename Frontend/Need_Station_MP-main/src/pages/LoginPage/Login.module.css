@@ -43,6 +43,48 @@
 
 
 
+.toggle-container {
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #444;
+  background-color: transparent;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background-color: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.toggle-btn:hover {
+  background-color: rgba(38, 208, 206, 0.1);
+  color: #26D0CE;
+}
+
+.toggle-btn.active {
+  background-color: #26D0CE;
+  color: white;
+}
+
+.toggle-btn:first-child {
+  border-right: 1px solid #444;
+}
+
+.toggle-btn:first-child.active {
+  border-right: 1px solid #26D0CE;
+}
+
 .form-container {
   display: flex;
   flex-direction: column;
