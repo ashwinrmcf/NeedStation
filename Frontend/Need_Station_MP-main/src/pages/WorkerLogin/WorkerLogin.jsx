@@ -6,7 +6,7 @@ import axios from "axios";
 import { CheckCircle, Loader2, RefreshCw } from "lucide-react";
 
 const WorkerLogin = () => {
-  const [formData, setFormData] = useState({ email: "", phone: "" });
+  const [formData, setFormData] = useState({ phone: "" });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -15,6 +15,9 @@ const WorkerLogin = () => {
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpError, setOtpError] = useState("");
   const [workerId, setWorkerId] = useState(null);
+  const [nameVerification, setNameVerification] = useState(false);
+  const [workerName, setWorkerName] = useState("");
+  const [nameError, setNameError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -41,21 +44,9 @@ const WorkerLogin = () => {
     setOtpError('');
     
     try {
-      // First try to find the worker by phone number using a temporary registration
-      // This will return the workerId if found or create a new registration if not
-      const registerRequest = {
-        fullName: "",  // These will be populated later
-        gender: "Other",
-        dob: "2000-01-01",
-        phone: formData.phone,
-        email: "",
-        whatsappNumber: formData.phone
-      };
-      
-      // Use the new Free OTP API endpoints
-      const response = await axios.post(
-        'http://localhost:8080/api/workers/register/step1',
-        registerRequest,
+      // First, check if worker exists with this phone number
+      const workerCheckResponse = await axios.get(
+        `http://localhost:8080/api/worker/check-phone/${formData.phone}`,
         {
           headers: {
             'Content-Type': 'application/json'
@@ -63,18 +54,30 @@ const WorkerLogin = () => {
         }
       );
       
-      // Check if we got a workerId
-      if (response.data && response.data.workerId) {
-        // Save the worker ID for OTP verification
-        const foundWorkerId = response.data.workerId;
-        setWorkerId(foundWorkerId);
+      if (workerCheckResponse.data && workerCheckResponse.data.exists) {
+        setWorkerId(workerCheckResponse.data.workerId);
         
-        // OTP is sent automatically during registration
-        setOtpSent(true);
-        console.log('OTP sent successfully via Free OTP API');
-        alert('OTP sent! Please check your phone for the verification code.');
+        // Generate OTP using the free OTP API only if worker exists
+        const otpResponse = await axios.post(
+          'http://localhost:3001/generate-otp',
+          {
+            phoneNumber: `+91${formData.phone}`
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if (otpResponse.data && otpResponse.data.success) {
+          setOtpSent(true);
+          console.log('OTP sent successfully via Free OTP API');
+        } else {
+          setOtpError("Failed to send verification code. Please try again.");
+        }
       } else {
-        setOtpError('Could not find or register your account. Please try again.');
+        setOtpError("Phone number not registered. Please register as a helper first.");
       }
     } catch (error) {
       console.error('Error generating OTP:', error);
@@ -114,7 +117,7 @@ const WorkerLogin = () => {
       setOtpLoading(false);
     }
   };
-  
+
   const verifyOtp = async () => {
     if (!otpCode || otpCode.length < 6) {
       setOtpError('Please enter a valid OTP code');
@@ -143,8 +146,8 @@ const WorkerLogin = () => {
         setOtpVerified(true);
         setOtpError('');
         console.log('OTP verified successfully via Free OTP API');
-        // Automatically proceed with login after verification
-        handleLoginAfterVerification();
+        // Show name verification step after OTP verification
+        setNameVerification(true);
       } else {
         setOtpError('Invalid OTP. Please try again.');
       }
@@ -160,7 +163,50 @@ const WorkerLogin = () => {
     }
   };
 
-  // This is called after successful OTP verification
+  // Verify worker name as security question
+  const verifyWorkerName = async () => {
+    if (!workerName.trim()) {
+      setNameError('Please enter your full name');
+      return;
+    }
+    
+    setLoading(true);
+    setNameError('');
+    
+    try {
+      // Verify name matches the registered worker for this specific phone number
+      const nameResponse = await axios.post(
+        'http://localhost:8080/api/worker/verify-name',
+        {
+          phone: formData.phone,
+          fullName: workerName.trim()
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      if (nameResponse.data && nameResponse.data.verified) {
+        // Name verified, proceed with login
+        handleLoginAfterVerification();
+      } else {
+        setNameError('Name does not match our records. Please check and try again.');
+      }
+    } catch (error) {
+      console.error('Error verifying name:', error);
+      if (error.response && error.response.data && error.response.data.error) {
+        setNameError(error.response.data.error);
+      } else {
+        setNameError('Failed to verify name. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // This is called after successful name verification
   const handleLoginAfterVerification = async () => {
     try {
       setLoading(true);
@@ -251,15 +297,6 @@ const WorkerLogin = () => {
 
       <div className={`${styles["form-container"]} signup-form-spacing`}>
         <h2>Helper Login</h2>
-        {/* Email is now optional for login since we're using OTP */}
-        <input
-          type="email"
-          name="email"
-          className={styles["input-box"]}
-          placeholder="Email Address (Optional)"
-          value={formData.email}
-          onChange={handleChange}
-        />
         <div className={styles["input-group"]}>
           <input
             type="tel"
@@ -337,6 +374,38 @@ const WorkerLogin = () => {
               </button>
               {otpError && <p className={styles["error-message"]}>{otpError}</p>}
             </div>
+          </div>
+        )}
+
+        {/* Name verification section */}
+        {nameVerification && otpVerified && (
+          <div className={styles["name-container"]}>
+            <p className={styles["name-instruction"]}>For security, please enter your full name as registered</p>
+            <div className={styles["name-input-group"]}>
+              <input
+                type="text"
+                value={workerName}
+                onChange={(e) => setWorkerName(e.target.value)}
+                placeholder="Enter your full name"
+                className={styles["input-box"]}
+              />
+              <button
+                type="button"
+                onClick={verifyWorkerName}
+                disabled={!workerName.trim() || loading}
+                className={styles["verify-btn"]}
+              >
+                {loading ? (
+                  <span className={styles["btn-loading"]}>
+                    <Loader2 className={styles["spin-icon"]} size={16} />
+                    Verifying...
+                  </span>
+                ) : (
+                  'Verify Name'
+                )}
+              </button>
+            </div>
+            {nameError && <p className={styles["error-message"]}>{nameError}</p>}
           </div>
         )}
         <button 

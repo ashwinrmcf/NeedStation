@@ -55,21 +55,29 @@ const Footer = () => {
             © Copyright All Rights Reserved.
           </p>
           <div className={`${styles["social-media"]}`}>
-            <span>
-              <BsInstagram />
-            </span>{" "}
+            <a href="https://www.instagram.com/needstation.in?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">
+              <span>
+                <BsInstagram />
+              </span>
+            </a>{" "}
             {/*Instagram*/}
-            <span>
-              <FaFacebook />
-            </span>{" "}
+            <a href="https://facebook.com/your_facebook_page" target="_blank" rel="noopener noreferrer">
+              <span>
+                <FaFacebook />
+              </span>
+            </a>{" "}
             {/*Facebook*/}
-            <span>
-              <FaTwitter />
-            </span>{" "}
+            <a href="https://twitter.com/your_twitter_handle" target="_blank" rel="noopener noreferrer">
+              <span>
+                <FaTwitter />
+              </span>
+            </a>{" "}
             {/*Twitter*/}
-            <span>
-              <FaLinkedin />
-            </span>{" "}
+            <a href="https://www.linkedin.com/company/needstation/?viewAsMember=true" target="_blank" rel="noopener noreferrer">
+              <span>
+                <FaLinkedin />
+              </span>
+            </a>{" "}
             {/*LinkedIn*/}
           </div>
         </div>
