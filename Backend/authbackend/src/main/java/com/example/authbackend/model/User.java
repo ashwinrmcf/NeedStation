@@ -1,9 +1,15 @@
 package com.example.authbackend.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,38 +38,91 @@ public class User {
 
     @Column(name = "is_verified")
     private Boolean verified = false;
-
+    
+    @Column(name = "user_role")
+    private String role = "USER";
+    
+    // Explicit getters and setters for critical fields to ensure compilation
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public String getUsername() {
         return username;
     }
-
+    
     public void setUsername(String username) {
         this.username = username;
     }
-
+    
     public String getEmail() {
         return email;
     }
-
+    
     public void setEmail(String email) {
         this.email = email;
     }
-
+    
     public String getPassword() {
         return password;
     }
-
+    
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    public String getFirstName() {
+        return firstName;
+    }
+    
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    
+    public String getLastName() {
+        return lastName;
+    }
+    
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    
+    public String getFullName() {
+        return fullName;
+    }
+    
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+    
+    public String getProvider() {
+        return provider;
+    }
+    
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+    
+    public Boolean getVerified() {
+        return verified;
+    }
+    
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+    
+    public String getRole() {
+        return role;
+    }
+    
+    public void setRole(String role) {
+        this.role = role;
+    }
+
 
     @Column(name = "location_lat")
     private Double locationLat;
@@ -98,135 +157,94 @@ public class User {
 
     @Column(name = "work_details", columnDefinition = "TEXT")
     private String workDetails;
-
-    public void setLocationLat(Double locationLat) {
-        this.locationLat = locationLat;
-    }
-
-    public void setLocationLng(Double locationLng) {
-        this.locationLng = locationLng;
-    }
-
-    public void setLocationAddress(String locationAddress) {
-        this.locationAddress = locationAddress;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
-
-    public Boolean getVerified() {
-        return verified;
-    }
-
-    public void setVerified(Boolean verified) {
-        this.verified = verified;
-    }
-
-    public Double getLocationLat() {
-        return locationLat;
-    }
-
-    public Double getLocationLng() {
-        return locationLng;
-    }
-
-    public String getLocationAddress() {
-        return locationAddress;
-    }
-
-    // Getters and setters for form data fields
+    
+    // Explicit getters and setters for additional fields to ensure compilation
     public String getContactNumber() {
         return contactNumber;
     }
-
+    
     public void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
     }
-
-    public String getAlternateContact() {
-        return alternateContact;
-    }
-
-    public void setAlternateContact(String alternateContact) {
-        this.alternateContact = alternateContact;
-    }
-
-    public String getPreferredDate() {
-        return preferredDate;
-    }
-
-    public void setPreferredDate(String preferredDate) {
-        this.preferredDate = preferredDate;
-    }
-
-    public String getPreferredTime() {
-        return preferredTime;
-    }
-
-    public void setPreferredTime(String preferredTime) {
-        this.preferredTime = preferredTime;
-    }
-
-    public String getWorkDetails() {
-        return workDetails;
-    }
-
-    public void setWorkDetails(String workDetails) {
-        this.workDetails = workDetails;
-    }
-
+    
     public String getAddress() {
         return address;
     }
-
+    
     public void setAddress(String address) {
         this.address = address;
     }
-
+    
     public String getLandmark() {
         return landmark;
     }
-
+    
     public void setLandmark(String landmark) {
         this.landmark = landmark;
     }
-
+    
     public String getPincode() {
         return pincode;
     }
-
+    
     public void setPincode(String pincode) {
         this.pincode = pincode;
     }
-
-    public String getFullName() {
-        return fullName;
+    
+    public String getAlternateContact() {
+        return alternateContact;
     }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    
+    public void setAlternateContact(String alternateContact) {
+        this.alternateContact = alternateContact;
+    }
+    
+    public String getPreferredDate() {
+        return preferredDate;
+    }
+    
+    public void setPreferredDate(String preferredDate) {
+        this.preferredDate = preferredDate;
+    }
+    
+    public String getPreferredTime() {
+        return preferredTime;
+    }
+    
+    public void setPreferredTime(String preferredTime) {
+        this.preferredTime = preferredTime;
+    }
+    
+    public String getWorkDetails() {
+        return workDetails;
+    }
+    
+    public void setWorkDetails(String workDetails) {
+        this.workDetails = workDetails;
+    }
+    
+    public Double getLocationLat() {
+        return locationLat;
+    }
+    
+    public void setLocationLat(Double locationLat) {
+        this.locationLat = locationLat;
+    }
+    
+    public Double getLocationLng() {
+        return locationLng;
+    }
+    
+    public void setLocationLng(Double locationLng) {
+        this.locationLng = locationLng;
+    }
+    
+    public String getLocationAddress() {
+        return locationAddress;
+    }
+    
+    public void setLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
     }
 
 }

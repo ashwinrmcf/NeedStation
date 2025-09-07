@@ -1,71 +1,95 @@
 package com.example.authbackend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class WorkerDTO {
+    private Long id;
     private String fullName;
     private String gender;
-    private String dob;  // Date of birth as string (will be parsed to LocalDate)
+    private String dob;
     private String phone;
     private String email;
     private String whatsappNumber;
-    // Note: profileImageUrl is handled separately through file upload
-
+    private String profileImageUrl;
+    private String status;
+    
+    // Explicit getters and setters to ensure compilation
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public String getFullName() {
         return fullName;
     }
-
+    
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getDob() {
-        return dob;
-    }
-
-    public void setDob(String dob) {
-        this.dob = dob;
-    }
-
+    
     public String getPhone() {
         return phone;
     }
-
+    
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
+    
     public String getEmail() {
         return email;
     }
-
+    
     public void setEmail(String email) {
         this.email = email;
     }
-
+    
+    public String getStatus() {
+        return status;
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
+    public String getGender() {
+        return gender;
+    }
+    
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+    
+    public String getDob() {
+        return dob;
+    }
+    
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+    
     public String getWhatsappNumber() {
         return whatsappNumber;
     }
-
+    
     public void setWhatsappNumber(String whatsappNumber) {
         this.whatsappNumber = whatsappNumber;
     }
-
-    public WorkerDTO() {
+    
+    public String getProfileImageUrl() {
+        return profileImageUrl;
     }
-
-    public WorkerDTO(String fullName, String gender, String dob, String phone, String email, String whatsappNumber) {
-        this.fullName = fullName;
-        this.gender = gender;
-        this.dob = dob;
-        this.phone = phone;
-        this.email = email;
-        this.whatsappNumber = whatsappNumber;
+    
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

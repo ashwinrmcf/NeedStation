@@ -129,6 +129,24 @@ public class OtpEncryptionUtil {
     }
     
     /**
+     * Encrypt a plain text string (like phone number for key generation)
+     * @param plainText The text to encrypt
+     * @return Base64-encoded encrypted text
+     */
+    public String encrypt(String plainText) {
+        return encryptOtp(plainText);
+    }
+    
+    /**
+     * Decrypt an encrypted string
+     * @param encryptedText Base64-encoded encrypted text
+     * @return Decrypted text
+     */
+    public String decrypt(String encryptedText) {
+        return decryptOtp(encryptedText);
+    }
+    
+    /**
      * Get the secret key for encryption/decryption
      * We derive a 256-bit key from the configured secret key string
      * @return SecretKey for AES encryption

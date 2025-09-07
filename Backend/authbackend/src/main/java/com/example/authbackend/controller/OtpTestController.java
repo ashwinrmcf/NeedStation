@@ -1,17 +1,16 @@
 package com.example.authbackend.controller;
 
+import com.example.authbackend.dto.*;
 import com.example.authbackend.model.Worker;
 import com.example.authbackend.security.OtpEncryptionUtil;
 import com.example.authbackend.security.RateLimiter;
-import com.example.authbackend.service.FreeOtpService;
+import com.example.authbackend.service.interfac.IFreeOtpService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 /**
  * Test controller for OTP functionality - for development use only
@@ -29,73 +28,66 @@ public class OtpTestController {
         lastGeneratedOtps.put(phone, otp);
     }
 
-    private final FreeOtpService freeOtpService;
-    private final OtpEncryptionUtil encryptionUtil;
-    private final RateLimiter rateLimiter;
-
     @Autowired
-    public OtpTestController(FreeOtpService freeOtpService, OtpEncryptionUtil encryptionUtil, RateLimiter rateLimiter) {
-        this.freeOtpService = freeOtpService;
-        this.encryptionUtil = encryptionUtil;
-        this.rateLimiter = rateLimiter;
-    }
+    private IFreeOtpService iFreeOtpService;
+    
+    @Autowired
+    private OtpEncryptionUtil encryptionUtil;
+    
+    @Autowired
+    private RateLimiter rateLimiter;
 
     /**
      * Test OTP encryption
      */
     @GetMapping("/encrypt/{otp}")
-    public ResponseEntity<Map<String, Object>> testEncryption(@PathVariable String otp) {
-        Map<String, Object> response = new HashMap<>();
-        
+    public Response testEncryption(@PathVariable String otp) {
+        Response response = new Response();
         try {
             String encrypted = encryptionUtil.encryptOtp(otp);
             String decrypted = encryptionUtil.decryptOtp(encrypted);
             
-            response.put("original", otp);
-            response.put("encrypted", encrypted);
-            response.put("decrypted", decrypted);
-            response.put("matches", otp.equals(decrypted));
-            
-            return ResponseEntity.ok(response);
+            response.setStatusCode(200);
+            response.setMessage("Encryption test completed - Original: " + otp + ", Matches: " + otp.equals(decrypted));
         } catch (Exception e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            response.setStatusCode(500);
+            response.setMessage("Encryption test failed: " + e.getMessage());
         }
+        return response;
     }
     
     /**
      * Test rate limiter
      */
     @GetMapping("/rate-limit-test/{ip}")
-    public ResponseEntity<Map<String, Object>> testRateLimit(@PathVariable String ip) {
-        Map<String, Object> response = new HashMap<>();
+    public Response testRateLimit(@PathVariable String ip) {
+        Response response = new Response();
         
         boolean limited = rateLimiter.isIpLimited(ip);
         int attempts = rateLimiter.getIpAttemptCount(ip);
         
-        response.put("ip", ip);
-        response.put("limited", limited);
-        response.put("attempts", attempts);
-        
         if (limited) {
-            return ResponseEntity.status(429).body(response);
+            response.setStatusCode(429);
+            response.setMessage("IP " + ip + " is rate limited. Attempts: " + attempts);
         } else {
-            return ResponseEntity.ok(response);
+            response.setStatusCode(200);
+            response.setMessage("IP " + ip + " is not limited. Attempts: " + attempts);
         }
+        return response;
     }
     
     /**
      * Reset rate limiter for testing
      */
     @PostMapping("/reset-rate-limit/{ip}")
-    public ResponseEntity<Map<String, Object>> resetRateLimit(@PathVariable String ip) {
-        Map<String, Object> response = new HashMap<>();
+    public Response resetRateLimit(@PathVariable String ip) {
+        Response response = new Response();
         
         rateLimiter.resetIpLimit(ip);
-        response.put("ip", ip);
-        response.put("status", "Rate limit reset");
+        response.setStatusCode(200);
+        response.setMessage("Rate limit reset for IP: " + ip);
         
-        return ResponseEntity.ok(response);
+        return response;
     }
     
     /**
@@ -103,28 +95,27 @@ public class OtpTestController {
      * This should only be used in development environments
      */
     @GetMapping("/debug/last-otp/{phone}")
-    public ResponseEntity<Map<String, Object>> getLastOtp(@PathVariable String phone) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("phone", phone);
+    public Response getLastOtp(@PathVariable String phone) {
+        Response response = new Response();
         
         String lastOtp = lastGeneratedOtps.get(phone);
         if (lastOtp != null) {
-            response.put("lastOtp", lastOtp);
-            response.put("found", true);
+            response.setStatusCode(200);
+            response.setMessage("Last OTP for " + phone + ": " + lastOtp);
         } else {
-            response.put("found", false);
-            response.put("message", "No OTP found for this phone number");
+            response.setStatusCode(404);
+            response.setMessage("No OTP found for phone number: " + phone);
         }
         
-        return ResponseEntity.ok(response);
+        return response;
     }
     
     /**
      * Test OTP generation and verification
      */
     @GetMapping("/generate-otp")
-    public ResponseEntity<Map<String, Object>> generateTestOtp() {
-        Map<String, Object> response = new HashMap<>();
+    public Response generateTestOtp() {
+        Response response = new Response();
         
         try {
             Worker worker = new Worker();
@@ -133,28 +124,22 @@ public class OtpTestController {
             worker.setEmail("test@example.com");
             
             // Generate OTP
-            boolean result = freeOtpService.generateOtp(worker);
-            String backupOtp = worker.getPhoneVerificationOtp();
+            Response otpResponse = iFreeOtpService.generateOtp(worker);
+            return otpResponse;
             
-            response.put("success", result);
-            response.put("workerPhone", worker.getPhone());
-            response.put("encryptedBackupOtp", backupOtp);
-            response.put("otpCreatedAt", worker.getOtpCreatedAt());
-            response.put("otpExpiresAt", worker.getOtpExpiresAt());
-            
-            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            response.setStatusCode(500);
+            response.setMessage("OTP generation test failed: " + e.getMessage());
         }
+        return response;
     }
     
     /**
      * Test OTP verification with a specific OTP
      */
     @GetMapping("/verify-otp/{otp}")
-    public ResponseEntity<Map<String, Object>> verifyTestOtp(@PathVariable String otp) {
-        Map<String, Object> response = new HashMap<>();
+    public Response verifyTestOtp(@PathVariable String otp) {
+        Response response = new Response();
         
         try {
             Worker worker = new Worker();
@@ -172,16 +157,13 @@ public class OtpTestController {
             worker.setPhoneVerificationOtp(encryptedOtp);
             
             // Verify OTP
-            boolean result = freeOtpService.verifyOtp(worker, otp);
+            Response otpResponse = iFreeOtpService.verifyOtp(worker, otp);
+            return otpResponse;
             
-            response.put("success", result);
-            response.put("workerPhone", worker.getPhone());
-            response.put("otpVerified", result);
-            
-            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            response.setStatusCode(500);
+            response.setMessage("OTP verification test failed: " + e.getMessage());
         }
+        return response;
     }
 }
