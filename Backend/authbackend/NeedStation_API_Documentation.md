@@ -485,7 +485,6 @@ twofactor.api.key=YOUR_2FACTOR_API_KEY
 
 # Google Services
 google.maps.api.key=YOUR_GOOGLE_MAPS_API_KEY
-google.translate.api-key=YOUR_GOOGLE_TRANSLATE_API_KEY
 google.oauth.client-id=YOUR_GOOGLE_OAUTH_CLIENT_ID
 google.oauth.client-secret=YOUR_GOOGLE_OAUTH_CLIENT_SECRET
 

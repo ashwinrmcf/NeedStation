@@ -37,13 +37,13 @@ const Footer = () => {
             <div className={`${styles["footer-contact"]}`}>
               <h3>Contact</h3>
               <p>
-                 <IoCall /> <span> +11 222 3333</span> 
+                 <IoCall /> <span>+91 8357028350</span> 
               </p>
               <p>
-                <IoMdMail /> <span>mangcoding123@gmail.com</span> 
+                <IoMdMail /> <span>support@needstation.in</span> 
               </p>
               <p>
-                <FaLocationDot /> <span>2972 Westheimer Rd, Santa Ana, Illinois 85486</span> 
+                <FaLocationDot /> <span>Scheme No 74C, Indore, Madhya Pradesh 452010</span> 
               </p>
             </div>
           </div>
