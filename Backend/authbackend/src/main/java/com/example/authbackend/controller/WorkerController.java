@@ -65,6 +65,30 @@ public class WorkerController {
         }
     }
     
+    // Check if worker exists by phone number (for OTP login verification)
+    @GetMapping("/check-phone/{phone}")
+    public ResponseEntity<?> checkWorkerByPhone(@PathVariable String phone) {
+        try {
+            java.util.Optional<Worker> workerOpt = workerService.findWorkerByPhone(phone);
+            if (workerOpt.isPresent()) {
+                Worker worker = workerOpt.get();
+                Map<String, Object> response = new HashMap<>();
+                response.put("workerId", worker.getId());
+                response.put("exists", true);
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> response = new HashMap<>();
+                response.put("exists", false);
+                response.put("message", "No worker found with this phone number");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
     // Find worker by phone number (for OTP login verification)
     @GetMapping("/findByPhone/{phone}")
     public ResponseEntity<?> findWorkerByPhone(@PathVariable String phone) {
@@ -81,6 +105,45 @@ public class WorkerController {
                 error.put("found", false);
                 error.put("message", "No worker found with this phone number");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            }
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    // Verify worker name matches phone number
+    @PostMapping("/verify-name")
+    public ResponseEntity<?> verifyWorkerName(@RequestBody Map<String, String> request) {
+        try {
+            String phone = request.get("phone");
+            String fullName = request.get("fullName");
+            
+            if (phone == null || fullName == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("verified", false);
+                error.put("error", "Phone and fullName are required");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            java.util.Optional<Worker> workerOpt = workerService.findWorkerByPhone(phone);
+            if (workerOpt.isPresent()) {
+                Worker worker = workerOpt.get();
+                boolean nameMatches = worker.getFullName() != null && 
+                                    worker.getFullName().trim().equalsIgnoreCase(fullName.trim());
+                
+                Map<String, Object> response = new HashMap<>();
+                response.put("verified", nameMatches);
+                if (!nameMatches) {
+                    response.put("message", "Name does not match our records");
+                }
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> response = new HashMap<>();
+                response.put("verified", false);
+                response.put("message", "Worker not found with this phone number");
+                return ResponseEntity.ok(response);
             }
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
