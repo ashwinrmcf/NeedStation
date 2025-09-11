@@ -525,7 +525,7 @@ Import the API endpoints into Postman for testing:
 ## Support
 
 For API support and questions:
-- **Email:** needstation3@gmail.com
+- **Email:** support@needstation.in
 - **Documentation:** This document
 - **Base URL:** http://localhost:8080
 
