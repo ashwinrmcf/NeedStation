@@ -2,17 +2,11 @@ package com.example.authbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "worker")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,84 +16,21 @@ public class Worker {
     @Column(nullable = false)
     private String fullName = "";
     
-    // Explicit getters and setters for critical fields to ensure compilation
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    // Explicit getter and setter for fullName to ensure compilation
-    public String getFullName() {
-        return fullName;
-    }
-    
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-    
     @Column(nullable = false)
     private String gender = "";
-    
-    // Explicit getter and setter for gender to ensure compilation
-    public String getGender() {
-        return gender;
-    }
-    
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false)
     private LocalDate dob = LocalDate.now();
-    
-    // Explicit getter and setter for dob to ensure compilation
-    public LocalDate getDob() {
-        return dob;
-    }
-    
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
 
     @Column(length = 500)
     private String profileImageUrl = "";
-    
-    // Explicit getter and setter for profileImageUrl to ensure compilation
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-    
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-    }
 
     @Column(unique = true, nullable = false)
     private String phone = "";
-    
-    // Explicit getter and setter for phone to ensure compilation
-    public String getPhone() {
-        return phone;
-    }
-    
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 
     private String email = "";
     private String whatsappNumber = "";
-    
-    // Explicit getter and setter for whatsappNumber to ensure compilation
-    public String getWhatsappNumber() {
-        return whatsappNumber;
-    }
-    
-    public void setWhatsappNumber(String whatsappNumber) {
-        this.whatsappNumber = whatsappNumber;
-    }
     
     // Step 2: Contact Information
     private String permanentAddress = "";
@@ -161,67 +92,328 @@ public class Worker {
     private String phoneVerificationOtp;
     private LocalDateTime otpCreatedAt;
     private LocalDateTime otpExpiresAt;
-    private LocalDateTime otpVerifiedAt;
     private Boolean phoneVerified = false;
     private Integer otpAttempts = 0; // Track failed attempts for security
-    
-    // Explicit getters and setters for OTP fields to ensure compilation
-    public String getPhoneVerificationOtp() {
-        return phoneVerificationOtp;
+
+    public Long getId() {
+        return id;
     }
-    
-    public void setPhoneVerificationOtp(String phoneVerificationOtp) {
-        this.phoneVerificationOtp = phoneVerificationOtp;
+
+    public void setId(Long id) {
+        this.id = id;
     }
-    
-    public LocalDateTime getOtpCreatedAt() {
-        return otpCreatedAt;
+
+    public String getFullName() {
+        return fullName;
     }
-    
-    public void setOtpCreatedAt(LocalDateTime otpCreatedAt) {
-        this.otpCreatedAt = otpCreatedAt;
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
-    
-    public LocalDateTime getOtpExpiresAt() {
-        return otpExpiresAt;
+
+    public String getGender() {
+        return gender;
     }
-    
-    public void setOtpExpiresAt(LocalDateTime otpExpiresAt) {
-        this.otpExpiresAt = otpExpiresAt;
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
-    
-    public Boolean getPhoneVerified() {
-        return phoneVerified;
+
+    public LocalDate getDob() {
+        return dob;
     }
-    
-    public void setPhoneVerified(Boolean phoneVerified) {
-        this.phoneVerified = phoneVerified;
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
     }
-    
-    public Integer getOtpAttempts() {
-        return otpAttempts;
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
     }
-    
-    public void setOtpAttempts(Integer otpAttempts) {
-        this.otpAttempts = otpAttempts;
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
-    
-    public LocalDateTime getOtpVerifiedAt() {
-        return otpVerifiedAt;
+
+    public String getPhone() {
+        return phone;
     }
-    
-    public void setOtpVerifiedAt(LocalDateTime otpVerifiedAt) {
-        this.otpVerifiedAt = otpVerifiedAt;
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
-    
+
     public String getEmail() {
         return email;
     }
-    
+
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public String getWhatsappNumber() {
+        return whatsappNumber;
+    }
+
+    public void setWhatsappNumber(String whatsappNumber) {
+        this.whatsappNumber = whatsappNumber;
+    }
+
+    public String getPermanentAddress() {
+        return permanentAddress;
+    }
+
+    public void setPermanentAddress(String permanentAddress) {
+        this.permanentAddress = permanentAddress;
+    }
+
+    public String getCurrentAddress() {
+        return currentAddress;
+    }
+
+    public void setCurrentAddress(String currentAddress) {
+        this.currentAddress = currentAddress;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPincode() {
+        return pincode;
+    }
+
+    public void setPincode(String pincode) {
+        this.pincode = pincode;
+    }
+
+    public String getServiceAreas() {
+        return serviceAreas;
+    }
+
+    public void setServiceAreas(String serviceAreas) {
+        this.serviceAreas = serviceAreas;
+    }
+
+    public Boolean getOpenToTravel() {
+        return openToTravel;
+    }
+
+    public void setOpenToTravel(Boolean openToTravel) {
+        this.openToTravel = openToTravel;
+    }
+
+    public String getServices() {
+        return services;
+    }
+
+    public void setServices(String services) {
+        this.services = services;
+    }
+
+    public String getExperience() {
+        return experience;
+    }
+
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
+
+    public String getWorkType() {
+        return workType;
+    }
+
+    public void setWorkType(String workType) {
+        this.workType = workType;
+    }
+
+    public String getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(String availability) {
+        this.availability = availability;
+    }
+
+    public String getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(String languages) {
+        this.languages = languages;
+    }
+
+    public String getAadharNumber() {
+        return aadharNumber;
+    }
+
+    public void setAadharNumber(String aadharNumber) {
+        this.aadharNumber = aadharNumber;
+    }
+
+    public String getPoliceVerificationStatus() {
+        return policeVerificationStatus;
+    }
+
+    public void setPoliceVerificationStatus(String policeVerificationStatus) {
+        this.policeVerificationStatus = policeVerificationStatus;
+    }
+
+    public String getIdProofUrl() {
+        return idProofUrl;
+    }
+
+    public void setIdProofUrl(String idProofUrl) {
+        this.idProofUrl = idProofUrl;
+    }
+
+    public String getSelfieWithIdUrl() {
+        return selfieWithIdUrl;
+    }
+
+    public void setSelfieWithIdUrl(String selfieWithIdUrl) {
+        this.selfieWithIdUrl = selfieWithIdUrl;
+    }
+
+    public String getCertificateUrls() {
+        return certificateUrls;
+    }
+
+    public void setCertificateUrls(String certificateUrls) {
+        this.certificateUrls = certificateUrls;
+    }
+
+    public String getPaymentMode() {
+        return paymentMode;
+    }
+
+    public void setPaymentMode(String paymentMode) {
+        this.paymentMode = paymentMode;
+    }
+
+    public String getUpiId() {
+        return upiId;
+    }
+
+    public void setUpiId(String upiId) {
+        this.upiId = upiId;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public String getIfscCode() {
+        return ifscCode;
+    }
+
+    public void setIfscCode(String ifscCode) {
+        this.ifscCode = ifscCode;
+    }
+
+    public String getPanCard() {
+        return panCard;
+    }
+
+    public void setPanCard(String panCard) {
+        this.panCard = panCard;
+    }
+
+    public String getEmergencyContactName() {
+        return emergencyContactName;
+    }
+
+    public void setEmergencyContactName(String emergencyContactName) {
+        this.emergencyContactName = emergencyContactName;
+    }
+
+    public String getEmergencyContactNumber() {
+        return emergencyContactNumber;
+    }
+
+    public void setEmergencyContactNumber(String emergencyContactNumber) {
+        this.emergencyContactNumber = emergencyContactNumber;
+    }
+
+    public String getRegistrationStatus() {
+        return registrationStatus;
+    }
+
+    public void setRegistrationStatus(String registrationStatus) {
+        this.registrationStatus = registrationStatus;
+    }
+
+    public LocalDate getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDate registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public LocalDate getVerificationDate() {
+        return verificationDate;
+    }
+
+    public void setVerificationDate(LocalDate verificationDate) {
+        this.verificationDate = verificationDate;
+    }
+    
+    public String getPhoneVerificationOtp() {
+        return phoneVerificationOtp;
+    }
+
+    public void setPhoneVerificationOtp(String phoneVerificationOtp) {
+        this.phoneVerificationOtp = phoneVerificationOtp;
+    }
+
+    public LocalDateTime getOtpCreatedAt() {
+        return otpCreatedAt;
+    }
+
+    public void setOtpCreatedAt(LocalDateTime otpCreatedAt) {
+        this.otpCreatedAt = otpCreatedAt;
+    }
+
+    public LocalDateTime getOtpExpiresAt() {
+        return otpExpiresAt;
+    }
+
+    public void setOtpExpiresAt(LocalDateTime otpExpiresAt) {
+        this.otpExpiresAt = otpExpiresAt;
+    }
+
+    public Boolean getPhoneVerified() {
+        return phoneVerified;
+    }
+
+    public void setPhoneVerified(Boolean phoneVerified) {
+        this.phoneVerified = phoneVerified;
+    }
+
+    public Integer getOtpAttempts() {
+        return otpAttempts;
+    }
+
+    public void setOtpAttempts(Integer otpAttempts) {
+        this.otpAttempts = otpAttempts;
+    }
 
     // Missing getter/setter methods for WorkerService compatibility
     public String getAddress() {
@@ -264,4 +456,17 @@ public class Worker {
         // Add education field if needed
     }
 
+    public Worker() {
+    }
+
+    public Worker(Long id, String fullName, String gender, LocalDate dob, String profileImageUrl, String phone, String email, String whatsappNumber) {
+        this.id = id;
+        this.fullName = fullName;
+        this.gender = gender;
+        this.dob = dob;
+        this.profileImageUrl = profileImageUrl;
+        this.phone = phone;
+        this.email = email;
+        this.whatsappNumber = whatsappNumber;
+    }
 }

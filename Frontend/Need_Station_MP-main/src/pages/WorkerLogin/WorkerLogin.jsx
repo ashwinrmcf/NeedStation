@@ -57,61 +57,18 @@ const WorkerLogin = () => {
       if (workerCheckResponse.data && workerCheckResponse.data.exists) {
         setWorkerId(workerCheckResponse.data.workerId);
         
-        // Generate OTP using the free OTP API only if worker exists
-        const otpResponse = await axios.post(
-          'http://localhost:3001/generate-otp',
-          {
-            phoneNumber: `+91${formData.phone}`
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        
-        if (otpResponse.data && otpResponse.data.success) {
-          setOtpSent(true);
-          console.log('OTP sent successfully via Free OTP API');
-        } else {
-          setOtpError("Failed to send verification code. Please try again.");
-        }
+        // For testing purposes, use hardcoded OTP like user signup
+        setOtpSent(true);
+        console.log('OTP sent successfully - Use 123456 for testing');
       } else {
         setOtpError("Phone number not registered. Please register as a helper first.");
       }
     } catch (error) {
-      console.error('Error generating OTP:', error);
-      if (error.response && error.response.status === 409 && error.response.data && error.response.data.workerId) {
-        // This means the worker already exists, which is good for login
-        setWorkerId(error.response.data.workerId);
-        
-        // Now send the OTP using the resend endpoint
-        try {
-          const resendResponse = await axios.post(
-            'http://localhost:8080/api/workers/resend-otp',
-            { workerId: error.response.data.workerId },
-            {
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            }
-          );
-          
-          if (resendResponse.data && resendResponse.data.sent) {
-            setOtpSent(true);
-            console.log('OTP resent successfully');
-            alert('OTP sent! Please check your phone for the verification code.');
-          } else {
-            setOtpError('Failed to send OTP. Please try again.');
-          }
-        } catch (resendError) {
-          console.error('Error resending OTP:', resendError);
-          setOtpError('Failed to send OTP. Please try again.');
-        }
-      } else if (error.response && error.response.data && error.response.data.error) {
+      console.error('Error checking phone number:', error);
+      if (error.response && error.response.data && error.response.data.error) {
         setOtpError(error.response.data.error);
       } else {
-        setOtpError('Failed to send OTP. Please try again.');
+        setOtpError('Failed to check phone number. Please try again.');
       }
     } finally {
       setOtpLoading(false);
@@ -128,36 +85,19 @@ const WorkerLogin = () => {
     setOtpError('');
     
     try {
-      // Use the new Free OTP API endpoint for verification
-      const verifyResponse = await axios.post(
-        'http://localhost:8080/api/workers/verify-otp',
-        { 
-          workerId: workerId,
-          otp: otpCode 
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      
-      if (verifyResponse.data && verifyResponse.data.verified) {
+      // For testing purposes, use hardcoded OTP verification like user signup
+      if (otpCode === '123456') {
         setOtpVerified(true);
         setOtpError('');
-        console.log('OTP verified successfully via Free OTP API');
+        console.log('OTP verified successfully - hardcoded for testing');
         // Show name verification step after OTP verification
         setNameVerification(true);
       } else {
-        setOtpError('Invalid OTP. Please try again.');
+        setOtpError('Invalid OTP. Please enter 123456 for testing.');
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      if (error.response && error.response.data && error.response.data.error) {
-        setOtpError(error.response.data.error);
-      } else {
-        setOtpError('Failed to verify OTP. Please try again.');
-      }
+      setOtpError('Failed to verify OTP. Please try again.');
     } finally {
       setOtpLoading(false);
     }
@@ -349,7 +289,7 @@ const WorkerLogin = () => {
               <button
                 type="button"
                 onClick={verifyOtp}
-                disabled={!otpCode || otpCode.length !== 6 || otpLoading}
+                disabled={!otpCode || otpCode.length < 6 || otpLoading}
                 className={styles["verify-btn"]}
               >
                 {otpLoading ? (

@@ -1,15 +1,12 @@
-package com.example.authbackend.repository;
+    package com.example.authbackend.repository;
 
 import com.example.authbackend.model.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
+@Repository
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
     boolean existsByPhone(String phone);
-    boolean existsByEmail(String email);
-    
-    Optional<Worker> findByEmailIgnoreCaseAndPhone(String email, String phone);
-    Optional<Worker> findByPhone(String phone);
-    Optional<Worker> findByEmail(String email);
+    java.util.Optional<Worker> findByEmailIgnoreCaseAndPhone(String email, String phone);
+    java.util.Optional<Worker> findByPhone(String phone);
 }
