@@ -2,6 +2,8 @@ package com.example.authbackend.service;
 
 import com.example.authbackend.dto.ContactRequest;
 import com.example.authbackend.dto.ContactResponse;
+import com.example.authbackend.dto.ContactSubmissionDTO;
+import com.example.authbackend.entity.ContactSubmission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,6 +30,9 @@ public class ContactService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private ContactSubmissionService contactSubmissionService;
+
     @Value("${contact.method:smtp}")
     private String contactMethod;
 
@@ -39,6 +44,16 @@ public class ContactService {
 
     public ContactResponse processContactForm(ContactRequest contactRequest) {
         try {
+            // First, save the contact submission to the database
+            ContactSubmissionDTO submissionDTO = new ContactSubmissionDTO(
+                contactRequest.getName(),
+                contactRequest.getEmail(),
+                contactRequest.getSubject(),
+                contactRequest.getMessage()
+            );
+            contactSubmissionService.saveContactSubmission(submissionDTO);
+            
+            // Then send the email based on the configured method
             switch (contactMethod.toLowerCase()) {
                 case "sendgrid":
                     if (emailService != null) {

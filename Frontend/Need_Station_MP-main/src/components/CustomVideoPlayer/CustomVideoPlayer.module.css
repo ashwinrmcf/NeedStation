@@ -1,0 +1,265 @@
+.videoContainer {
+  position: relative;
+  background: #1a202c;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Branding Overlay */
+.brandingOverlay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 8px 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.logo {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+}
+
+.logoHighlight {
+  color: #00e0b8;
+}
+
+/* Loading Overlay */
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 32, 44, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+  color: white;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 224, 184, 0.3);
+  border-top: 3px solid #00e0b8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Minimal Controls - Instagram Style */
+.controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 20;
+}
+
+.showControls {
+  transform: translateX(0);
+}
+
+/* Minimal Controls Container */
+.minimalControls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Instagram-style Control Buttons */
+.playButton, .volumeButton {
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.playButton:hover, .volumeButton:hover {
+  background: rgba(0, 224, 184, 0.8);
+  transform: scale(1.1);
+}
+
+.skipText {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Volume Controls */
+.volumeContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.volumeSlider {
+  width: 80px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #00e0b8;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #00e0b8;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.timeDisplay {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 100px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* Center Play Button */
+.centerPlayButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  cursor: pointer;
+}
+
+.playButtonCircle {
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 224, 184, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 224, 184, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.playButtonCircle:hover {
+  background: #00e0b8;
+  transform: scale(1.1);
+  box-shadow: 0 12px 35px rgba(0, 224, 184, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .controls {
+    padding: 16px;
+  }
+  
+  .leftControls {
+    gap: 12px;
+  }
+  
+  .controlButton {
+    padding: 8px;
+  }
+  
+  .volumeSlider {
+    width: 60px;
+  }
+  
+  .timeDisplay {
+    font-size: 12px;
+    min-width: 80px;
+    padding: 4px 8px;
+  }
+  
+  .playButtonCircle {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .brandingOverlay {
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+  }
+  
+  .logo {
+    font-size: 14px;
+  }
+}
+
+/* Fullscreen Styles */
+.videoContainer:fullscreen {
+  border-radius: 0;
+}
+
+.videoContainer:fullscreen .controls {
+  padding: 30px;
+}
+
+.videoContainer:fullscreen .playButtonCircle {
+  width: 100px;
+  height: 100px;
+}
+
+/* Smooth Animations */
+.videoContainer * {
+  transition: all 0.2s ease;
+}
+
+/* Custom Scrollbar for Volume */
+.volumeSlider::-webkit-slider-track {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.volumeSlider::-moz-range-track {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  border: none;
+}
