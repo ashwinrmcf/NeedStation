@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
 import HeaderDropdown from "../HeaderDropdown/HeaderDropdown.jsx";
 import TaskerDropdown from "../TaskerDropdown/TaskerDropdown.jsx";
+import ThemeToggle from "../ThemeToggle/ThemeToggle.jsx";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext.jsx";
 import PortalModal from "../common/PortalModal.jsx";
@@ -77,6 +78,7 @@ const Header = () => {
             <NavLink to="/about-us" className={({isActive}) => isActive ? styles.active : undefined}>About Us</NavLink>
           </nav>
           <div className={styles.authButtons}>
+            <ThemeToggle />
             {user ? (
               <>
                 <span className={styles.greeting}>Hello, {user.username}</span>

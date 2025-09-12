@@ -3,13 +3,15 @@
   min-height: 58.217vh;
   margin: 0;
   padding: 5.571vh 0;
-  background: rgba(11, 10, 12, 0.6);
-  color: rgba(255, 255, 255, 0.7);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
   display: flex;
   flex-direction: column; /* Keeps the bottom section separated */
   align-items: center;
   gap: 1.337vw;
   box-sizing: border-box;
+  border-top: 1px solid var(--border-color);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* Top Section: Logo, Links, Contact - aligned in a row */
@@ -29,8 +31,9 @@
   font-family: 'Poppins', sans-serif;
   font-size: 2rem;
   font-weight: 600;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .footer-logo h2 span {
@@ -42,9 +45,10 @@
   font-size: 1.125rem;
   font-weight: 400;
   line-height: 4.457vh;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   max-width: 20.856vw;
   margin-top: 1.393vh;
+  transition: color 0.3s ease;
 }
 
 /* Footer Links */
@@ -58,8 +62,9 @@
   font-family: 'Poppins', sans-serif;
   font-size: 1.125rem;
   font-weight: 500;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin-bottom: 2.089vh;
+  transition: color 0.3s ease;
 }
 
 .footer-links ul {
@@ -73,8 +78,9 @@
   font-size: 1rem;
   font-weight: 400;
   line-height: 3.343vh;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   margin-bottom: 1.393vh;
+  transition: color 0.3s ease;
 }
 
 /* Footer Contact Section */
@@ -88,8 +94,9 @@
   font-family: 'Roboto', sans-serif;
   font-size: 1.125rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin-bottom: 2.089vh;
+  transition: color 0.3s ease;
 }
 
 .footer-contact p {
@@ -99,8 +106,9 @@
   font-size: 1rem;
   font-weight: 400;
   line-height: 3.343vh;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   margin-bottom: 1.393vh;
+  transition: color 0.3s ease;
   /* align-items: baseline; */
 }
 
@@ -129,7 +137,8 @@
   font-family: 'Poppins', sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 .social-media{
@@ -139,9 +148,10 @@
 
 .social-media span {
   font-size: 1.125rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   margin-right: 1.5vw;
   cursor: pointer;
+  transition: color 0.3s ease;
 }
 
 .FirstBreakPoint{

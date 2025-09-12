@@ -13,8 +13,9 @@
   font-size: 3rem;
   font-weight: 600;
   line-height: 11.4vh;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin-bottom: 2.786vh;
+  transition: color 0.3s ease;
 }
 
 /* Container for all review cards */
@@ -32,22 +33,28 @@
   height: 58.496vh;
   border-radius: 1.25rem;
   padding: 1.875rem;
-  color: #FFFFFF;
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
   backdrop-filter: blur(0.625rem);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Gradient background for the first card */
 .gradient {
-  background: linear-gradient(144.39deg, #FFFFFF -278.56%, #6D6D6D -78.47%, #11101D 91.61%);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
 }
 
 /* Transparent background for the other cards */
 .transparent {
-  background: transparent;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
 }
 
 /* Quote mark styling */
@@ -66,8 +73,9 @@
   font-weight: 400;
   line-height: 4.526vh;
   letter-spacing: 0.02em;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin-bottom: 2.786vh;
+  transition: color 0.3s ease;
 }
 
 /* Reviewer information container */
@@ -90,16 +98,18 @@
   font-family: Poppins, sans-serif;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .reviewer-details .reviewer-role {
   font-family: Poppins, sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
-  color: #B0B0B0;
+  color: var(--text-muted);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 @media screen and (max-width: 768px) {
@@ -118,6 +128,7 @@
   }
 
   .transparent{
-    background: linear-gradient(144.39deg, #FFFFFF -278.56%, #6D6D6D -78.47%, #11101D 91.61%);
+    background: var(--bg-surface);
+    border: 2px solid var(--border-color);
   }
 }

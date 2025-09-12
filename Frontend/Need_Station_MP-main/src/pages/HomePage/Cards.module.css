@@ -2,12 +2,12 @@
   min-height: 63vh;
   border-radius: 8px; 
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-  transition: transform 0.2s; 
+  transition: transform 0.2s, background 0.3s ease, color 0.3s ease; 
   display: flex;
   flex-direction: column; /* Arrange children vertically */
   justify-content: flex-start; /* Align items to the start */
-  background: linear-gradient(144.39deg, #FFFFFF -278.56%, #6D6D6D -78.47%, #11101D 91.61%);
-  color: #fff;
+  background: var(--gradient-secondary);
+  color: var(--text-primary);
   position: relative; /* Ensure absolute children are positioned relative to the card */
 }
 
@@ -44,14 +44,32 @@
 }
 
 .heading {
-  color: #fff;
+  color: var(--text-primary);
   font-size: 2.5rem;
   font-weight: bold;
+  transition: color 0.3s ease;
 }
 
 .cardButton {
   margin-top: 3vh;
   /* margin-bottom: 2vh; */
-  background: linear-gradient(157.81deg, #DEF9FA -43.27%, #BEF3F5 -21.24%, #9DEDF0 12.19%, #7DE7EB 29.82%, #5CE1E6 51.94%, #33BBCF 90.29%);
-  color: black;
+  background: var(--gradient-text);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Dark mode specific blue color for Learn More buttons */
+[data-theme="dark"] .cardButton {
+  background: #5CE1E6;
+  color: #1A1D29;
+}
+
+.cardButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--button-shadow-color);
 }

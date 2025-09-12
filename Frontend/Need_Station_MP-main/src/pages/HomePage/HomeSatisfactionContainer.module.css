@@ -1,11 +1,12 @@
 .satisfaction-container {
   background: transparent;
-  color: #FFFFFF;
+  color: var(--text-primary);
   padding: 5.571vh 1.337vw;
   font-family: Poppins, sans-serif;
   text-align: center;
   width: 90%;
   margin-left: 5%;
+  transition: color 0.3s ease;
 }
 
 /* Section title styling */
@@ -14,8 +15,9 @@
   font-size: 3rem;
   font-weight: 600;
   line-height: 11.365vh;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin-bottom: 4.178vh;
+  transition: color 0.3s ease;
 }
 
 /* Highlighted word in the title */
@@ -50,8 +52,9 @@
   font-size: 2rem;
   font-weight: 500;
   line-height: 8.357vh;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin-bottom: 1.393vh;
+  transition: color 0.3s ease;
 }
 
 /* Description style for each feature */
@@ -60,8 +63,9 @@
   font-size: 1.25rem;
   font-weight: 400;
   line-height: 5.432vh;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 @media screen and (max-width: 768px) {

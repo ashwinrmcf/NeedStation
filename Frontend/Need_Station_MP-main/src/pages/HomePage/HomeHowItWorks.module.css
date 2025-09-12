@@ -27,8 +27,9 @@
 /* Left text section */
 .how-it-works-text {
   width: 38.102vw;
-  color: white;
+  color: var(--text-primary);
   font-family: Poppins, sans-serif;
+  transition: color 0.3s ease;
 }
 
 .how-it-works-text h2 {
@@ -36,8 +37,9 @@
   font-weight: 600;
   line-height: 10.7vh;
   letter-spacing: 0.01em;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin-bottom: 2.786vh;
+  transition: color 0.3s ease;
 }
 
 /* Step container */
@@ -69,9 +71,10 @@
   font-size: 1.4rem;
   font-weight: 200;
   line-height: 4.32vh;
-  color: #FFFFFF;
+  color: var(--text-primary);
   letter-spacing: 0.01em;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 /* Get Started button */

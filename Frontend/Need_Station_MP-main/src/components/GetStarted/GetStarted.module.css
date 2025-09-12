@@ -4,13 +4,16 @@
   margin-top: 10vh;
   margin-bottom: 10vh;
   margin-left: 10vw;
-  background: linear-gradient(-144.39deg, #FFFFFF -278.56%, #6D6D6D -78.47%, #11101D 91.61%);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
   border-radius: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem;
-  backdrop-filter: blur(0.625rem); /* Background blur */
+  backdrop-filter: blur(0.625rem);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 /* "Let’s try our service now!" Text */
@@ -20,8 +23,9 @@
   font-size: 3rem;
   font-weight: 600;
   line-height: 9.359vh;
-  color: #FFFFFF;
+  color: var(--text-primary);
   margin-left: 6.684vw;
+  transition: color 0.3s ease;
 }
 
 /* Subtitle Text */
@@ -32,9 +36,10 @@
   font-weight: 400;
   /* line-height: 4.039vh; */
   letter-spacing: 0.01em;
-  color: #FFFFFFB2;
+  color: var(--text-secondary);
   margin-left: 6.684vw;
   margin-top: 1.393vh;
+  transition: color 0.3s ease;
 }
 
 /* Get Started Button */
