@@ -6,9 +6,12 @@ import { useAuth } from "../../store/AuthContext.jsx";
 
 const Login = () => {
   const { login } = useAuth();
-  const [formData, setFormData] = useState({ emailOrContact: "", password: "" });
+  const [formData, setFormData] = useState({ emailOrContact: "", otp: "" });
   const [contactType, setContactType] = useState("email"); // "email" or "phone"
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showOtpField, setShowOtpField] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -21,23 +24,72 @@ const Login = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleLogin = async () => {
+  const handleVerify = async () => {
+    if (!formData.emailOrContact) {
+      setMessage('Please enter your email or phone number');
+      return;
+    }
+
+    setIsVerifying(true);
     try {
-      const loginData = {
-        ...formData,
-        contactType: contactType
-      };
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      // Send OTP to email/phone
+      const response = await fetch("http://localhost:8080/api/auth/send-login-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
+        body: JSON.stringify({
+          email: contactType === 'email' ? formData.emailOrContact : null,
+          phone: contactType === 'phone' ? formData.emailOrContact : null,
+          contactType: contactType
+        }),
       });
       const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message);
-        const displayName = data.displayName || data.username;
+      
+      if (response.ok && data.success) {
+        setMessage(`OTP sent to your ${contactType}!`);
+        setShowOtpField(true);
+      } else {
+        setMessage(data.message || "Failed to send OTP.");
+      }
+    } catch (error) {
+      setMessage("An error occurred. Please try again.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!formData.otp) {
+      setMessage('Please enter the OTP');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: contactType === 'email' ? formData.emailOrContact : null,
+          phone: contactType === 'phone' ? formData.emailOrContact : null,
+          otp: formData.otp,
+          contactType: contactType
+        }),
+      });
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setMessage("Login successful!");
+        // Use first name for greeting, fallback to username or email
+        const displayName = data.user.firstName || data.user.username || data.user.email?.split("@")[0] || "User";
         login(displayName);
+        
+        // Store user data
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("workerId", data.user.id);
         localStorage.setItem("username", displayName);
+        localStorage.setItem("userEmail", data.user.email || '');
+        localStorage.setItem("userPhone", data.user.phone || '');
         
         // If we came from a service page, redirect to user-details with the service data
         if (redirectPath === '/user-details' && serviceData) {
@@ -46,10 +98,12 @@ const Login = () => {
           navigate("/");
         }
       } else {
-        setMessage(data.message || "Login failed.");
+        setMessage(data.message || "Invalid OTP or login failed.");
       }
     } catch (error) {
       setMessage("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -175,24 +229,78 @@ const Login = () => {
           </button>
         </div>
         
-        <input
-          type="text"
-          name="emailOrContact"
-          className={styles["input-box"]}
-          placeholder={contactType === "email" ? "Email" : "Phone Number"}
-          value={formData.emailOrContact}
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          className={styles["input-box"]}
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-        <button className={styles["continue-btn"]} onClick={handleLogin}>
-          Continue
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+          <input
+            type="text"
+            name="emailOrContact"
+            className={styles["input-box"]}
+            placeholder={contactType === "email" ? "Email" : "Phone Number"}
+            value={formData.emailOrContact}
+            onChange={handleChange}
+            disabled={showOtpField}
+            style={{ marginBottom: 0, paddingRight: showOtpField ? '15px' : '80px' }}
+          />
+          {!showOtpField && (
+            <button 
+              onClick={handleVerify}
+              disabled={isVerifying || !formData.emailOrContact}
+              style={{
+                position: 'absolute',
+                right: '8px',
+                padding: '6px 12px',
+                backgroundColor: '#26D0CE',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '12px',
+                cursor: 'pointer',
+                opacity: (!formData.emailOrContact || isVerifying) ? 0.6 : 1
+              }}
+            >
+              {isVerifying ? 'Sending...' : 'Verify'}
+            </button>
+          )}
+        </div>
+        
+        {showOtpField && (
+          <div>
+            <input
+              type="text"
+              name="otp"
+              className={styles["input-box"]}
+              placeholder="Enter OTP"
+              value={formData.otp}
+              onChange={handleChange}
+              maxLength="6"
+              disabled={isLoading}
+            />
+            <div style={{ textAlign: 'right', marginTop: '5px' }}>
+              <button
+                type="button"
+                onClick={handleVerify}
+                disabled={isVerifying}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#26D0CE',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  opacity: isVerifying ? 0.6 : 1
+                }}
+              >
+                {isVerifying ? 'Resending...' : 'Resend OTP'}
+              </button>
+            </div>
+          </div>
+        )}
+        
+        <button 
+          className={styles["continue-btn"]} 
+          onClick={showOtpField ? handleLogin : handleVerify} 
+          disabled={isLoading || isVerifying || (!showOtpField && !formData.emailOrContact) || (showOtpField && !formData.otp)}
+        >
+          {isLoading ? 'Logging in...' : isVerifying ? 'Sending OTP...' : showOtpField ? 'Login' : 'Send OTP'}
         </button>
         {message && <p>{message}</p>}
         <div className={styles["separator"]}>

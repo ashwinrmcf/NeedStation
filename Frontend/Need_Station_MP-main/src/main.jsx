@@ -5,6 +5,7 @@ import HindiApp from "./routes/HindiApp.jsx";
 import { AuthProvider } from "./store/AuthContext.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import "./index.css";
+import "./i18n/i18n.js";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/HomePage/Home.jsx";
 import BasicNeedsHome from "./pages/BasicNeeds/BasicNeedsHome.jsx";

@@ -113,30 +113,36 @@ public class WorkerController {
         }
     }
 
-    // Verify worker name matches phone number
+    // Verify worker name matches phone number (first name only, case-insensitive)
     @PostMapping("/verify-name")
     public ResponseEntity<?> verifyWorkerName(@RequestBody Map<String, String> request) {
         try {
             String phone = request.get("phone");
-            String fullName = request.get("fullName");
+            String firstName = request.get("firstName");
             
-            if (phone == null || fullName == null) {
+            if (phone == null || firstName == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("verified", false);
-                error.put("error", "Phone and fullName are required");
+                error.put("error", "Phone and firstName are required");
                 return ResponseEntity.badRequest().body(error);
             }
             
             java.util.Optional<Worker> workerOpt = workerService.findWorkerByPhone(phone);
             if (workerOpt.isPresent()) {
                 Worker worker = workerOpt.get();
-                boolean nameMatches = worker.getFullName() != null && 
-                                    worker.getFullName().trim().equalsIgnoreCase(fullName.trim());
+                
+                // Extract first name from full name and compare case-insensitively
+                String workerFirstName = "";
+                if (worker.getFullName() != null && !worker.getFullName().trim().isEmpty()) {
+                    workerFirstName = worker.getFullName().trim().split("\\s+")[0]; // Get first word
+                }
+                
+                boolean nameMatches = workerFirstName.equalsIgnoreCase(firstName.trim());
                 
                 Map<String, Object> response = new HashMap<>();
                 response.put("verified", nameMatches);
                 if (!nameMatches) {
-                    response.put("message", "Name does not match our records");
+                    response.put("message", "First name does not match our records");
                 }
                 return ResponseEntity.ok(response);
             } else {

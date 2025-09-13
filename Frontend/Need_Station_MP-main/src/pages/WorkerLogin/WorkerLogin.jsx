@@ -103,10 +103,10 @@ const WorkerLogin = () => {
     }
   };
 
-  // Verify worker name as security question
+  // Verify worker first name as security question
   const verifyWorkerName = async () => {
     if (!workerName.trim()) {
-      setNameError('Please enter your full name');
+      setNameError('Please enter your first name');
       return;
     }
     
@@ -114,12 +114,15 @@ const WorkerLogin = () => {
     setNameError('');
     
     try {
-      // Verify name matches the registered worker for this specific phone number
+      // Extract first name from input (in case user enters full name)
+      const firstNameOnly = workerName.trim().split(/\s+/)[0];
+      
+      // Verify first name matches the registered worker for this specific phone number
       const nameResponse = await axios.post(
         'http://localhost:8080/api/worker/verify-name',
         {
           phone: formData.phone,
-          fullName: workerName.trim()
+          firstName: firstNameOnly
         },
         {
           headers: {
@@ -132,7 +135,7 @@ const WorkerLogin = () => {
         // Name verified, proceed with login
         handleLoginAfterVerification();
       } else {
-        setNameError('Name does not match our records. Please check and try again.');
+        setNameError('First name does not match our records. Please check and try again.');
       }
     } catch (error) {
       console.error('Error verifying name:', error);
@@ -320,13 +323,13 @@ const WorkerLogin = () => {
         {/* Name verification section */}
         {nameVerification && otpVerified && (
           <div className={styles["name-container"]}>
-            <p className={styles["name-instruction"]}>For security, please enter your full name as registered</p>
+            <p className={styles["name-instruction"]}>For security, please enter your first name as registered</p>
             <div className={styles["name-input-group"]}>
               <input
                 type="text"
                 value={workerName}
                 onChange={(e) => setWorkerName(e.target.value)}
-                placeholder="Enter your full name"
+                placeholder="Enter your first name"
                 className={styles["input-box"]}
               />
               <button

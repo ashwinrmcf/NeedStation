@@ -317,3 +317,38 @@
   border-radius: 0.3rem;
   font-size: 0.9rem;
 }
+
+/* Name verification container styles */
+.name-container {
+  width: 35vw;
+  background-color: #222;
+  border-radius: 0.625rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.name-instruction {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.name-input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.name-input-group .input-box {
+  flex: 1;
+  margin-top: 0;
+  margin-right: 10px;
+}
+
+.name-input-group .verify-btn {
+  margin-left: 0;
+  margin-top: 0;
+  flex-shrink: 0;
+}

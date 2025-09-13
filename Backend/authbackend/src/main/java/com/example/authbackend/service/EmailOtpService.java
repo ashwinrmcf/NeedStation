@@ -34,6 +34,8 @@ public class EmailOtpService {
                 System.err.println("JavaMailSender is not configured");
                 return false;
             }
+            
+            System.out.println("Attempting to send OTP to: " + email);
 
             // Generate 6-digit OTP
             String otp = generateOtp();
@@ -60,7 +62,7 @@ public class EmailOtpService {
             message.setTo(email);
             message.setSubject(subject);
             message.setText(body);
-            message.setFrom("noreply@needstation.com");
+            message.setFrom("needstation3@gmail.com");
 
             mailSender.send(message);
             

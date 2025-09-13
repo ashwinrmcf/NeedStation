@@ -8,79 +8,28 @@ const Signup = () => {
   const { login } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
     phone: '',
-    password: '',
-    confirmPassword: '',
     otp: ''
   });
   const [contactType, setContactType] = useState('email'); // 'email' or 'phone'
-  const [passwordStrength, setPasswordStrength] = useState({ score: 0, feedback: '' });
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Password strength checker
-  const checkPasswordStrength = (password) => {
-    let score = 0;
-    let feedback = '';
-
-    if (password.length >= 8) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
-
-    switch (score) {
-      case 0:
-      case 1:
-        feedback = 'Very Weak';
-        break;
-      case 2:
-        feedback = 'Weak';
-        break;
-      case 3:
-        feedback = 'Fair';
-        break;
-      case 4:
-        feedback = 'Good';
-        break;
-      case 5:
-        feedback = 'Strong';
-        break;
-      default:
-        feedback = 'Very Weak';
-    }
-
-    return { score, feedback };
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    
-    // Password strength checking
-    if (name === 'password') {
-      const strength = checkPasswordStrength(value);
-      setPasswordStrength(strength);
-    }
-    
-    setFormData({ ...formData, [name]: value });
-  };
-
   // Step 1: Send OTP
   const handleStep1 = async () => {
     const contactValue = contactType === 'email' ? formData.email : formData.phone;
-    if (!formData.firstName || !formData.lastName || !contactValue) {
+    if (!formData.fullName || !contactValue) {
       setMessage('Please fill in all fields');
       return;
     }
 
-    if (contactType === 'phone' && !/^[6-9]\d{9}$/.test(formData.phone)) {
-      setMessage('Please enter a valid 10-digit phone number');
-      return;
-    }
+    // Split full name into first and last name for backend compatibility
+    const nameParts = formData.fullName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
 
     setIsLoading(true);
     try {
@@ -88,8 +37,8 @@ const Signup = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          firstName: firstName,
+          lastName: lastName,
           email: contactType === 'email' ? formData.email : null,
           phone: contactType === 'phone' ? formData.phone : null,
           contactType: contactType
@@ -110,16 +59,22 @@ const Signup = () => {
     }
   };
 
-  // Verify OTP
+  // Verify OTP and create account directly
   const handleVerifyOtp = async () => {
     if (!formData.otp) {
       setMessage('Please enter the OTP');
       return;
     }
 
+    // Split full name into first and last name for backend compatibility
+    const nameParts = formData.fullName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/auth/signup/verify-otp', {
+      // First verify the OTP
+      const verifyResponse = await fetch('http://localhost:8080/api/auth/signup/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -129,55 +84,60 @@ const Signup = () => {
           contactType: contactType
         }),
       });
-      const data = await response.json();
+      const verifyData = await verifyResponse.json();
       
-      if (response.ok && data.success) {
-        setMessage(`${contactType === 'email' ? 'Email' : 'Phone'} verified! Please set your password.`);
-        setStep(3);
-      } else {
-        setMessage(data.message || 'Invalid OTP.');
+      if (!verifyResponse.ok || !verifyData.success) {
+        setMessage(verifyData.message || 'Invalid OTP.');
+        setIsLoading(false);
+        return;
       }
-    } catch (error) {
-      setMessage('An error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  // Step 2: Complete signup (works for both regular and Google users)
-  const handleStep2 = async () => {
-    if (!formData.password || !formData.confirmPassword) {
-      setMessage('Please fill in all fields');
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setMessage('Passwords do not match');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await fetch('http://localhost:8080/api/auth/signup/step2', {
+      // If OTP is valid, create account directly with a default password
+      const createAccountResponse = await fetch('http://localhost:8080/api/auth/signup/step2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          firstName: firstName,
+          lastName: lastName,
           email: contactType === 'email' ? formData.email : null,
           phone: contactType === 'phone' ? formData.phone : null,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          password: 'tempPassword123!', // Temporary password - user can change later
+          confirmPassword: 'tempPassword123!',
           contactType: contactType
         }),
       });
-      const data = await response.json();
+      const createData = await createAccountResponse.json();
       
-      if (response.ok && data.success) {
-        setMessage('Account created successfully!');
-        setTimeout(() => navigate('/login'), 2000);
+      if (createAccountResponse.ok && createData.success) {
+        // Auto-login after successful signup
+        const loginResponse = await fetch('http://localhost:8080/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: contactType === 'email' ? formData.email : formData.phone,
+            password: 'tempPassword123!'
+          }),
+        });
+        
+        const loginData = await loginResponse.json();
+        
+        if (loginResponse.ok && loginData.success) {
+          // Store login data
+          localStorage.setItem('token', loginData.token);
+          localStorage.setItem('userId', loginData.user.id);
+          localStorage.setItem('workerId', loginData.user.id);
+          localStorage.setItem('username', loginData.user.username);
+          localStorage.setItem('userEmail', loginData.user.email || '');
+          localStorage.setItem('userPhone', loginData.user.phone || '');
+          
+          setMessage('Account created and logged in successfully! Redirecting to dashboard...');
+          setTimeout(() => navigate('/worker-dashboard'), 2000);
+        } else {
+          setMessage('Account created successfully! Please login manually.');
+          setTimeout(() => navigate('/login'), 2000);
+        }
       } else {
-        setMessage(data.message || 'Signup failed.');
+        setMessage(createData.message || 'Account creation failed.');
       }
     } catch (error) {
       setMessage('An error occurred. Please try again.');
@@ -226,15 +186,21 @@ const Signup = () => {
       
       const data = await response.json();
       if (response.ok && data.success) {
-        // Store Google user data temporarily and move to password setup
-        setFormData({
-          ...formData,
-          firstName: data.user.firstName || data.user.name.split(' ')[0] || '',
-          lastName: data.user.lastName || data.user.name.split(' ').slice(1).join(' ') || '',
-          email: data.user.email
-        });
-        setMessage("Google account verified! Please set a password to complete signup.");
-        setStep(3); // Go directly to password setup step
+        // Store login data from Google signup response
+        if (data.token && data.user) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userId', data.user.id);
+          localStorage.setItem('workerId', data.user.id);
+          localStorage.setItem('username', data.user.username);
+          localStorage.setItem('userEmail', data.user.email || '');
+          localStorage.setItem('userPhone', data.user.phone || '');
+          
+          setMessage("Google account created and logged in successfully! Redirecting to dashboard...");
+          setTimeout(() => navigate('/worker-dashboard'), 2000);
+        } else {
+          setMessage("Google account created successfully! Redirecting to login...");
+          setTimeout(() => navigate('/login'), 2000);
+        }
       } else {
         setMessage(data.message || "Google signup failed.");
       }
@@ -265,7 +231,7 @@ const Signup = () => {
     script.onload = () => {
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID",
+          client_id: "371371610049-bh10hbvhbtij5qa8r3f0srjdeseisqr0.apps.googleusercontent.com",
           callback: handleGoogleSignup,
           auto_select: false,
           cancel_on_tap_outside: true
@@ -284,20 +250,11 @@ const Signup = () => {
       <h2>Sign up</h2>
       <input
         type="text"
-        name="firstName"
+        name="fullName"
         className={styles['input-box']}
-        placeholder="First Name"
-        value={formData.firstName}
-        onChange={handleChange}
-        disabled={isLoading}
-      />
-      <input
-        type="text"
-        name="lastName"
-        className={styles['input-box']}
-        placeholder="Last Name"
-        value={formData.lastName}
-        onChange={handleChange}
+        placeholder="Full Name"
+        value={formData.fullName}
+        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
         disabled={isLoading}
       />
       
@@ -355,7 +312,7 @@ const Signup = () => {
             className={styles['input-box']}
             placeholder="Email"
             value={formData.email}
-            onChange={handleChange}
+            onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
             disabled={isLoading}
           />
         ) : (
@@ -365,7 +322,7 @@ const Signup = () => {
             className={styles['input-box']}
             placeholder="Phone Number (10 digits)"
             value={formData.phone}
-            onChange={handleChange}
+            onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
             disabled={isLoading}
             maxLength="10"
           />
@@ -387,7 +344,7 @@ const Signup = () => {
       </div>
       <div 
         id="g_id_onload"
-        data-client_id={import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"}
+        data-client_id="371371610049-bh10hbvhbtij5qa8r3f0srjdeseisqr0.apps.googleusercontent.com"
         data-context="signup"
         data-ux_mode="popup"
         data-callback="handleGoogleSignup"
@@ -400,7 +357,7 @@ const Signup = () => {
         data-shape="rectangular"
         data-theme="outline"
         data-text="signup_with"
-        data-size="large"
+        data-size="medium"
         data-logo_alignment="left">
       </div>
       
@@ -423,7 +380,7 @@ const Signup = () => {
         className={styles['input-box']}
         placeholder="Enter 6-digit code"
         value={formData.otp}
-        onChange={handleChange}
+        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
         maxLength="6"
         disabled={isLoading}
       />
@@ -454,123 +411,6 @@ const Signup = () => {
     </div>
   );
 
-  // Password strength indicator component
-  const getPasswordStrengthColor = (score) => {
-    switch (score) {
-      case 0:
-      case 1:
-        return '#ff4757';
-      case 2:
-        return '#ff6b35';
-      case 3:
-        return '#f39c12';
-      case 4:
-        return '#2ed573';
-      case 5:
-        return '#20bf6b';
-      default:
-        return '#ddd';
-    }
-  };
-
-  // Step 3: Password Setup
-  const renderStep3 = () => (
-    <div className={`${styles['form-container']} signup-form-spacing`}>
-      <h2>Set your password</h2>
-      <p style={{ color: '#888', marginBottom: '20px', textAlign: 'center' }}>
-        Create a secure password for your account
-      </p>
-      <div style={{ position: 'relative' }}>
-        <input
-          type="password"
-          name="password"
-          className={styles['input-box']}
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          disabled={isLoading}
-        />
-        {formData.password && (
-          <div style={{ 
-            marginTop: '8px', 
-            display: 'flex', 
-            flexDirection: 'column',
-            gap: '4px'
-          }}>
-            <div style={{ 
-              display: 'flex', 
-              gap: '3px', 
-              width: '100%'
-            }}>
-              {[1, 2, 3, 4, 5].map((level) => (
-                <div
-                  key={level}
-                  style={{
-                    height: '4px',
-                    flex: 1,
-                    backgroundColor: level <= passwordStrength.score 
-                      ? getPasswordStrengthColor(passwordStrength.score) 
-                      : '#ddd',
-                    borderRadius: '2px',
-                    transition: 'background-color 0.3s'
-                  }}
-                />
-              ))}
-            </div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '11px'
-            }}>
-              <span style={{ 
-                color: getPasswordStrengthColor(passwordStrength.score),
-                fontWeight: '500'
-              }}>
-                {passwordStrength.feedback}
-              </span>
-            </div>
-          </div>
-        )}
-        {formData.password && (
-          <div style={{ 
-            fontSize: '11px', 
-            color: '#666', 
-            marginTop: '5px' 
-          }}>
-            Password should contain: uppercase, lowercase, numbers, and special characters
-          </div>
-        )}
-      </div>
-      <input
-        type="password"
-        name="confirmPassword"
-        className={styles['input-box']}
-        placeholder="Confirm Password"
-        value={formData.confirmPassword}
-        onChange={handleChange}
-        disabled={isLoading}
-      />
-      {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-        <div style={{ 
-          fontSize: '12px', 
-          color: '#ff4757', 
-          marginTop: '5px' 
-        }}>
-          Passwords do not match
-        </div>
-      )}
-      <button 
-        className={styles['continue-btn']} 
-        onClick={handleStep2}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Creating Account...' : 'Create Account'}
-      </button>
-      {message && <p>{message}</p>}
-    </div>
-  );
-
   return (
     <>
       <div className={styles['header-container']}>
@@ -586,7 +426,6 @@ const Signup = () => {
 
       {step === 1 && renderStep1()}
       {step === 2 && renderStep2()}
-      {step === 3 && renderStep3()}
     </>
   );
 };
