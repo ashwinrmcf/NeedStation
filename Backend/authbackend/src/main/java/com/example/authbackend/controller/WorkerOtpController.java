@@ -36,7 +36,7 @@ public class WorkerOtpController {
      * Register a new worker (Step 1) with OTP verification
      * JSON-only endpoint for login/OTP flow
      */
-    @PostMapping(value = "/register/step1", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/register/otp-step1", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> registerWorker(@RequestBody WorkerDTO workerDTO) {
         try {
             System.out.println("Received worker registration request: " + workerDTO.getFullName() + ", " + workerDTO.getPhone());

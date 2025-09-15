@@ -24,9 +24,6 @@ public class ContactService {
     @Autowired(required = false)
     private WebhookEmailService webhookEmailService;
 
-    @Autowired(required = false)
-    private FirebaseEmailService firebaseEmailService;
-
     @Autowired
     private JavaMailSender mailSender;
 
@@ -60,13 +57,6 @@ public class ContactService {
                         emailService.sendContactFormEmail(contactRequest);
                     } else {
                         throw new RuntimeException("SendGrid service not available");
-                    }
-                    break;
-                case "firebase":
-                    if (firebaseEmailService != null) {
-                        firebaseEmailService.sendContactFormViaFirebase(contactRequest);
-                    } else {
-                        throw new RuntimeException("Firebase service not available");
                     }
                     break;
                 case "smtp":

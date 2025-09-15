@@ -65,7 +65,7 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login-otp", {
+      const response = await fetch("http://localhost:8080/api/auth/verify-login-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -173,7 +173,7 @@ const Login = () => {
                 text: 'continue_with',
                 size: 'large',
                 logo_alignment: 'left',
-                width: '100%'
+                width: 400
               });
             }
           }, 100);

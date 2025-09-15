@@ -111,7 +111,7 @@ public class GoogleAuthService {
     }
 
     /**
-     * Verify Google token for signup flow - returns user data without creating account
+     * Verify Google token for signup flow - creates user account immediately
      */
     public java.util.Map<String, Object> verifyGoogleTokenForSignup(String idToken) {
         try {
@@ -129,6 +129,7 @@ public class GoogleAuthService {
                 
                 String email = payload.getEmail();
                 String name = (String) payload.get("name");
+                String phoneNumber = (String) payload.get("phone_number"); // Google may provide phone
                 
                 // Check if user already exists
                 if (userRepository.findByEmail(email).isPresent()) {
@@ -140,11 +141,32 @@ public class GoogleAuthService {
                 String firstName = nameParts[0];
                 String lastName = nameParts.length > 1 ? nameParts[1] : "";
                 
+                // Create user account immediately
+                User user = new User();
+                user.setEmail(email);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setFullName(name);
+                user.setUsername(email); // Use email as username
+                user.setPassword(null); // No password for Google users
+                user.setProvider("GOOGLE");
+                user.setVerified(true); // Google accounts are pre-verified
+                
+                // Set phone number if available from Google
+                if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                    user.setContactNumber(phoneNumber);
+                }
+                
+                // Save user to database
+                User savedUser = userRepository.save(user);
+                
                 return java.util.Map.of(
-                    "email", email,
-                    "name", name,
-                    "firstName", firstName,
-                    "lastName", lastName
+                    "success", true,
+                    "message", "Google account created successfully",
+                    "userId", savedUser.getId(),
+                    "email", savedUser.getEmail(),
+                    "name", savedUser.getFullName(),
+                    "phoneNumber", savedUser.getContactNumber() != null ? savedUser.getContactNumber() : ""
                 );
                 
             } else {
@@ -156,6 +178,7 @@ public class GoogleAuthService {
             return java.util.Map.of("error", "Google token verification failed: " + e.getMessage());
         }
     }
+
 
     private String generateJwtToken(User user) {
         // Simple token generation - you can implement proper JWT here

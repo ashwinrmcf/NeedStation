@@ -49,18 +49,14 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
     
-    setFormData(prev => {
-      const updatedData = {
-        ...prev,
-        [name]: newValue
-      };
-      
-      // Update parent form data immediately
-      updateForm({
-        [name]: newValue
-      });
-      
-      return updatedData;
+    setFormData(prev => ({
+      ...prev,
+      [name]: newValue
+    }));
+    
+    // Update parent form data separately to avoid infinite loops
+    updateForm({
+      [name]: newValue
     });
   };
 
@@ -111,7 +107,7 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
       
       // Send data to backend
       const response = await axios.post(
-        `${API_URL}/worker/register/step2?workerId=${workerId}`,
+        `${API_URL}/workers/register/step2?workerId=${workerId}`,
         workerData
       );
       

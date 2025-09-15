@@ -52,6 +52,7 @@ public class WorkerService {
 
     private final WorkerRepository repo;
     private final BackblazeB2Service backblazeB2Service;
+    private final CloudinaryService cloudinaryService;
     private final ObjectMapper objectMapper;
     private final TwilioConfig twilioConfig;
     private final FreeOtpService freeOtpService;
@@ -63,20 +64,24 @@ public class WorkerService {
     @Value("${sms.default-provider:2factor}")
     private String smsProvider;
 
-    public WorkerService(WorkerRepository repo, BackblazeB2Service backblazeB2Service, ObjectMapper objectMapper, 
+    public WorkerService(WorkerRepository repo, BackblazeB2Service backblazeB2Service, 
+                       CloudinaryService cloudinaryService, ObjectMapper objectMapper, 
                        TwilioConfig twilioConfig, FreeOtpService freeOtpService, 
                        TwoFactorOtpService twoFactorOtpService) {
         this.repo = repo;
         this.backblazeB2Service = backblazeB2Service;
+        this.cloudinaryService = cloudinaryService;
         this.objectMapper = objectMapper;
         this.twilioConfig = twilioConfig;
         this.freeOtpService = freeOtpService;
         this.twoFactorOtpService = twoFactorOtpService;
     }
 
-    // Method to upload image to Backblaze B2 and return the image URL
+    // Method to upload profile picture to Cloudinary and return the image URL
     public String uploadImage(MultipartFile file) throws IOException {
-        return backblazeB2Service.uploadImage(file);
+        // Generate a temporary worker ID for the upload
+        String tempWorkerId = "temp_" + System.currentTimeMillis();
+        return cloudinaryService.uploadProfilePicture(file, tempWorkerId);
     }
 
     // Upload multiple files and return a map of file names to URLs
@@ -254,25 +259,36 @@ public class WorkerService {
      * @return true if verification successful, false otherwise
      */
     public boolean verifyOtp(Long workerId, String otp) {
-        Optional<Worker> workerOpt = repo.findById(workerId);
-        if (workerOpt.isEmpty()) {
-            return false;
-        }
-        
-        Worker worker = workerOpt.get();
-        
-        // Check if worker already verified
-        Boolean verified = worker.getPhoneVerified();
-        if (verified != null && verified) {
-            return true;
-        }
-        
-        // Check if max attempts reached (5 attempts)
-        if (worker.getOtpAttempts() >= 5) {
-            return false;
-        }
-        
         try {
+            System.out.println("=== OTP VERIFICATION DEBUG ===");
+            System.out.println("Worker ID: " + workerId);
+            System.out.println("OTP provided: " + otp);
+            
+            Optional<Worker> workerOpt = repo.findById(workerId);
+            if (workerOpt.isEmpty()) {
+                System.out.println("Worker not found with ID: " + workerId);
+                return false;
+            }
+            
+            Worker worker = workerOpt.get();
+            System.out.println("Worker found: " + worker.getFullName());
+            System.out.println("Phone verified: " + worker.getPhoneVerified());
+            System.out.println("OTP attempts: " + worker.getOtpAttempts());
+            System.out.println("Stored OTP: " + worker.getPhoneVerificationOtp());
+            System.out.println("OTP expires at: " + worker.getOtpExpiresAt());
+            
+            // Check if worker already verified
+            Boolean verified = worker.getPhoneVerified();
+            if (verified != null && verified) {
+                System.out.println("Worker already verified");
+                return true;
+            }
+            
+            // Check if max attempts reached (5 attempts)
+            if (worker.getOtpAttempts() != null && worker.getOtpAttempts() >= 5) {
+                System.out.println("Max OTP attempts reached");
+                return false;
+            }
             // Check if 2Factor API is the default provider
             if ("2factor".equalsIgnoreCase(smsProvider)) {
                 System.out.println("Using 2Factor API for verification");
@@ -386,8 +402,6 @@ public class WorkerService {
         } catch (Exception e) {
             System.err.println("Error during OTP verification: " + e.getMessage());
             e.printStackTrace();
-            worker.setOtpAttempts(worker.getOtpAttempts() + 1);
-            repo.save(worker);
             return false;
         }
     }
@@ -488,19 +502,14 @@ public class WorkerService {
                 System.out.println("File type: " + profilePicture.getContentType());
                 System.out.println("Original filename: " + profilePicture.getOriginalFilename());
                 
-                String imageUrl = backblazeB2Service.uploadImage(profilePicture, worker.getFullName(), worker.getId());
-                System.out.println("Backblaze upload result: " + imageUrl);
+                String imageUrl = cloudinaryService.uploadProfilePicture(profilePicture, worker.getId().toString());
+                System.out.println("Cloudinary upload result: " + imageUrl);
                 
                 if (imageUrl != null && !imageUrl.isEmpty()) {
                     worker.setProfileImageUrl(imageUrl);
-                    System.out.println("SUCCESS: Profile image URL set in worker entity: " + imageUrl);
-                    
-                    // Force save immediately to verify database update
-                    Worker savedWorker = repo.save(worker);
-                    System.out.println("VERIFICATION: Profile URL in saved worker: " + savedWorker.getProfileImageUrl());
+                    System.out.println("Profile image URL set: " + imageUrl);
                 } else {
-                    System.err.println("ERROR: Backblaze upload returned null or empty URL");
-                    System.err.println("This means the upload to Backblaze B2 failed");
+                    System.err.println("ERROR: Cloudinary upload returned null or empty URL");
                 }
             } catch (Exception e) {
                 System.err.println("EXCEPTION during profile picture upload:");

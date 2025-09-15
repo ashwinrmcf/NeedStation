@@ -157,7 +157,7 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
       
       // Send data to backend
       const response = await axios.post(
-        `${API_URL}/worker/register/step4?workerId=${workerId}`,
+        `${API_URL}/workers/register/step4?workerId=${workerId}`,
         formPayload,
         {
           headers: {
