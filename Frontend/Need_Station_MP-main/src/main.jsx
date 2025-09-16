@@ -8,6 +8,21 @@ import "./index.css";
 import "./i18n/i18n.js";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/HomePage/Home.jsx";
+import Services from "./pages/Services/Services.jsx";
+import SecurityGuard from "./pages/ServiceDetails/SecurityGuard.jsx";
+import ParkinsonsCare from "./pages/ServiceDetails/ParkinsonsCare.jsx";
+import BedriddenPatientCare from "./pages/ServiceDetails/BedriddenPatientCare.jsx";
+import ParalysisCareNew from "./pages/ServiceDetails/ParalysisCareNew.jsx";
+import MotherBabyCare from "./pages/ServiceDetails/MotherBabyCare.jsx";
+import HealthCheckupNew from "./pages/ServiceDetails/HealthCheckupNew.jsx";
+import PhysiotherapyNew from "./pages/ServiceDetails/PhysiotherapyNew.jsx";
+import PostSurgeryCare from "./pages/ServiceDetails/PostSurgeryCare.jsx";
+import CaretakerAtHome from "./pages/ServiceDetails/CaretakerAtHome.jsx";
+import ElderlyCareNew from "./pages/ServiceDetails/ElderlyCareNew.jsx";
+import NursingCareNew from "./pages/ServiceDetails/NursingCareNew.jsx";
+import PathologyCare from "./pages/ServiceDetails/PathologyCare.jsx";
+import DiabetesManagement from "./pages/ServiceDetails/DiabetesManagement.jsx";
+
 import BasicNeedsHome from "./pages/BasicNeeds/BasicNeedsHome.jsx";
 import Login from "./pages/LoginPage/Login.jsx";
 import Signup from "./pages/SignupPage/Signup.jsx";
@@ -33,6 +48,20 @@ import OverviewPage from "./pages/HelperPages/OverviewPage.jsx";
 import UpcomingTaskPage from "./pages/HelperPages/UpcomingTasksPage";
 import CompletedTaskPage from "./pages/HelperPages/CompletedTaskPage";
 import SettingsPage from "./pages/HelperPages/SettingsPage";
+import CommonDetails from "./pages/user-details/CommonDetails.jsx";
+import SecurityUniqueDetails from "./pages/user-details/SecurityUniqueDetails.jsx";
+import ParkinsonsUniqueDetails from "./pages/user-details/ParkinsonsUniqueDetails.jsx";
+import BedriddenPatientUniqueDetails from "./pages/user-details/BedriddenPatientUniqueDetails.jsx";
+import MotherBabyUniqueDetails from "./pages/user-details/MotherBabyUniqueDetails.jsx";
+import ParalysisUniqueDetails from "./pages/user-details/ParalysisUniqueDetails.jsx";
+import ElderlyCareUniqueDetails from "./pages/user-details/ElderlyCareUniqueDetails.jsx";
+import NursingCareUniqueDetails from "./pages/user-details/NursingCareUniqueDetails.jsx";
+import PathologyCareUniqueDetails from "./pages/user-details/PathologyCareUniqueDetails.jsx";
+import DiabetesManagementUniqueDetails from "./pages/user-details/DiabetesManagementUniqueDetails.jsx";
+import HealthCheckupUniqueDetails from "./pages/user-details/HealthCheckupUniqueDetails.jsx";
+import PhysiotherapyUniqueDetails from "./pages/user-details/PhysiotherapyUniqueDetails.jsx";
+import PostSurgeryCareUniqueDetails from "./pages/user-details/PostSurgeryCareUniqueDetails.jsx";
+import CaretakerAtHomeUniqueDetails from "./pages/user-details/CaretakerAtHomeUniqueDetails.jsx";
 import EarningPage from "./pages/HelperPages/EarningAndPaymentPage";
 import ContactUs from "./pages/ContactUs/ContactUs.jsx";
 import AboutUs from "./pages/AboutUs/AboutUs.jsx";
@@ -64,13 +93,27 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "/", element: <Home /> },
-      { path: "/basic-needs-home", element: <BasicNeedsHome /> },
-      { path: "/why-become-helper", element: <WhyBecomeHelper /> },
-      { path: "/maid-services", element: <MaidServicesHome/>},
+      { path: "/services", element: <Services /> },
+      // { path: "/basic-needs-home", element: <BasicNeedsHome /> },
+      // { path: "/why-become-helper", element: <WhyBecomeHelper /> },
+      // { path: "/maid-services", element: <MaidServicesHome/>},
       { path: "/electrician", element: <Electrician /> },
-      { path: "/plumber", element: <Plumber /> },
-      { path: "/water-supply", element: <WaterSupply /> },
-      { path: "/babysitter", element: <BabySitter /> },
+      // { path: "/plumber", element: <Plumber /> },
+      // { path: "/water-supply", element: <WaterSupply /> },
+      // { path: "/babysitter", element: <BabySitter /> },
+      {path: "/services/security-guard", element: <SecurityGuard />},
+      {path: "/services/parkinsons-care", element: <ParkinsonsCare />},
+      {path: "/services/bedridden-patient-care", element: <BedriddenPatientCare />},
+      {path: "/services/mother-baby-care", element: <MotherBabyCare />},
+      {path: "/services/paralysis-care", element: <ParalysisCareNew />},
+      {path: "/services/elderly-care", element: <ElderlyCareNew />},
+      {path: "/services/nursing-care", element: <NursingCareNew />},
+      {path: "/services/pathology-care", element: <PathologyCare />},
+      {path: "/services/diabetes-management", element: <DiabetesManagement />},
+      {path: "/services/health-check-up-services", element: <HealthCheckupNew />},
+      {path: "/services/physiotherapy", element: <PhysiotherapyNew />},
+      {path: "/services/post-surgery-care", element: <PostSurgeryCare />},
+      {path: "/services/caretaker-at-home", element: <CaretakerAtHome />},
       { path: "/caretaker", element: <CareTaker /> },
       { path: "/nurse", element: <Nurse /> },
       { path: "/paralysis-care", element: <ParalysisCare /> },
@@ -94,7 +137,59 @@ const router = createBrowserRouter([
   { path: "/worker-dashboard", element: <WorkerDashboard /> },
   {
     path: "/user-details",
-    element: <BasicNeedsServiceUserDescription />,
+    element: <CommonDetails />,
+  },
+  {
+    path: "/user-details/security-guard",
+    element: <SecurityUniqueDetails />,
+  },
+  {
+    path: "/user-details/parkinsons-care",
+    element: <ParkinsonsUniqueDetails />,
+  },
+  {
+    path: "/user-details/bedridden-patient-care",
+    element: <BedriddenPatientUniqueDetails />,
+  },
+  {
+    path: "/user-details/mother-baby-care",
+    element: <MotherBabyUniqueDetails />,
+  },
+  {
+    path: "/user-details/paralysis-care",
+    element: <ParalysisUniqueDetails />,
+  },
+  {
+    path: "/user-details/elderly-care",
+    element: <ElderlyCareUniqueDetails />,
+  },
+  {
+    path: "/user-details/nursing-care",
+    element: <NursingCareUniqueDetails />,
+  },
+  {
+    path: "/user-details/pathology-care",
+    element: <PathologyCareUniqueDetails />,
+  },
+  {
+    path: "/user-details/diabetes-management",
+    element: <DiabetesManagementUniqueDetails />,
+  },
+  {
+    path: "/user-details/health-check-up-services",
+    element: <HealthCheckupUniqueDetails />,
+  },
+  {
+    path: "/user-details/physiotherapy",
+    element: <PhysiotherapyUniqueDetails />,
+  },
+  {
+    path: "/user-details/post-surgery-care",
+    element: <PostSurgeryCareUniqueDetails />,
+  },
+  {
+    path: "/user-details/caretaker-at-home",
+    element: <CaretakerAtHomeUniqueDetails />,
   },
   { path: "/payment-gateway", element: <PaymentGateway /> },
   { path: "/available-helpers", element: <AvailableHelpers /> },

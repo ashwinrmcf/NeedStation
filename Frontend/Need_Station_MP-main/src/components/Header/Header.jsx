@@ -2,7 +2,6 @@ import { Link, NavLink } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom"; 
 import styles from "./Header.module.css";
-import HeaderDropdown from "../HeaderDropdown/HeaderDropdown.jsx";
 import TaskerDropdown from "../TaskerDropdown/TaskerDropdown.jsx";
 import ThemeToggle from "../ThemeToggle/ThemeToggle.jsx";
 import { AnimatePresence } from "framer-motion";
@@ -13,7 +12,6 @@ const Header = () => {
   const { user, logout } = useAuth();
   console.log("AuthContext user:", user);
 
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isTaskerDropdownOpen, setTaskerDropdownOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
@@ -37,9 +35,6 @@ const Header = () => {
     };
   }, []);
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!isDropdownOpen);
-  };
 
   const initiateLogout = () => {
     setShowLogoutConfirmation(true);
@@ -49,10 +44,7 @@ const Header = () => {
     logout();
   };
 
-  const location = useLocation(); 
-  useEffect(() => {
-    setDropdownOpen(false);
-  }, [location.pathname]);
+  const location = useLocation();
 
 
   return (
@@ -66,14 +58,7 @@ const Header = () => {
           </Link>
           <nav className={styles.navLinks}>
             <NavLink to="/" className={({isActive}) => isActive ? styles.active : undefined}>Home</NavLink>
-            <button 
-              className={`${styles.dropdownToggle} ${location.pathname.includes('/basic-needs') || 
-                location.pathname.includes('/maid-services') || 
-                location.pathname.includes('/elder-care') ? styles.active : ''}`} 
-              onClick={toggleDropdown}
-            >
-              Services
-            </button>
+            <NavLink to="/services" className={({isActive}) => isActive ? styles.active : undefined}>Services</NavLink>
             <NavLink to="/language-settings" className={({isActive}) => isActive ? styles.active : undefined}>Languages</NavLink>
             <NavLink to="/about-us" className={({isActive}) => isActive ? styles.active : undefined}>About Us</NavLink>
           </nav>
@@ -113,7 +98,6 @@ const Header = () => {
             )}
           </div>
         </header>
-        {isDropdownOpen && <HeaderDropdown />}
       </div>
 
       {/* Logout Confirmation Modal */}

@@ -1,3 +1,140 @@
+/* Header section with title and view all button */
+.headerSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.heading {
+  color: var(--text-primary);
+  font-size: 2.5rem;
+  font-weight: bold;
+  transition: color 0.3s ease;
+  margin: 0;
+}
+
+.viewAllButton {
+  background: var(--gradient-text);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: 16px;
+  position: absolute;
+  right: 0;
+}
+
+.viewAllButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--button-shadow-color);
+  text-decoration: none;
+  color: white;
+}
+
+/* Dark mode specific styling for view all button */
+[data-theme="dark"] .viewAllButton {
+  background: #5CE1E6;
+  color: #1A1D29;
+}
+
+[data-theme="dark"] .viewAllButton:hover {
+  color: #1A1D29;
+}
+
+/* Scroll wrapper with arrow buttons */
+.scrollWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+}
+
+/* Horizontal scroll container */
+.scrollContainer {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  display: none;
+}
+
+/* Arrow buttons */
+.scrollButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gradient-secondary);
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scrollButton:hover {
+  background: var(--gradient-text);
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.scrollButtonLeft {
+  left: -25px;
+}
+
+.scrollButtonRight {
+  right: -25px;
+}
+
+/* Card container for horizontal layout */
+.cardContainer {
+  display: flex;
+  gap: 30px;
+  padding: 0 20px;
+  min-width: max-content;
+}
+
+/* Individual scroll cards - restored original sizing */
+.scrollCard {
+  min-width: 382px;
+  max-width: 350px;
+  min-height: 500px;
+  border-radius: 8px; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  transition: transform 0.2s, background 0.3s ease, color 0.3s ease; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: var(--gradient-secondary);
+  color: var(--text-primary);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.scrollCard:hover {
+  transform: translateY(-10px);
+}
+
 .card {
   min-height: 63vh;
   border-radius: 8px; 
@@ -15,15 +152,54 @@
   .card{
     margin-bottom: 3vh;
   }
+  
+  .headerSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .viewAllButton {
+    align-self: flex-end;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  
+  .scrollCard {
+    min-width: 320px;
+    max-width: 320px;
+    min-height: 450px;
+  }
+  
+  .cardContainer {
+    gap: 20px;
+  }
+  
+  .scrollButtonLeft {
+    left: -15px;
+  }
+  
+  .scrollButtonRight {
+    right: -15px;
+  }
+  
+  .scrollButton {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
 }
 
 .cardTitle{
   font-size: 25px;
+  padding: 1rem;
 }
 
 .cardBody{
   margin-top: 1.5vh;
   font-size: 16px;
+  padding: 1rem;
 }
 
 .card-body {
@@ -61,7 +237,8 @@
   font-weight: 600;
   transition: all 0.3s ease;
   cursor: pointer;
-}
+  margin-left: 1rem;
+  }
 
 /* Dark mode specific blue color for Learn More buttons */
 [data-theme="dark"] .cardButton {
