@@ -195,13 +195,36 @@ export default function WorkerProfileSummary({ workerId, prev, data }) {
                   <div>
                     <div className="mb-6 flex justify-center">
                       <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-teal-400">
-                        {/* Use local device storage for profile image preview */}
+                        {/* Use Cloudinary URL from worker data or fallback to local storage */}
                         {(() => {
-                          // Priority: Local stored image first (always works), server URL as backup info only
+                          // Priority: Server Cloudinary URL first, then local storage as fallback
+                          const cloudinaryUrl = workerData?.profileImageUrl;
                           const localImageUrl = localStorage.getItem('tempProfileImageUrl');
                           
-                          if (localImageUrl && localImageUrl.trim() !== '') {
-                            console.log("Using local profile image for preview:", localImageUrl);
+                          if (cloudinaryUrl && cloudinaryUrl.trim() !== '') {
+                            console.log("Using Cloudinary profile image:", cloudinaryUrl);
+                            return (
+                              <img 
+                                src={cloudinaryUrl} 
+                                alt="Profile" 
+                                className="w-full h-full object-cover"
+                                onLoad={() => console.log("Cloudinary profile image loaded successfully")}
+                                onError={(e) => {
+                                  console.error("Cloudinary image failed to load:", cloudinaryUrl);
+                                  console.log("Trying local image as fallback");
+                                  // Try local image as fallback
+                                  if (localImageUrl && localImageUrl.trim() !== '') {
+                                    e.target.src = localImageUrl;
+                                  } else {
+                                    console.log("No fallback image, showing default user icon");
+                                    e.target.style.display = 'none';
+                                    e.target.parentNode.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>';
+                                  }
+                                }}
+                              />
+                            );
+                          } else if (localImageUrl && localImageUrl.trim() !== '') {
+                            console.log("No Cloudinary URL, using local profile image:", localImageUrl);
                             return (
                               <img 
                                 src={localImageUrl} 
@@ -217,7 +240,7 @@ export default function WorkerProfileSummary({ workerId, prev, data }) {
                               />
                             );
                           } else {
-                            console.log("No local profile image found, showing default icon");
+                            console.log("No profile image found (neither Cloudinary nor local), showing default icon");
                             return <User size={48} className="text-gray-400" />;
                           }
                         })()} {/* Self-executing function */}

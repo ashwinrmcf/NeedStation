@@ -113,8 +113,8 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
         };
 
         try {
-          // Register the worker first using the new Free OTP API endpoint
-          const registerResponse = await axios.post(`${API_URL}/workers/register/step1`, workerData, {
+          // Register the worker first using the JSON endpoint
+          const registerResponse = await axios.post(`${API_URL}/workers/register/step1-json`, workerData, {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -429,7 +429,7 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
     
     try {
       // Create endpoint URL
-      let url = `${API_URL}/worker/register/step1`;
+      let url = `${API_URL}/workers/register/step1`;
       
       // Add workerId parameter if it exists
       if (verifiedWorkerId) {

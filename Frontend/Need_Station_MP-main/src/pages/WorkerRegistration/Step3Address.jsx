@@ -133,7 +133,7 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
       
       // Send data to backend
       const response = await axios.post(
-        `${API_URL}/worker/register/step3?workerId=${workerId}`,
+        `${API_URL}/workers/register/step3?workerId=${workerId}`,
         workerData
       );
       

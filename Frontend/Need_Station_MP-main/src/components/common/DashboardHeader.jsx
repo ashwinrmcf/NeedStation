@@ -70,9 +70,21 @@ const DashboardHeader = ({ title }) => {
                 onClick={toggleDropdown}
                 className='flex items-center space-x-2 text-gray-300 hover:text-white px-3 py-2 rounded-lg border border-gray-700 hover:border-teal-500 bg-gray-800 hover:bg-gray-700 transition-all duration-200'
               >
-                <div className='w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center shadow-lg'>
+                <div className='w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center shadow-lg overflow-hidden'>
                   {loading ? (
                     <div className='animate-pulse'>...</div>
+                  ) : worker?.profileImageUrl ? (
+                    <img 
+                      src={worker.profileImageUrl} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.log("Profile image failed to load, showing default icon");
+                        e.target.style.display = 'none';
+                        e.target.parentNode.innerHTML = '<svg class="w-5 h-5 text-gray-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+                      }}
+                      onLoad={() => console.log("Worker profile image loaded successfully in header")}
+                    />
                   ) : (
                     <User size={18} className='text-gray-900' />
                   )}

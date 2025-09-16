@@ -32,11 +32,7 @@ public class GoogleSignupController {
                 ));
             }
             
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Google account verified. Please set a password to complete signup.",
-                "user", result
-            ));
+            return ResponseEntity.ok(result);
             
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
@@ -45,4 +41,5 @@ public class GoogleSignupController {
             ));
         }
     }
+
 }

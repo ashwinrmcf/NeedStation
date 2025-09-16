@@ -65,8 +65,10 @@ const BasicNeedsServiceUserDescription = () => {
         console.error('Error parsing saved location data:', error);
       }
     }
+  }, []); // Remove dependencies to prevent infinite loop
 
-    // Add beforeunload warning for page reload - clears data after warning
+  // Separate useEffect for beforeunload warning
+  useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (formData.address || formData.contactNumber || selectedLocation) {
         e.preventDefault();

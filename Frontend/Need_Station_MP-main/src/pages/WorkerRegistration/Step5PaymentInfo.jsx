@@ -79,7 +79,7 @@ export default function PaymentInformationPage({ data, updateForm, prev, next, w
       
       // Send data to backend
       const response = await axios.post(
-        `${API_URL}/worker/register/step5?workerId=${workerId}`,
+        `${API_URL}/workers/register/step5?workerId=${workerId}`,
         workerData
       );
       

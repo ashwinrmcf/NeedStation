@@ -173,15 +173,21 @@ const SettingsPage = () => {
 					{/* Profile Header */}
 					<div className="text-center mb-8">
 						<div className="relative inline-block">
-							{workerData.profile_image_url ? (
+							{workerData.profileImageUrl ? (
 								<img 
-									src={workerData.profile_image_url} 
+									src={workerData.profileImageUrl} 
 									alt="Profile" 
 									className="h-24 w-24 rounded-full object-cover border-3 border-[#00E0B8] mx-auto"
+									onError={(e) => {
+										console.log("Profile image failed to load in settings");
+										e.target.style.display = 'none';
+										e.target.parentNode.innerHTML = `<div class='h-24 w-24 rounded-full bg-gradient-to-r from-[#00E0B8] to-[#00C4A0] flex items-center justify-center text-gray-900 font-bold text-3xl mx-auto'>${workerData.fullName ? workerData.fullName.charAt(0).toUpperCase() : 'W'}</div>`;
+									}}
+									onLoad={() => console.log("Profile image loaded successfully in settings")}
 								/>
 							) : (
 								<div className='h-24 w-24 rounded-full bg-gradient-to-r from-[#00E0B8] to-[#00C4A0] flex items-center justify-center text-gray-900 font-bold text-3xl mx-auto'>
-									{workerData.full_name ? workerData.full_name.charAt(0).toUpperCase() : 'W'}
+									{workerData.fullName ? workerData.fullName.charAt(0).toUpperCase() : 'W'}
 								</div>
 							)}
 							{isEditing && (
@@ -190,11 +196,11 @@ const SettingsPage = () => {
 								</button>
 							)}
 						</div>
-						<h3 className='text-2xl font-semibold text-white mt-4'>{workerData.full_name || 'Worker Name'}</h3>
+						<h3 className='text-2xl font-semibold text-white mt-4'>{workerData.fullName || 'Worker Name'}</h3>
 						<div className="flex items-center justify-center gap-3 text-green-400 mt-2">
 							<Shield size={18} />
-							<span className="font-medium">{workerData.registration_status || 'PENDING'}</span>
-							{workerData.phone_verified === "1" && (
+							<span className="font-medium">{workerData.registrationStatus || 'PENDING'}</span>
+							{workerData.phoneVerified === "1" && (
 								<span className="text-blue-400">• Phone Verified</span>
 							)}
 						</div>
@@ -237,12 +243,12 @@ const SettingsPage = () => {
 									{isEditing ? (
 										<input 
 											type="text" 
-											value={workerData.current_address || ''}
+											value={workerData.currentAddress || ''}
 											className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-[#00E0B8] focus:outline-none flex-1"
-											onChange={(e) => setWorkerData({...workerData, current_address: e.target.value})}
+											onChange={(e) => setWorkerData({...workerData, currentAddress: e.target.value})}
 										/>
 									) : (
-										<span className="text-lg">{(workerData.current_address || 'Address not provided')}{workerData.city ? `, ${workerData.city}` : ''}{workerData.pincode ? ` - ${workerData.pincode}` : ''}</span>
+										<span className="text-lg">{(workerData.currentAddress || 'Address not provided')}{workerData.city ? `, ${workerData.city}` : ''}{workerData.pincode ? ` - ${workerData.pincode}` : ''}</span>
 									)}
 								</div>
 							</div>
@@ -272,14 +278,14 @@ const SettingsPage = () => {
 									<label className="text-sm text-gray-400 block mb-2">Experience</label>
 									<div className="flex items-center gap-2 text-white">
 										<Clock size={18} className="text-[#00E0B8]" />
-										<span className="text-lg">{workerData.experience || '0'} years</span>
+										<span className="text-lg">{workerData.experience || '1-3'} years</span>
 									</div>
 								</div>
 								<div>
 									<label className="text-sm text-gray-400 block mb-2">Work Type</label>
 									<div className="flex items-center gap-2 text-white">
 										<Heart size={18} className="text-[#00E0B8]" />
-										<span className="text-lg">{workerData.work_type || 'Not specified'}</span>
+										<span className="text-lg">{workerData.workType || 'Not specified'}</span>
 									</div>
 								</div>
 							</div>
@@ -315,7 +321,7 @@ const SettingsPage = () => {
 							<label className="text-sm text-gray-400 block mb-2">Payment Mode</label>
 							<div className="flex items-center gap-3 text-white">
 								<Clock size={18} className="text-[#00E0B8]" />
-								<span className="text-lg">{workerData.payment_mode || 'Not specified'}</span>
+								<span className="text-lg">{workerData.paymentMode || 'Not specified'}</span>
 							</div>
 						</div>
 					</div>
@@ -343,12 +349,12 @@ const SettingsPage = () => {
 								{isEditing ? (
 									<input 
 										type="text" 
-										value={workerData.emergency_contact_name || ''}
+										value={workerData.emergencyContactName || ''}
 										className="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 focus:border-[#00E0B8] focus:outline-none"
-										onChange={(e) => setWorkerData({...workerData, emergency_contact_name: e.target.value})}
+										onChange={(e) => setWorkerData({...workerData, emergencyContactName: e.target.value})}
 									/>
 								) : (
-									<span>{workerData.emergency_contact_name || 'Not provided'}</span>
+									<span>{workerData.emergencyContactName || 'Not provided'}</span>
 								)}
 							</div>
 							<div className="flex items-center gap-2 text-white">
@@ -357,12 +363,12 @@ const SettingsPage = () => {
 								{isEditing ? (
 									<input 
 										type="tel" 
-										value={workerData.emergency_contact_number || ''}
+										value={workerData.emergencyContactNumber || ''}
 										className="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 focus:border-[#00E0B8] focus:outline-none"
-										onChange={(e) => setWorkerData({...workerData, emergency_contact_number: e.target.value})}
+										onChange={(e) => setWorkerData({...workerData, emergencyContactNumber: e.target.value})}
 									/>
 								) : (
-									<span>{workerData.emergency_contact_number || 'Not provided'}</span>
+									<span>{workerData.emergencyContactNumber || 'Not provided'}</span>
 								)}
 							</div>
 						</div>
