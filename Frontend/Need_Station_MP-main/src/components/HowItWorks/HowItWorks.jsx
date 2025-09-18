@@ -13,14 +13,14 @@ export default function HowItWorks() {
     {
       icon: <CheckCircle size={28} className="text-cyan-300" />,
       number: 2,
-      title: "Choose Your Tasker",
-      description: "Browse trusted Taskers by skills, reviews, and price. Chat with them to confirm details."
+      title: "Choose Your Helper",
+      description: "Browse trusted Helper by skills, reviews, and price. Chat with them to confirm details."
     },
     {
       icon: <Calendar size={28} className="text-cyan-300" />,
       number: 3,
       title: "Get It Done!",
-      description: "Your Tasker arrives and gets the job done. Pay securely and leave a review, all through NeedStation."
+      description: "Your Helper arrives and gets the job done. Pay securely and leave a review, all through NeedStation."
     }
   ];
 
@@ -48,9 +48,9 @@ export default function HowItWorks() {
         </div>
         
         <div className="mt-12 flex justify-center">
-          <button className="bg-cyan-300 hover:bg-cyan-400 text-gray-900 font-bold py-3 px-8 rounded-md transition-colors">
+          {/* <button className="bg-cyan-300 hover:bg-cyan-400 text-gray-900 font-bold py-3 px-8 rounded-md transition-colors">
             Get Started
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

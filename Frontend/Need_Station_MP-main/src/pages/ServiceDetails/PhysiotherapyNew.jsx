@@ -1,6 +1,6 @@
 import ElderCareServiceDetails from "../../components/ElderCareServiceDetails/ElderCareServiceDetails";
 import ServicesData from "../../data/Services/Services.js";
-import AvailableServices from "../../components/ElderCareAvailableServices/AvailableServices.jsx";
+import PhysiotherapyOptions from "../../components/ServiceOptions/PhysiotherapyOptions.jsx";
 import HowItWorks from "../../components/HowItWorks/HowItWorks.jsx";
 
 const PhysiotherapyNew = () => {
@@ -9,7 +9,7 @@ const PhysiotherapyNew = () => {
 
   return <>
     <ElderCareServiceDetails data = {serviceData} />
-    <AvailableServices currentServiceId={11}/>
+    <PhysiotherapyOptions/>
     <HowItWorks/>
   </>
 }

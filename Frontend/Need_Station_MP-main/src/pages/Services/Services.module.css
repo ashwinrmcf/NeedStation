@@ -10,7 +10,7 @@
 
 /* Service Card Styling - reusing styles from Cards component */
 .serviceCard {
-  min-height: 500px;
+  min-height: 470px;
   border-radius: 8px; 
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
   transition: transform 0.2s, background 0.3s ease, color 0.3s ease; 

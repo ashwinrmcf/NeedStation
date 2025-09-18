@@ -175,7 +175,12 @@ const NursingCareUniqueDetails = () => {
           <FaUserNurse style={{ marginRight: "15px", fontSize: "28px" }} />
           Nursing Type
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['General', 'Critical', 'ICU-trained'].map((type) => (
             <label key={type} style={{
               display: "flex",
@@ -183,10 +188,13 @@ const NursingCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.nursingType === type.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.nursingType === type.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.nursingType === type.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -194,9 +202,14 @@ const NursingCareUniqueDetails = () => {
                 value={type.toLowerCase()}
                 checked={formData.nursingType === type.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {type}
+              <span style={{ fontWeight: "500" }}>{type}</span>
             </label>
           ))}
         </div>
@@ -223,7 +236,12 @@ const NursingCareUniqueDetails = () => {
           <FaSyringe style={{ marginRight: "15px", fontSize: "28px" }} />
           Medical Procedures Required
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['IV', 'Injection', 'Catheter', 'Wound Dressing'].map((procedure) => (
             <label key={procedure} style={{
               display: "flex",
@@ -231,18 +249,26 @@ const NursingCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.medicalProcedures.includes(procedure.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.medicalProcedures.includes(procedure.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.medicalProcedures.includes(procedure.toLowerCase()) ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="checkbox"
                 checked={formData.medicalProcedures.includes(procedure.toLowerCase())}
                 onChange={() => handleCheckboxChange('medicalProcedures', procedure.toLowerCase())}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {procedure}
+              <span style={{ fontWeight: "500" }}>{procedure}</span>
             </label>
           ))}
         </div>
@@ -269,7 +295,12 @@ const NursingCareUniqueDetails = () => {
           <FaClock style={{ marginRight: "15px", fontSize: "28px" }} />
           Frequency of Visits
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Daily', 'Alternate Days', '24x7'].map((frequency) => (
             <label key={frequency} style={{
               display: "flex",
@@ -277,10 +308,13 @@ const NursingCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.visitFrequency === frequency.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.visitFrequency === frequency.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.visitFrequency === frequency.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -288,9 +322,14 @@ const NursingCareUniqueDetails = () => {
                 value={frequency.toLowerCase()}
                 checked={formData.visitFrequency === frequency.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {frequency}
+              <span style={{ fontWeight: "500" }}>{frequency}</span>
             </label>
           ))}
         </div>
@@ -406,7 +445,7 @@ const NursingCareUniqueDetails = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
+        // background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
         <button 
           className={styles["button"]}
@@ -455,7 +494,7 @@ const NursingCareUniqueDetails = () => {
             }
           }}
         >
-          <FaStar style={{ marginRight: "10px" }} />
+          {/* <FaStar style={{ marginRight: "10px" }} /> */}
           {isSubmitting ? "Submitting..." : "See Taskers"}
         </button>
       </div>

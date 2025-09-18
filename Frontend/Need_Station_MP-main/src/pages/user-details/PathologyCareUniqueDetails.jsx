@@ -176,7 +176,12 @@ const PathologyCareUniqueDetails = () => {
           <FaVial style={{ marginRight: "15px", fontSize: "28px" }} />
           Test Type Required
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Blood', 'Urine', 'Imaging', 'Full Body', 'Specialized'].map((test) => (
             <label key={test} style={{
               display: "flex",
@@ -184,18 +189,26 @@ const PathologyCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: (formData.testType || []).includes(test.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: (formData.testType || []).includes(test.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: (formData.testType || []).includes(test.toLowerCase()) ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="checkbox"
                 checked={(formData.testType || []).includes(test.toLowerCase())}
                 onChange={() => handleCheckboxChange('testType', test.toLowerCase())}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {test}
+              <span style={{ fontWeight: "500" }}>{test}</span>
             </label>
           ))}
         </div>
@@ -222,7 +235,12 @@ const PathologyCareUniqueDetails = () => {
           <FaClock style={{ marginRight: "15px", fontSize: "28px" }} />
           Preferred Sample Collection Time
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Morning', 'Afternoon', 'Evening'].map((time) => (
             <label key={time} style={{
               display: "flex",
@@ -230,10 +248,13 @@ const PathologyCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.collectionTime === time.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.collectionTime === time.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.collectionTime === time.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -241,9 +262,14 @@ const PathologyCareUniqueDetails = () => {
                 value={time.toLowerCase()}
                 checked={formData.collectionTime === time.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {time}
+              <span style={{ fontWeight: "500" }}>{time}</span>
             </label>
           ))}
         </div>
@@ -270,7 +296,12 @@ const PathologyCareUniqueDetails = () => {
           <FaUtensils style={{ marginRight: "15px", fontSize: "28px" }} />
           Fasting Required?
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Yes', 'No'].map((option) => (
             <label key={option} style={{
               display: "flex",
@@ -278,10 +309,13 @@ const PathologyCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.fastingRequired === option.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.fastingRequired === option.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.fastingRequired === option.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -289,9 +323,14 @@ const PathologyCareUniqueDetails = () => {
                 value={option.toLowerCase()}
                 checked={formData.fastingRequired === option.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {option}
+              <span style={{ fontWeight: "500" }}>{option}</span>
             </label>
           ))}
         </div>
@@ -370,7 +409,12 @@ const PathologyCareUniqueDetails = () => {
           <FaEnvelope style={{ marginRight: "15px", fontSize: "28px" }} />
           Report Delivery Preference
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Email', 'WhatsApp', 'Printed Copy'].map((delivery) => (
             <label key={delivery} style={{
               display: "flex",
@@ -378,10 +422,13 @@ const PathologyCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.reportDelivery === delivery.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.reportDelivery === delivery.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.reportDelivery === delivery.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -389,9 +436,14 @@ const PathologyCareUniqueDetails = () => {
                 value={delivery.toLowerCase()}
                 checked={formData.reportDelivery === delivery.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {delivery}
+              <span style={{ fontWeight: "500" }}>{delivery}</span>
             </label>
           ))}
         </div>
@@ -403,7 +455,7 @@ const PathologyCareUniqueDetails = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
+        // background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
         <button 
           className={styles["button"]}
@@ -452,7 +504,7 @@ const PathologyCareUniqueDetails = () => {
             }
           }}
         >
-          <FaStar style={{ marginRight: "10px" }} />
+          {/* <FaStar style={{ marginRight: "10px" }} /> */}
           {isSubmitting ? "Submitting..." : "See Taskers"}
         </button>
       </div>

@@ -175,7 +175,12 @@ const ElderlyCareUniqueDetails = () => {
           <FaUserFriends style={{ marginRight: "15px", fontSize: "28px" }} />
           Condition
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Healthy', 'Chronic Illness', 'Dementia', 'Bedridden'].map((condition) => (
             <label key={condition} style={{
               display: "flex",
@@ -183,10 +188,13 @@ const ElderlyCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.condition === condition.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.condition === condition.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.condition === condition.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -194,9 +202,14 @@ const ElderlyCareUniqueDetails = () => {
                 value={condition.toLowerCase()}
                 checked={formData.condition === condition.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {condition}
+              <span style={{ fontWeight: "500" }}>{condition}</span>
             </label>
           ))}
         </div>
@@ -223,7 +236,12 @@ const ElderlyCareUniqueDetails = () => {
           <FaHandsHelping style={{ marginRight: "15px", fontSize: "28px" }} />
           Support Needed
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Companionship', 'Medication', 'Mobility', 'Hygiene'].map((support) => (
             <label key={support} style={{
               display: "flex",
@@ -231,18 +249,26 @@ const ElderlyCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.supportNeeded.includes(support.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.supportNeeded.includes(support.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.supportNeeded.includes(support.toLowerCase()) ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="checkbox"
                 checked={formData.supportNeeded.includes(support.toLowerCase())}
                 onChange={() => handleCheckboxChange('supportNeeded', support.toLowerCase())}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {support}
+              <span style={{ fontWeight: "500" }}>{support}</span>
             </label>
           ))}
         </div>
@@ -269,7 +295,12 @@ const ElderlyCareUniqueDetails = () => {
           <FaClock style={{ marginRight: "15px", fontSize: "28px" }} />
           Frequency
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Full-time', 'Part-time', 'Live-in'].map((freq) => (
             <label key={freq} style={{
               display: "flex",
@@ -277,10 +308,13 @@ const ElderlyCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.frequency === freq.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.frequency === freq.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.frequency === freq.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -288,9 +322,14 @@ const ElderlyCareUniqueDetails = () => {
                 value={freq.toLowerCase()}
                 checked={formData.frequency === freq.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {freq}
+              <span style={{ fontWeight: "500" }}>{freq}</span>
             </label>
           ))}
         </div>
@@ -317,7 +356,12 @@ const ElderlyCareUniqueDetails = () => {
           <FaUtensils style={{ marginRight: "15px", fontSize: "28px" }} />
           Special Needs
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Diet Restrictions', 'Memory Care', 'Palliative Care', 'None'].map((need) => (
             <label key={need} style={{
               display: "flex",
@@ -325,18 +369,26 @@ const ElderlyCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.specialNeeds.includes(need.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.specialNeeds.includes(need.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.specialNeeds.includes(need.toLowerCase()) ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="checkbox"
                 checked={formData.specialNeeds.includes(need.toLowerCase())}
                 onChange={() => handleCheckboxChange('specialNeeds', need.toLowerCase())}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {need}
+              <span style={{ fontWeight: "500" }}>{need}</span>
             </label>
           ))}
         </div>
@@ -400,7 +452,7 @@ const ElderlyCareUniqueDetails = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
+        // background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
         <button 
           className={styles["button"]}
@@ -449,7 +501,7 @@ const ElderlyCareUniqueDetails = () => {
             }
           }}
         >
-          <FaStar style={{ marginRight: "10px" }} />
+          {/* <FaStar style={{ marginRight: "10px" }} /> */}
           {isSubmitting ? "Submitting..." : "See Taskers"}
         </button>
       </div>

@@ -1,6 +1,6 @@
 import ElderCareServiceDetails from "../../components/ElderCareServiceDetails/ElderCareServiceDetails";
 import ServicesData from "../../data/Services/Services.js";
-import AvailableServices from "../../components/ElderCareAvailableServices/AvailableServices.jsx";
+import MotherBabyOptions from "../../components/ServiceOptions/MotherBabyOptions.jsx";
 import HowItWorks from "../../components/HowItWorks/HowItWorks.jsx";
 
 const MotherBabyCare = () => {
@@ -9,7 +9,7 @@ const MotherBabyCare = () => {
 
   return <>
     <ElderCareServiceDetails data = {serviceData} />
-    <AvailableServices currentServiceId={4}/>
+    <MotherBabyOptions/>
     <HowItWorks/>
   </>
 }

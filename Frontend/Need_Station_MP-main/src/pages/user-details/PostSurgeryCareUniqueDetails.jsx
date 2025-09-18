@@ -166,7 +166,12 @@ const PostSurgeryCareUniqueDetails = () => {
           <FaHospital style={{ marginRight: "15px", fontSize: "28px" }} />
           Type of Surgery
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Orthopedic', 'Cardiac', 'Abdominal', 'Neurological', 'General', 'Other'].map((surgery) => (
             <label key={surgery} style={{
               display: "flex",
@@ -174,10 +179,13 @@ const PostSurgeryCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.surgeryType === surgery.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.surgeryType === surgery.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.surgeryType === surgery.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -185,9 +193,14 @@ const PostSurgeryCareUniqueDetails = () => {
                 value={surgery.toLowerCase()}
                 checked={formData.surgeryType === surgery.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {surgery}
+              <span style={{ fontWeight: "500" }}>{surgery}</span>
             </label>
           ))}
         </div>
@@ -264,7 +277,12 @@ const PostSurgeryCareUniqueDetails = () => {
           <FaUserNurse style={{ marginRight: "15px", fontSize: "28px" }} />
           Care Level Required
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Basic', 'Intermediate', 'Intensive'].map((level) => (
             <label key={level} style={{
               display: "flex",
@@ -272,10 +290,13 @@ const PostSurgeryCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.careLevel === level.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.careLevel === level.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.careLevel === level.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -283,9 +304,14 @@ const PostSurgeryCareUniqueDetails = () => {
                 value={level.toLowerCase()}
                 checked={formData.careLevel === level.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {level}
+              <span style={{ fontWeight: "500" }}>{level}</span>
             </label>
           ))}
         </div>
@@ -312,7 +338,12 @@ const PostSurgeryCareUniqueDetails = () => {
           <FaHeartbeat style={{ marginRight: "15px", fontSize: "28px" }} />
           Wound Care Required?
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Yes', 'No'].map((option) => (
             <label key={option} style={{
               display: "flex",
@@ -320,10 +351,13 @@ const PostSurgeryCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.woundCare === option.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.woundCare === option.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.woundCare === option.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -331,9 +365,14 @@ const PostSurgeryCareUniqueDetails = () => {
                 value={option.toLowerCase()}
                 checked={formData.woundCare === option.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {option}
+              <span style={{ fontWeight: "500" }}>{option}</span>
             </label>
           ))}
         </div>
@@ -360,7 +399,12 @@ const PostSurgeryCareUniqueDetails = () => {
           <FaPills style={{ marginRight: "15px", fontSize: "28px" }} />
           Medication Management
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Required', 'Not Required'].map((option) => (
             <label key={option} style={{
               display: "flex",
@@ -368,10 +412,13 @@ const PostSurgeryCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.medicationManagement === option.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.medicationManagement === option.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.medicationManagement === option.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -379,9 +426,14 @@ const PostSurgeryCareUniqueDetails = () => {
                 value={option.toLowerCase()}
                 checked={formData.medicationManagement === option.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {option}
+              <span style={{ fontWeight: "500" }}>{option}</span>
             </label>
           ))}
         </div>
@@ -408,7 +460,12 @@ const PostSurgeryCareUniqueDetails = () => {
           <FaUserNurse style={{ marginRight: "15px", fontSize: "28px" }} />
           Mobility Assistance
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Full Assistance', 'Partial Assistance', 'Independent'].map((mobility) => (
             <label key={mobility} style={{
               display: "flex",
@@ -416,10 +473,13 @@ const PostSurgeryCareUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.mobilityAssistance === mobility.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.mobilityAssistance === mobility.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.mobilityAssistance === mobility.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -427,9 +487,14 @@ const PostSurgeryCareUniqueDetails = () => {
                 value={mobility.toLowerCase()}
                 checked={formData.mobilityAssistance === mobility.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {mobility}
+              <span style={{ fontWeight: "500" }}>{mobility}</span>
             </label>
           ))}
         </div>
@@ -493,7 +558,7 @@ const PostSurgeryCareUniqueDetails = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
+        // background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
         <button 
           className={styles["button"]}
@@ -542,7 +607,7 @@ const PostSurgeryCareUniqueDetails = () => {
             }
           }}
         >
-          <FaStar style={{ marginRight: "10px" }} />
+          {/* <FaStar style={{ marginRight: "10px" }} /> */}
           {isSubmitting ? "Submitting..." : "See Taskers"}
         </button>
       </div>

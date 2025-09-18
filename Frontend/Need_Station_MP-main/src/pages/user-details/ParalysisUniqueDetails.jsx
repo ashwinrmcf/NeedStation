@@ -348,7 +348,12 @@ const ParalysisUniqueDetails = () => {
           <FaDumbbell style={{ marginRight: "15px", fontSize: "28px" }} />
           Physiotherapy Requirement
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Home Sessions', 'Equipment Use', 'Both', 'None'].map((requirement) => (
             <label key={requirement} style={{
               display: "flex",
@@ -356,10 +361,13 @@ const ParalysisUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.physiotherapyRequirement === requirement.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.physiotherapyRequirement === requirement.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.physiotherapyRequirement === requirement.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -367,9 +375,14 @@ const ParalysisUniqueDetails = () => {
                 value={requirement.toLowerCase()}
                 checked={formData.physiotherapyRequirement === requirement.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {requirement}
+              <span style={{ fontWeight: "500" }}>{requirement}</span>
             </label>
           ))}
         </div>
@@ -381,7 +394,7 @@ const ParalysisUniqueDetails = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
+        // background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
         <button 
           className={styles["button"]}
@@ -430,7 +443,7 @@ const ParalysisUniqueDetails = () => {
             }
           }}
         >
-          <FaStar style={{ marginRight: "10px" }} />
+          {/* <FaStar style={{ ma rginRight: "10px" }} /> */}
           {isSubmitting ? "Submitting..." : "See Taskers"}
         </button>
       </div>

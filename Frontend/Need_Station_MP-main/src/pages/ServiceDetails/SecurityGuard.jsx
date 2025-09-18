@@ -1,6 +1,6 @@
 import ElderCareServiceDetails from "../../components/ElderCareServiceDetails/ElderCareServiceDetails";
 import ServicesData from "../../data/Services/Services.js";
-import AvailableServices from "../../components/ElderCareAvailableServices/AvailableServices.jsx";
+import SecurityGuardOptions from "../../components/ServiceOptions/SecurityGuardOptions.jsx";
 import HowItWorks from "../../components/HowItWorks/HowItWorks.jsx";
 // import GetStarted from "../../components/GetStarted/GetStarted.jsx";
 
@@ -10,7 +10,7 @@ const SecurityGuard = () => {
 
   return <>
     <ElderCareServiceDetails data = {serviceData} />
-    <AvailableServices currentServiceId={1}/>
+    <SecurityGuardOptions/>
     <HowItWorks/>
     {/* <GetStarted/> */}
   </>

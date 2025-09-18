@@ -1,6 +1,6 @@
 import ElderCareServiceDetails from "../../components/ElderCareServiceDetails/ElderCareServiceDetails";
 import ServicesData from "../../data/Services/Services.js";
-import AvailableServices from "../../components/ElderCareAvailableServices/AvailableServices.jsx";
+import ParkinsonsOptions from "../../components/ServiceOptions/ParkinsonsOptions.jsx";
 import HowItWorks from "../../components/HowItWorks/HowItWorks.jsx";
 
 const ParkinsonsCare = () => {
@@ -9,7 +9,7 @@ const ParkinsonsCare = () => {
 
   return <>
     <ElderCareServiceDetails data = {serviceData} />
-    <AvailableServices currentServiceId={2}/>
+    <ParkinsonsOptions/>
     <HowItWorks/>
   </>
 }

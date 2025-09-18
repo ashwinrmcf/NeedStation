@@ -1,4 +1,4 @@
-import image1 from '../../assets/images/services/securityGuard.png';
+import image1 from '../../assets/images/services/security/securityGuard.png';
 import image2 from '../../assets/images/services/parkinsonsCare.png';
 import image3 from '../../assets/images/services/bedriddenPatient.png';
 import image4 from '../../assets/images/services/motherAndBaby.png';

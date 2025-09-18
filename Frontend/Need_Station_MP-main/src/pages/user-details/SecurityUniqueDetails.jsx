@@ -503,7 +503,7 @@ const SecurityUniqueDetails = ({ onDataChange, initialData = {} }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
+        // background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
         <button 
           className={styles["button"]}
@@ -539,7 +539,7 @@ const SecurityUniqueDetails = ({ onDataChange, initialData = {} }) => {
               : "0 10px 30px rgba(92, 225, 230, 0.4), 0 0 0 1px rgba(92, 225, 230, 0.2)",
             textTransform: "uppercase",
             letterSpacing: "1px",
-            minWidth: "250px"
+            minWidth: "270px"
           }}
           onMouseEnter={(e) => {
             if (!e.target.disabled) {
@@ -554,7 +554,6 @@ const SecurityUniqueDetails = ({ onDataChange, initialData = {} }) => {
             }
           }}
         >
-          <FaStar style={{ marginRight: "10px" }} />
           {isSubmitting ? "Submitting..." : "See Taskers"}
         </button>
       </div>

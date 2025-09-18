@@ -1,6 +1,6 @@
 import ElderCareServiceDetails from "../../components/ElderCareServiceDetails/ElderCareServiceDetails";
 import ServicesData from "../../data/Services/Services.js";
-import AvailableServices from "../../components/ElderCareAvailableServices/AvailableServices.jsx";
+import HealthCheckupOptions from "../../components/ServiceOptions/HealthCheckupOptions.jsx";
 import HowItWorks from "../../components/HowItWorks/HowItWorks.jsx";
 
 const HealthCheckupNew = () => {
@@ -9,7 +9,7 @@ const HealthCheckupNew = () => {
 
   return <>
     <ElderCareServiceDetails data = {serviceData} />
-    <AvailableServices currentServiceId={10}/>
+    <HealthCheckupOptions/>
     <HowItWorks/>
   </>
 }

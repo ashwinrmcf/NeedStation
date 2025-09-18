@@ -179,7 +179,12 @@ const PhysiotherapyUniqueDetails = () => {
           <FaUserMd style={{ marginRight: "15px", fontSize: "28px" }} />
           Condition Type
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Post-Surgery', 'Sports Injury', 'Chronic Pain', 'Stroke Recovery', 'Arthritis', 'General Wellness'].map((condition) => (
             <label key={condition} style={{
               display: "flex",
@@ -187,10 +192,13 @@ const PhysiotherapyUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.conditionType === condition.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.conditionType === condition.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.conditionType === condition.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -198,9 +206,14 @@ const PhysiotherapyUniqueDetails = () => {
                 value={condition.toLowerCase()}
                 checked={formData.conditionType === condition.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {condition}
+              <span style={{ fontWeight: "500" }}>{condition}</span>
             </label>
           ))}
         </div>
@@ -227,7 +240,12 @@ const PhysiotherapyUniqueDetails = () => {
           <FaRunning style={{ marginRight: "15px", fontSize: "28px" }} />
           Therapy Type
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Manual Therapy', 'Exercise Therapy', 'Electrotherapy', 'Hydrotherapy', 'Heat/Cold Therapy', 'Massage Therapy'].map((therapy) => (
             <label key={therapy} style={{
               display: "flex",
@@ -235,18 +253,26 @@ const PhysiotherapyUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.therapyType.includes(therapy.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.therapyType.includes(therapy.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.therapyType.includes(therapy.toLowerCase()) ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="checkbox"
                 checked={formData.therapyType.includes(therapy.toLowerCase())}
                 onChange={() => handleCheckboxChange('therapyType', therapy.toLowerCase())}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {therapy}
+              <span style={{ fontWeight: "500" }}>{therapy}</span>
             </label>
           ))}
         </div>
@@ -273,7 +299,12 @@ const PhysiotherapyUniqueDetails = () => {
           <FaClock style={{ marginRight: "15px", fontSize: "28px" }} />
           Session Duration
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['30 minutes', '45 minutes', '60 minutes'].map((duration) => (
             <label key={duration} style={{
               display: "flex",
@@ -281,10 +312,13 @@ const PhysiotherapyUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.sessionDuration === duration.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.sessionDuration === duration.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.sessionDuration === duration.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -292,9 +326,14 @@ const PhysiotherapyUniqueDetails = () => {
                 value={duration.toLowerCase()}
                 checked={formData.sessionDuration === duration.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {duration}
+              <span style={{ fontWeight: "500" }}>{duration}</span>
             </label>
           ))}
         </div>
@@ -321,7 +360,12 @@ const PhysiotherapyUniqueDetails = () => {
           <FaClock style={{ marginRight: "15px", fontSize: "28px" }} />
           Frequency
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Daily', '3 times/week', '2 times/week'].map((freq) => (
             <label key={freq} style={{
               display: "flex",
@@ -329,10 +373,13 @@ const PhysiotherapyUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.frequency === freq.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.frequency === freq.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.frequency === freq.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -340,9 +387,14 @@ const PhysiotherapyUniqueDetails = () => {
                 value={freq.toLowerCase()}
                 checked={formData.frequency === freq.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {freq}
+              <span style={{ fontWeight: "500" }}>{freq}</span>
             </label>
           ))}
         </div>
@@ -369,7 +421,12 @@ const PhysiotherapyUniqueDetails = () => {
           <FaFileUpload style={{ marginRight: "15px", fontSize: "28px" }} />
           Equipment Needed
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Exercise Bands', 'Weights', 'Balance Board', 'TENS Unit', 'Hot/Cold Packs', 'Massage Tools'].map((equipment) => (
             <label key={equipment} style={{
               display: "flex",
@@ -377,18 +434,26 @@ const PhysiotherapyUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.equipmentNeeded.includes(equipment.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.equipmentNeeded.includes(equipment.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.equipmentNeeded.includes(equipment.toLowerCase()) ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="checkbox"
                 checked={formData.equipmentNeeded.includes(equipment.toLowerCase())}
                 onChange={() => handleCheckboxChange('equipmentNeeded', equipment.toLowerCase())}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {equipment}
+              <span style={{ fontWeight: "500" }}>{equipment}</span>
             </label>
           ))}
         </div>
@@ -415,7 +480,12 @@ const PhysiotherapyUniqueDetails = () => {
           <FaHome style={{ marginRight: "15px", fontSize: "28px" }} />
           Location Preference
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Home Visit', 'Clinic Visit'].map((location) => (
             <label key={location} style={{
               display: "flex",
@@ -423,10 +493,13 @@ const PhysiotherapyUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.locationPreference === location.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.locationPreference === location.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.locationPreference === location.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -434,9 +507,14 @@ const PhysiotherapyUniqueDetails = () => {
                 value={location.toLowerCase()}
                 checked={formData.locationPreference === location.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {location}
+              <span style={{ fontWeight: "500" }}>{location}</span>
             </label>
           ))}
         </div>
@@ -500,7 +578,7 @@ const PhysiotherapyUniqueDetails = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
+        // background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
         <button 
           className={styles["button"]}
@@ -549,7 +627,7 @@ const PhysiotherapyUniqueDetails = () => {
             }
           }}
         >
-          <FaStar style={{ marginRight: "10px" }} />
+          {/* <FaStar style={{ marginRight: "10px" }} /> */}
           {isSubmitting ? "Submitting..." : "See Taskers"}
         </button>
       </div>

@@ -43,6 +43,3 @@ const AvailableServices = ({ currentServiceId = null }) => {
 };
 
 export default AvailableServices;
-
-
-

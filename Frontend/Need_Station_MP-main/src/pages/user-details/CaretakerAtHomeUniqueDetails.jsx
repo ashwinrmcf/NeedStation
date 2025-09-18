@@ -181,7 +181,12 @@ const CaretakerAtHomeUniqueDetails = () => {
           <FaHome style={{ marginRight: "15px", fontSize: "28px" }} />
           Type of Care
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Elderly Care', 'Child Care', 'Patient Care', 'Companion Care'].map((care) => (
             <label key={care} style={{
               display: "flex",
@@ -189,10 +194,13 @@ const CaretakerAtHomeUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.careType === care.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.careType === care.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.careType === care.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -200,9 +208,14 @@ const CaretakerAtHomeUniqueDetails = () => {
                 value={care.toLowerCase()}
                 checked={formData.careType === care.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {care}
+              <span style={{ fontWeight: "500" }}>{care}</span>
             </label>
           ))}
         </div>
@@ -229,7 +242,12 @@ const CaretakerAtHomeUniqueDetails = () => {
           <FaHeart style={{ marginRight: "15px", fontSize: "28px" }} />
           Patient Condition
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Healthy/Independent', 'Mild Assistance', 'Moderate Care', 'Intensive Care', 'Bedridden', 'Dementia/Alzheimer\'s'].map((condition) => (
             <label key={condition} style={{
               display: "flex",
@@ -237,10 +255,13 @@ const CaretakerAtHomeUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.patientCondition === condition.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.patientCondition === condition.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.patientCondition === condition.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -248,9 +269,14 @@ const CaretakerAtHomeUniqueDetails = () => {
                 value={condition.toLowerCase()}
                 checked={formData.patientCondition === condition.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {condition}
+              <span style={{ fontWeight: "500" }}>{condition}</span>
             </label>
           ))}
         </div>
@@ -277,7 +303,12 @@ const CaretakerAtHomeUniqueDetails = () => {
           <FaUserNurse style={{ marginRight: "15px", fontSize: "28px" }} />
           Care Level
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Basic', 'Skilled', 'Medical'].map((level) => (
             <label key={level} style={{
               display: "flex",
@@ -285,10 +316,13 @@ const CaretakerAtHomeUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.careLevel === level.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.careLevel === level.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.careLevel === level.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -296,9 +330,14 @@ const CaretakerAtHomeUniqueDetails = () => {
                 value={level.toLowerCase()}
                 checked={formData.careLevel === level.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {level}
+              <span style={{ fontWeight: "500" }}>{level}</span>
             </label>
           ))}
         </div>
@@ -325,7 +364,12 @@ const CaretakerAtHomeUniqueDetails = () => {
           <FaClock style={{ marginRight: "15px", fontSize: "28px" }} />
           Shift Type
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Day Shift', 'Night Shift', '24/7 Live-in'].map((shift) => (
             <label key={shift} style={{
               display: "flex",
@@ -333,10 +377,13 @@ const CaretakerAtHomeUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.shiftType === shift.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.shiftType === shift.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.shiftType === shift.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -344,9 +391,14 @@ const CaretakerAtHomeUniqueDetails = () => {
                 value={shift.toLowerCase()}
                 checked={formData.shiftType === shift.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {shift}
+              <span style={{ fontWeight: "500" }}>{shift}</span>
             </label>
           ))}
         </div>
@@ -373,7 +425,12 @@ const CaretakerAtHomeUniqueDetails = () => {
           <FaUsers style={{ marginRight: "15px", fontSize: "28px" }} />
           Caretaker Gender Preference
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['Male', 'Female', 'No Preference'].map((gender) => (
             <label key={gender} style={{
               display: "flex",
@@ -381,10 +438,13 @@ const CaretakerAtHomeUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.caretakerGender === gender.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.caretakerGender === gender.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.caretakerGender === gender.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -392,9 +452,14 @@ const CaretakerAtHomeUniqueDetails = () => {
                 value={gender.toLowerCase()}
                 checked={formData.caretakerGender === gender.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {gender}
+              <span style={{ fontWeight: "500" }}>{gender}</span>
             </label>
           ))}
         </div>
@@ -421,7 +486,12 @@ const CaretakerAtHomeUniqueDetails = () => {
           <FaUserNurse style={{ marginRight: "15px", fontSize: "28px" }} />
           Experience Required
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(3, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['0-1 years', '2-5 years', '5+ years'].map((exp) => (
             <label key={exp} style={{
               display: "flex",
@@ -429,10 +499,13 @@ const CaretakerAtHomeUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.experienceRequired === exp.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.experienceRequired === exp.toLowerCase() ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.experienceRequired === exp.toLowerCase() ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="radio"
@@ -440,9 +513,14 @@ const CaretakerAtHomeUniqueDetails = () => {
                 value={exp.toLowerCase()}
                 checked={formData.experienceRequired === exp.toLowerCase()}
                 onChange={handleInputChange}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {exp}
+              <span style={{ fontWeight: "500" }}>{exp}</span>
             </label>
           ))}
         </div>
@@ -469,7 +547,12 @@ const CaretakerAtHomeUniqueDetails = () => {
           <FaHeart style={{ marginRight: "15px", fontSize: "28px" }} />
           Special Skills Required
         </h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(2, 1fr)", 
+          gap: "20px",
+          alignItems: "start"
+        }}>
           {['First Aid', 'CPR Certified', 'Medication Management', 'Physiotherapy', 'Cooking', 'Driving'].map((skill) => (
             <label key={skill} style={{
               display: "flex",
@@ -477,18 +560,26 @@ const CaretakerAtHomeUniqueDetails = () => {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
-              padding: "10px",
-              borderRadius: "10px",
+              padding: "15px 20px",
+              borderRadius: "12px",
               transition: "all 0.3s ease",
-              backgroundColor: formData.specialSkills.includes(skill.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "transparent"
+              backgroundColor: formData.specialSkills.includes(skill.toLowerCase()) ? "rgba(92, 225, 230, 0.2)" : "rgba(255, 255, 255, 0.05)",
+              border: formData.specialSkills.includes(skill.toLowerCase()) ? "2px solid rgba(92, 225, 230, 0.5)" : "2px solid transparent",
+              minHeight: "50px",
+              justifyContent: "flex-start"
             }}>
               <input
                 type="checkbox"
                 checked={formData.specialSkills.includes(skill.toLowerCase())}
                 onChange={() => handleCheckboxChange('specialSkills', skill.toLowerCase())}
-                style={{ marginRight: "10px", accentColor: "#5CE1E6" }}
+                style={{ 
+                  marginRight: "15px", 
+                  accentColor: "#5CE1E6",
+                  width: "18px",
+                  height: "18px"
+                }}
               />
-              {skill}
+              <span style={{ fontWeight: "500" }}>{skill}</span>
             </label>
           ))}
         </div>
@@ -552,7 +643,7 @@ const CaretakerAtHomeUniqueDetails = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
+        // background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%)"
       }}>
         <button 
           className={styles["button"]}
@@ -601,7 +692,7 @@ const CaretakerAtHomeUniqueDetails = () => {
             }
           }}
         >
-          <FaStar style={{ marginRight: "10px" }} />
+          {/* <FaStar style={{ marginRight: "10px" }} /> */}
           {isSubmitting ? "Submitting..." : "See Taskers"}
         </button>
       </div>
