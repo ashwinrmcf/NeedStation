@@ -110,7 +110,7 @@ export default function ContactUs() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Email Us</h3>
             <p className="text-gray-300">Get in touch via email</p>
-            <a href="mailto:support@needstation.com" className="text-teal-400 mt-4 font-medium hover:underline">support@needstation.in</a>
+            <a href="mailto:support@needstation.in" className="text-teal-400 mt-4 font-medium hover:underline">support@needstation.in</a>
           </div>
 
           <div className="bg-gray-800 rounded-lg p-8 flex flex-col items-center text-center hover:shadow-lg hover:shadow-teal-500/20 transition duration-300">

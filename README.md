@@ -86,6 +86,6 @@ NeedStation is more than just a service marketplace—it’s a vision to **empow
 
 ### 📬 Contact  
 For inquiries, collaborations, or support, reach out at:  
-**Email:** support@needstation.com *(future use)*  
+**Email:** support@needstation.in  
 
 > *NeedStation – Services that Simplify Life*  

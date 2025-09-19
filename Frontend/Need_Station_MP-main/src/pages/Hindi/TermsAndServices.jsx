@@ -132,7 +132,7 @@ const HindiTermsAndServices = () => {
         <section className={styles.termsSection}>
           <h2>12. संपर्क जानकारी</h2>
           <p>
-            यदि आपके पास इन शर्तों के बारे में कोई प्रश्न हैं, तो कृपया support@needstation.com पर या हमारे संपर्क पृष्ठ के माध्यम से हमसे संपर्क करें।
+            यदि आपके पास इन शर्तों के बारे में कोई प्रश्न हैं, तो कृपया support@needstation.in पर या हमारे संपर्क पृष्ठ के माध्यम से हमसे संपर्क करें।
           </p>
         </section>
         

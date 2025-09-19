@@ -191,6 +191,9 @@ CREATE TABLE service_subcategories (
     base_price_per_day DECIMAL(10, 2),
     base_price_per_month DECIMAL(10, 2),
     
+    -- Additional Pricing
+    additional_cost DECIMAL(10, 2) DEFAULT 0.00,
+    
     -- Requirements
     requires_medical_info BOOLEAN DEFAULT FALSE,
     requires_prescription BOOLEAN DEFAULT FALSE,
@@ -203,19 +206,88 @@ CREATE TABLE service_subcategories (
     FOREIGN KEY (category_id) REFERENCES service_categories(id) ON DELETE CASCADE
 );
 
--- Example subcategories
-INSERT INTO service_subcategories (category_id, subcategory_name, subcategory_code, base_price_per_hour) VALUES
--- Security Guard subcategories
-(1, 'Corporate Security', 'security_corporate', 150.00),
-(1, 'Domestic Security', 'security_domestic', 120.00),
-(1, 'On-Demand Security', 'security_ondemand', 200.00),
-(1, 'Event Security', 'security_event', 180.00),
+-- Comprehensive subcategories for all services
+INSERT INTO service_subcategories (category_id, subcategory_name, subcategory_code, base_price_per_hour, requires_medical_info) VALUES
+-- 1. Home Security Guard
+(1, 'Residential Security', 'security_residential', 120.00, FALSE),
+(1, 'Corporate Security', 'security_corporate', 150.00, FALSE),
+(1, 'Event Security', 'security_event', 180.00, FALSE),
+(1, 'Personal Security/Bodyguard', 'security_personal', 300.00, FALSE),
+(1, 'Night Watchman', 'security_night', 100.00, FALSE),
 
--- Elderly Care subcategories
-(6, 'Companion Care', 'elderly_companion', 100.00),
-(6, 'Dementia Care', 'elderly_dementia', 150.00),
-(6, 'Daily Living Assistance', 'elderly_daily', 120.00),
-(6, 'Medical Monitoring', 'elderly_medical', 180.00);
+-- 2. Parkinson's Care
+(2, 'Early Stage Care', 'parkinsons_early', 150.00, TRUE),
+(2, 'Advanced Stage Care', 'parkinsons_advanced', 250.00, TRUE),
+(2, 'Therapy Support', 'parkinsons_therapy', 180.00, TRUE),
+
+-- 3. Bedridden Patient Care
+(3, 'Complete Bedridden Care', 'bedridden_complete', 200.00, TRUE),
+(3, 'Stroke Patient Care', 'bedridden_stroke', 220.00, TRUE),
+(3, 'Coma Patient Care', 'bedridden_coma', 300.00, TRUE),
+(3, 'Palliative Care', 'bedridden_palliative', 250.00, TRUE),
+
+-- 4. Mother and Baby Care
+(4, 'Newborn Care (0-3 months)', 'baby_newborn', 150.00, TRUE),
+(4, 'Postnatal Mother Care', 'mother_postnatal', 120.00, TRUE),
+(4, 'Baby Massage & Care', 'baby_massage', 100.00, FALSE),
+(4, 'Twins/Multiple Babies Care', 'baby_twins', 250.00, TRUE),
+
+-- 5. Paralysis Care
+(5, 'Hemiplegia Care', 'paralysis_hemiplegia', 180.00, TRUE),
+(5, 'Paraplegia Care', 'paralysis_paraplegia', 200.00, TRUE),
+(5, 'Quadriplegia Care', 'paralysis_quadriplegia', 350.00, TRUE),
+(5, 'Facial Paralysis Care', 'paralysis_facial', 150.00, TRUE),
+
+-- 6. Elderly Care
+(6, 'Companion Care', 'elderly_companion', 100.00, FALSE),
+(6, 'Personal Care', 'elderly_personal', 120.00, TRUE),
+(6, 'Dementia/Alzheimer Care', 'elderly_dementia', 180.00, TRUE),
+(6, 'Respite Care', 'elderly_respite', 150.00, FALSE),
+
+-- 7. Nursing Care
+(7, 'General Nursing', 'nursing_general', 180.00, TRUE),
+(7, 'ICU Trained Nursing', 'nursing_icu', 300.00, TRUE),
+(7, 'Wound Care Nursing', 'nursing_wound', 200.00, TRUE),
+(7, 'Pediatric Nursing', 'nursing_pediatric', 220.00, TRUE),
+
+-- 8. Pathology Care
+(8, 'Home Sample Collection', 'pathology_collection', 50.00, FALSE),
+(8, 'Diagnostic Services', 'pathology_diagnostic', 200.00, TRUE),
+(8, 'Regular Monitoring', 'pathology_monitoring', 100.00, TRUE),
+(8, 'Corporate Health Checkups', 'pathology_corporate', 150.00, FALSE),
+
+-- 9. Diabetes Management
+(9, 'Type 1 Diabetes Care', 'diabetes_type1', 150.00, TRUE),
+(9, 'Type 2 Diabetes Care', 'diabetes_type2', 120.00, TRUE),
+(9, 'Gestational Diabetes Care', 'diabetes_gestational', 180.00, TRUE),
+(9, 'Diabetic Complication Care', 'diabetes_complications', 200.00, TRUE),
+
+-- 10. Health Check-up Services
+(10, 'Basic Health Checkup', 'checkup_basic', 80.00, FALSE),
+(10, 'Comprehensive Health Checkup', 'checkup_comprehensive', 200.00, TRUE),
+(10, 'Senior Citizen Checkup', 'checkup_senior', 150.00, TRUE),
+(10, 'Womens Health Checkup', 'checkup_women', 180.00, TRUE),
+(10, 'Mens Health Checkup', 'checkup_men', 160.00, TRUE),
+
+-- 11. Physiotherapy
+(11, 'Orthopedic Physiotherapy', 'physio_orthopedic', 100.00, TRUE),
+(11, 'Neurological Physiotherapy', 'physio_neurological', 150.00, TRUE),
+(11, 'Pediatric Physiotherapy', 'physio_pediatric', 120.00, TRUE),
+(11, 'Geriatric Physiotherapy', 'physio_geriatric', 100.00, TRUE),
+(11, 'Chest Physiotherapy', 'physio_chest', 120.00, TRUE),
+
+-- 12. Post Surgery Care
+(12, 'Cardiac Surgery Care', 'surgery_cardiac', 250.00, TRUE),
+(12, 'Orthopedic Surgery Care', 'surgery_orthopedic', 180.00, TRUE),
+(12, 'Abdominal Surgery Care', 'surgery_abdominal', 200.00, TRUE),
+(12, 'Neuro Surgery Care', 'surgery_neuro', 300.00, TRUE),
+(12, 'Cancer Surgery Care', 'surgery_cancer', 280.00, TRUE),
+
+-- 13. Caretaker at Home
+(13, 'Live-in Caretaker', 'caretaker_livein', 800.00, FALSE), -- Per day pricing
+(13, 'Part-time Caretaker', 'caretaker_parttime', 100.00, FALSE),
+(13, 'Cook-cum-Caretaker', 'caretaker_cook', 120.00, FALSE),
+(13, 'Baby Caretaker/Nanny', 'caretaker_baby', 150.00, FALSE);
 ```
 
 ### 5. service_form_fields
@@ -223,10 +295,11 @@ INSERT INTO service_subcategories (category_id, subcategory_name, subcategory_co
 CREATE TABLE service_form_fields (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     subcategory_id BIGINT NOT NULL,
+    field_category VARCHAR(100) NOT NULL, -- patient_info, care_requirements, medical_conditions, etc.
     field_name VARCHAR(255) NOT NULL,
     field_label VARCHAR(255) NOT NULL,
-    field_type ENUM('text', 'textarea', 'number', 'date', 'select', 'radio', 'checkbox', 'file') NOT NULL,
-    field_options JSON, -- For select/radio options
+    field_type ENUM('text', 'textarea', 'number', 'date', 'time', 'select', 'radio', 'checkbox', 'file', 'phone', 'email') NOT NULL,
+    field_options JSON, -- For select/radio/checkbox options
     is_required BOOLEAN DEFAULT FALSE,
     validation_rules JSON,
     placeholder_text VARCHAR(255),
@@ -234,20 +307,58 @@ CREATE TABLE service_form_fields (
     display_order INT DEFAULT 0,
     
     INDEX idx_subcategory (subcategory_id),
+    INDEX idx_category (field_category),
     FOREIGN KEY (subcategory_id) REFERENCES service_subcategories(id) ON DELETE CASCADE
 );
 
--- Example form fields for Paralysis Care
-INSERT INTO service_form_fields (subcategory_id, field_name, field_label, field_type, is_required) VALUES
--- Assuming paralysis care subcategory has id = 10
-(10, 'paralysis_type', 'Type of Paralysis', 'select', TRUE),
-(10, 'paralysis_duration', 'How long has the patient been paralyzed?', 'text', TRUE),
-(10, 'mobility_level', 'Current Mobility Level', 'select', TRUE),
-(10, 'medical_equipment', 'Medical Equipment at Home', 'checkbox', FALSE),
-(10, 'physician_name', 'Treating Physician Name', 'text', TRUE),
-(10, 'medications', 'Current Medications', 'textarea', TRUE),
-(10, 'special_requirements', 'Special Care Requirements', 'textarea', FALSE),
-(10, 'medical_reports', 'Upload Medical Reports', 'file', FALSE);
+-- Service Parameters Table for storing user selections
+CREATE TABLE service_parameters (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    service_id BIGINT NOT NULL,
+    parameter_group VARCHAR(100) NOT NULL, -- patient_info, care_requirements, etc.
+    parameter_name VARCHAR(255) NOT NULL,
+    parameter_type VARCHAR(50) NOT NULL,
+    required BOOLEAN DEFAULT FALSE,
+    options JSON, -- Available options for this parameter
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_service (service_id),
+    FOREIGN KEY (service_id) REFERENCES service_categories(id)
+);
+
+-- User Service Requests (stores actual user inputs)
+CREATE TABLE user_service_requests (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    service_id BIGINT NOT NULL,
+    subcategory_id BIGINT NOT NULL,
+    
+    -- Structured parameter storage
+    patient_info JSON,
+    care_requirements JSON,
+    medical_conditions JSON,
+    preferences JSON,
+    household_info JSON,
+    specific_requirements JSON,
+    
+    -- Common fields
+    service_timing JSON,
+    billing_preferences JSON,
+    
+    -- Request status
+    request_status ENUM('draft', 'submitted', 'processing', 'matched', 'confirmed', 'cancelled') DEFAULT 'draft',
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    submitted_at TIMESTAMP NULL,
+    
+    INDEX idx_user (user_id),
+    INDEX idx_service (service_id, subcategory_id),
+    INDEX idx_status (request_status),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (service_id) REFERENCES service_categories(id),
+    FOREIGN KEY (subcategory_id) REFERENCES service_subcategories(id)
+);
 ```
 
 ### 6. users (Customers)
@@ -636,57 +747,338 @@ CREATE TABLE audit_logs (
 );
 ```
 
-## Service-Specific Form Requirements
+## Comprehensive Service Parameters and Requirements
 
-### 1. Paralysis Care
-- Type of paralysis (Quadriplegia, Paraplegia, Hemiplegia, etc.)
-- Duration of condition
-- Current mobility level
-- Medical equipment available
-- Physician details
-- Current medications
-- Therapy requirements
-- Special care needs
+### Common Parameters for All Services
+```json
+{
+  "customer_details": {
+    "name": "text",
+    "phone": "number",
+    "email": "email",
+    "address": "full_address",
+    "pin_code": "number",
+    "preferred_language": "hindi/english/regional"
+  },
+  "service_timing": {
+    "start_date": "date",
+    "service_duration": "days/weeks/months",
+    "preferred_time_slot": "morning/afternoon/evening/night",
+    "urgent": "yes/no"
+  },
+  "billing_preferences": {
+    "payment_mode": "cash/online/insurance",
+    "billing_cycle": "daily/weekly/monthly",
+    "advance_payment": "yes/no",
+    "gst_invoice": "yes/no"
+  }
+}
+```
 
-### 2. Elderly Care
-- Age of patient
-- Medical conditions
-- Mobility status
-- Cognitive status
-- Daily assistance needed
-- Medication schedule
-- Dietary restrictions
-- Emergency protocols
+### 1. Elderly Care Parameters
+```json
+{
+  "patient_info": {
+    "age": "number",
+    "gender": "male/female",
+    "mobility_status": "mobile/partially_mobile/immobile",
+    "cognitive_status": "alert/mild_impairment/moderate_impairment/severe_impairment"
+  },
+  "care_requirements": {
+    "duration_type": "hourly/daily/weekly/monthly",
+    "hours_per_day": "4/8/12/24",
+    "care_level": "basic/intermediate/advanced",
+    "specific_needs": ["medication_reminder", "meal_preparation", "mobility_assistance", "companionship"]
+  },
+  "medical_conditions": {
+    "existing_conditions": ["diabetes", "hypertension", "arthritis", "dementia"],
+    "medications": "text",
+    "allergies": "text",
+    "emergency_contact": "phone"
+  }
+}
+```
 
-### 3. Mother & Baby Care
-- Mother's age
-- Delivery type
-- Delivery date
-- Baby's age
-- Feeding type
-- Special medical conditions
-- Postnatal care requirements
-- Vaccination schedule
+### 2. Nursing Care Parameters
+```json
+{
+  "patient_details": {
+    "age": "number",
+    "diagnosis": "text",
+    "hospitalization_history": "text"
+  },
+  "nursing_requirements": {
+    "care_type": "general/icu/wound_care/pediatric",
+    "shift_preference": "day/night/24x7",
+    "procedures_needed": ["injection", "iv_line", "catheter", "wound_dressing", "tube_feeding"]
+  },
+  "medical_equipment": {
+    "equipment_at_home": ["oxygen_concentrator", "ventilator", "suction_machine"],
+    "equipment_needed": ["hospital_bed", "wheelchair", "walker"]
+  }
+}
+```
 
-### 4. Diabetes Management
-- Type of diabetes
-- Current HbA1c level
-- Insulin dependency
-- Diet plan status
-- Exercise routine
-- Complications if any
-- Monitoring frequency
-- Doctor's contact
+### 3. Paralysis Care Parameters
+```json
+{
+  "paralysis_type": {
+    "affected_area": "right_side/left_side/lower_body/all_limbs/facial",
+    "cause": "stroke/accident/infection/birth_defect",
+    "duration": "months/years",
+    "recovery_potential": "good/moderate/poor"
+  },
+  "functional_status": {
+    "sensation": "present/absent/partial",
+    "bladder_control": "normal/catheter/diaper",
+    "bowel_control": "normal/managed/incontinent",
+    "communication": "normal/impaired/non_verbal"
+  },
+  "rehabilitation_plan": {
+    "physiotherapy": "ongoing/required/completed",
+    "occupational_therapy": "yes/no",
+    "speech_therapy": "yes/no"
+  }
+}
+```
 
-### 5. Post-Surgery Care
-- Type of surgery
-- Surgery date
-- Hospital discharge summary
-- Wound care requirements
-- Medication schedule
-- Mobility restrictions
-- Follow-up appointments
-- Physiotherapy needs
+### 4. Home Security Guard Parameters
+```json
+{
+  "property_details": {
+    "property_type": "residential/commercial/industrial",
+    "property_size": "sqft",
+    "location": "address",
+    "access_points": "number"
+  },
+  "security_requirements": {
+    "guard_count": "number",
+    "shift_type": "8hrs/12hrs/24hrs",
+    "armed_unarmed": "armed/unarmed",
+    "uniform_required": "yes/no"
+  },
+  "specific_duties": {
+    "primary_responsibilities": ["gate_management", "visitor_verification", "patrolling", "cctv_monitoring"],
+    "equipment_handling": ["metal_detector", "baggage_scanner", "communication_devices"]
+  },
+  "guard_specifications": {
+    "experience_level": "fresher/1-3years/3-5years/5+years",
+    "language_requirements": ["hindi", "english", "local_language"],
+    "special_training": ["fire_safety", "first_aid", "crowd_control"]
+  }
+}
+```
+
+### 5. Mother and Baby Care Parameters
+```json
+{
+  "baby_details": {
+    "age_in_days": "number",
+    "birth_type": "normal/cesarean",
+    "birth_weight": "kg",
+    "premature": "yes/no",
+    "twins_or_more": "yes/no"
+  },
+  "mother_details": {
+    "delivery_date": "date",
+    "delivery_type": "normal/cesarean",
+    "first_baby": "yes/no",
+    "health_complications": "text"
+  },
+  "care_preferences": {
+    "care_duration": "weeks/months",
+    "live_in_out": "live_in/daily_visit",
+    "massage_type": "traditional/modern/both",
+    "feeding_type": "breastfeeding/formula/mixed"
+  }
+}
+```
+
+### 6. Diabetes Management Parameters
+```json
+{
+  "diabetes_profile": {
+    "diabetes_type": "type1/type2/gestational/prediabetes",
+    "years_since_diagnosis": "number",
+    "hba1c_level": "percentage",
+    "current_medications": "list"
+  },
+  "monitoring_needs": {
+    "glucose_checks_per_day": "number",
+    "insulin_administration": "yes/no",
+    "continuous_glucose_monitor": "yes/no",
+    "diet_plan_required": "yes/no"
+  },
+  "complications": {
+    "retinopathy": "yes/no",
+    "neuropathy": "yes/no",
+    "nephropathy": "yes/no",
+    "foot_problems": "yes/no"
+  }
+}
+```
+
+### 7. Physiotherapy Parameters
+```json
+{
+  "condition_details": {
+    "primary_complaint": "text",
+    "diagnosis": "text",
+    "surgery_date": "date_if_applicable",
+    "pain_level": "1-10_scale"
+  },
+  "therapy_requirements": {
+    "therapy_type": "orthopedic/neurological/pediatric/geriatric/chest",
+    "sessions_per_week": "number",
+    "duration_per_session": "30min/45min/60min",
+    "preferred_time": "morning/afternoon/evening"
+  },
+  "mobility_status": {
+    "ambulatory": "independent/with_support/wheelchair/bedridden",
+    "equipment_available": ["walker", "crutches", "parallel_bars", "exercise_mat"]
+  }
+}
+```
+
+### 8. Post Surgery Care Parameters
+```json
+{
+  "surgery_details": {
+    "surgery_type": "text",
+    "surgery_date": "date",
+    "hospital": "text",
+    "surgeon": "contact_details"
+  },
+  "post_op_requirements": {
+    "wound_care": "yes/no",
+    "drain_management": "yes/no",
+    "medication_schedule": "text",
+    "physiotherapy": "yes/no"
+  },
+  "recovery_status": {
+    "mobility_level": "bedridden/limited/improving",
+    "pain_level": "1-10_scale",
+    "complications": "none/infection/other",
+    "follow_up_date": "date"
+  }
+}
+```
+
+### 9. Caretaker at Home Parameters
+```json
+{
+  "household_info": {
+    "family_size": "number",
+    "home_type": "apartment/house/villa",
+    "location": "address",
+    "pets": "yes/no"
+  },
+  "caretaker_duties": {
+    "primary_responsibilities": ["cooking", "cleaning", "patient_care", "child_care", "elderly_care"],
+    "working_hours": "8/10/12/24",
+    "accommodation": "live_in/live_out",
+    "days_per_week": "number"
+  },
+  "specific_requirements": {
+    "cooking_type": "vegetarian/non_vegetarian/jain/vegan",
+    "languages_required": ["hindi", "english", "regional"],
+    "experience_needed": "fresher/1-2years/3-5years/5+years",
+    "age_preference": "18-25/26-35/36-45/45+"
+  }
+}
+```
+
+### 10. Bedridden Patient Care Parameters
+```json
+{
+  "patient_condition": {
+    "diagnosis": "text",
+    "bedridden_duration": "weeks/months/years",
+    "consciousness_level": "alert/semi_conscious/unconscious",
+    "communication_ability": "verbal/non_verbal/none"
+  },
+  "care_intensity": {
+    "dependency_level": "partial/complete",
+    "medical_procedures": ["tube_feeding", "catheter_care", "tracheostomy", "oxygen_therapy"],
+    "pressure_sore_status": "none/grade1/grade2/grade3/grade4",
+    "mobility_exercises": "required/not_required"
+  },
+  "support_equipment": {
+    "available": ["hospital_bed", "air_mattress", "oxygen", "suction", "feeding_pump"],
+    "required": ["patient_lift", "wheelchair", "commode", "other"]
+  }
+}
+```
+
+### 11. Parkinson's Care Parameters
+```json
+{
+  "disease_stage": {
+    "stage": "early/moderate/advanced",
+    "years_since_diagnosis": "number",
+    "primary_symptoms": ["tremor", "rigidity", "bradykinesia", "postural_instability"]
+  },
+  "current_management": {
+    "medications": "list",
+    "therapy_schedule": "text",
+    "neurologist": "contact_details",
+    "last_assessment": "date"
+  },
+  "specific_challenges": {
+    "mobility_issues": "mild/moderate/severe",
+    "swallowing_difficulty": "yes/no",
+    "speech_problems": "yes/no",
+    "cognitive_issues": "yes/no"
+  }
+}
+```
+
+### 12. Pathology Care Parameters
+```json
+{
+  "test_requirements": {
+    "test_type": "routine/specific/package",
+    "tests_needed": ["CBC", "lipid_profile", "liver_function", "kidney_function", "other"],
+    "doctor_prescription": "yes/no",
+    "urgency": "routine/urgent/emergency"
+  },
+  "patient_info": {
+    "age": "number",
+    "fasting_status": "fasting/non_fasting",
+    "medical_history": "text",
+    "current_medications": "text"
+  },
+  "service_preferences": {
+    "collection_time": "early_morning/morning/afternoon/evening",
+    "report_delivery": "email/hard_copy/both",
+    "report_urgency": "same_day/next_day/regular"
+  }
+}
+```
+
+### 13. Health Check-up Services Parameters
+```json
+{
+  "patient_demographics": {
+    "age": "number",
+    "gender": "male/female",
+    "occupation": "text",
+    "lifestyle": "sedentary/active"
+  },
+  "checkup_preferences": {
+    "package_type": "basic/comprehensive/specialized",
+    "specific_concerns": ["cardiac", "diabetes", "cancer_screening", "general"],
+    "last_checkup": "date",
+    "frequency": "annual/biannual/first_time"
+  },
+  "medical_history": {
+    "existing_conditions": "list",
+    "family_history": "text",
+    "allergies": "text",
+    "current_medications": "list"
+  }
+}
+```
 
 ## Query Flow & Dashboard System
 
@@ -799,3 +1191,61 @@ CREATE INDEX idx_notifications_unread ON notifications(recipient_type, recipient
 2. **Hourly Backups**: Transaction logs
 3. **Replication**: Master-slave setup for high availability
 4. **Point-in-time Recovery**: Enabled through binary logs
+
+## Service Subcategories Implementation Strategy
+
+### 1. Dynamic Form Generation
+- Use service_form_fields table to dynamically generate forms for each subcategory
+- JSON schema validation for each parameter group
+- Progressive disclosure of fields based on previous selections
+- Client-side validation with server-side verification
+
+### 2. Pricing Calculation Model
+```sql
+-- Price calculation formula
+Total_Price = Base_Price + Subcategory_Additional_Cost + Parameter_Based_Pricing
+Where:
+  - Base_Price: From service_subcategories table
+  - Additional_Cost: Based on care level, equipment needed, etc.
+  - Parameter_Based_Pricing: Dynamic pricing based on complexity
+```
+
+### 3. Service-Worker Matching Algorithm
+- Match workers based on:
+  - Service subcategory specialization
+  - Required certifications (ICU training, specialized care)
+  - Language preferences
+  - Location proximity
+  - Availability matching (shift preferences)
+  - Experience level requirements
+
+### 4. API Structure for Service Booking
+```json
+POST /api/booking/create
+{
+  "service_id": 1,
+  "subcategory_id": 2,
+  "parameters": {
+    "patient_info": {...},
+    "care_requirements": {...},
+    "medical_conditions": {...},
+    "preferences": {...}
+  },
+  "service_timing": {...},
+  "billing_preferences": {...}
+}
+```
+
+### 5. Data Validation Rules
+- Required fields enforcement based on subcategory
+- Medical information validation for healthcare services
+- Age and experience verification for specialized care
+- Equipment availability checks
+- Insurance coverage validation where applicable
+
+### 6. Reporting & Analytics
+- Service utilization by subcategory
+- Parameter frequency analysis
+- Pricing optimization insights
+- Worker-service matching success rates
+- Customer satisfaction by service parameters

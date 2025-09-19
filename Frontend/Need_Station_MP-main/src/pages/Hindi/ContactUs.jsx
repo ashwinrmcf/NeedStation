@@ -110,7 +110,7 @@ export default function HindiContactUs() {
             </div>
             <h3 className="text-xl font-semibold mb-2">ईमेल करें</h3>
             <p className="text-gray-300">ईमेल के माध्यम से संपर्क करें</p>
-            <a href="mailto:support@needstation.com" className="text-teal-400 mt-4 font-medium hover:underline">support@needstation.com</a>
+            <a href="mailto:support@needstation.in" className="text-teal-400 mt-4 font-medium hover:underline">support@needstation.in</a>
           </div>
 
           <div className="bg-gray-800 rounded-lg p-8 flex flex-col items-center text-center hover:shadow-lg hover:shadow-teal-500/20 transition duration-300">

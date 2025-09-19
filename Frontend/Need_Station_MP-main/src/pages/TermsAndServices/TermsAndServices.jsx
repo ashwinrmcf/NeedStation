@@ -132,7 +132,7 @@ const TermsAndServices = () => {
         <section className={styles.termsSection}>
           <h2>12. Contact Information</h2>
           <p>
-            If you have any questions about these Terms, please contact us at support@needstation.com or through our contact page.
+            If you have any questions about these Terms, please contact us at support@needstation.in or through our contact page.
           </p>
         </section>
         
