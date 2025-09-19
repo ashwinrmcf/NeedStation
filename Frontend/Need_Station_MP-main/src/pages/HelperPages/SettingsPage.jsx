@@ -55,6 +55,10 @@ const SettingsPage = () => {
 				};
 
 				console.log('Parsed data:', parsedData); // Debug log
+				console.log('Profile Image URL from API:', data.profileImageUrl); // Specific debug for image
+				console.log('Profile Image URL type:', typeof data.profileImageUrl); // Check data type
+				console.log('Profile Image URL length:', data.profileImageUrl ? data.profileImageUrl.length : 'null/undefined'); // Check length
+
 				setWorkerData(parsedData);
 				setError(null);
 			} catch (err) {
@@ -173,17 +177,18 @@ const SettingsPage = () => {
 					{/* Profile Header */}
 					<div className="text-center mb-8">
 						<div className="relative inline-block">
-							{workerData.profileImageUrl ? (
+							{workerData.profileImageUrl && workerData.profileImageUrl.trim() !== '' ? (
 								<img 
 									src={workerData.profileImageUrl} 
 									alt="Profile" 
 									className="h-24 w-24 rounded-full object-cover border-3 border-[#00E0B8] mx-auto"
 									onError={(e) => {
-										console.log("Profile image failed to load in settings");
+										console.log("Profile image failed to load:", workerData.profileImageUrl);
+										console.log("Error details:", e);
 										e.target.style.display = 'none';
 										e.target.parentNode.innerHTML = `<div class='h-24 w-24 rounded-full bg-gradient-to-r from-[#00E0B8] to-[#00C4A0] flex items-center justify-center text-gray-900 font-bold text-3xl mx-auto'>${workerData.fullName ? workerData.fullName.charAt(0).toUpperCase() : 'W'}</div>`;
 									}}
-									onLoad={() => console.log("Profile image loaded successfully in settings")}
+									onLoad={() => console.log("Profile image loaded successfully:", workerData.profileImageUrl)}
 								/>
 							) : (
 								<div className='h-24 w-24 rounded-full bg-gradient-to-r from-[#00E0B8] to-[#00C4A0] flex items-center justify-center text-gray-900 font-bold text-3xl mx-auto'>

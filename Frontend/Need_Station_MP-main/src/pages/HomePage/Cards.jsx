@@ -1,181 +1,263 @@
 import styles from './Cards.module.css';
-import { useRef } from 'react';
+import { useState } from 'react';
 
-import image from '../../assets/images/cardImage1.jpg';
-import image1 from '../../assets/images/services/security/securityGuard.png';
-import image2 from '../../assets/images/services/parkinsonsCare.png';
-import image3 from '../../assets/images/services/bedriddenPatient.png';
-import image4 from '../../assets/images/services/motherAndBaby.png';
-import image5 from '../../assets/images/services/paralysisCare.png';
-import image6 from '../../assets/images/services/elderlyCare.png';
-import image7 from '../../assets/images/services/nursingCare.png';
-import image8 from '../../assets/images/services/pathologyCare.png';
-import image9 from '../../assets/images/services/diabetesManagement.png';
-import image10 from '../../assets/images/services/healthCheckUp.png';
-import image11 from '../../assets/images/services/physiotherapy.png';
-import image12 from '../../assets/images/services/medicalCare.png';
-import image13 from '../../assets/images/services/homeHealthCare.png';
+// Real service images
+import securityImage from '../../assets/images/services/realservices/se.png';
+import parkinsonsImage from '../../assets/images/services/realservices/parkinsons.webp';
+import bedriddenImage from '../../assets/images/services/realservices/bedridden.jpg';
+import motherBabyImage from '../../assets/images/services/realservices/motherbaby.jpg';
+import paralysisImage from '../../assets/images/services/realservices/paralysis.jpg';
+import elderlyCareImage from '../../assets/images/services/realservices/eldercare.jpg';
+import nursingImage from '../../assets/images/services/realservices/nurse].jpg';
+import pathologyImage from '../../assets/images/services/realservices/pathology.jpg';
+import diabetesImage from '../../assets/images/services/realservices/diabetes.jpg';
+import healthCheckImage from '../../assets/images/services/realservices/healthcheck.jpg';
+import physiotherapyImage from '../../assets/images/services/realservices/physiotherapy.jpg';
+import postSurgeryImage from '../../assets/images/services/realservices/postsurgery.jpg';
+import caregiverImage from '../../assets/images/services/realservices/caregiver.jpg';
 import { Link } from 'react-router-dom';
 
 const Cards = () => {
-  const scrollContainerRef = useRef(null);
+  const [selectedService, setSelectedService] = useState(0);
 
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: -400,
-        behavior: 'smooth'
-      });
+  // All services data
+  const allServices = [
+    {
+      image: elderlyCareImage,
+      title: "Elderly Care",
+      description: "Compassionate and professional care tailored to meet the needs of seniors.",
+      link: "/elderly-care",
+      alt: "Elderly Care",
+      category: "Elder Care",
+      icon: "👴"
+    },
+    {
+      image: nursingImage,
+      title: "Nursing Care",
+      description: "Professional nursing services with qualified nurses for medical care at home.",
+      link: "/nursing-care",
+      alt: "Nursing Care",
+      category: "Medical Care",
+      icon: "👩‍⚕️"
+    },
+    {
+      image: caregiverImage,
+      title: "Caretaker at Home",
+      description: "Dedicated caretakers providing personalized assistance and companionship at home.",
+      link: "/caretaker-at-home",
+      alt: "Caretaker at Home",
+      category: "Personal Care",
+      icon: "🤝"
+    },
+    {
+      image: bedriddenImage,
+      title: "Bedridden Patient Care",
+      description: "Comprehensive bedridden care with daily assistance and medical support.",
+      link: "/bedridden-patient-care",
+      alt: "Bedridden Patient Care",
+      category: "Specialized Care",
+      icon: "🛏️"
+    },
+    {
+      image: parkinsonsImage,
+      title: "Parkinsons Care",
+      description: "Specialized care and support for patients with Parkinson's disease and their families.",
+      link: "/parkinsons-care",
+      alt: "Parkinsons Care",
+      category: "Specialized Care",
+      icon: "🧠"
+    },
+    {
+      image: physiotherapyImage,
+      title: "Physiotherapy",
+      description: "Professional physiotherapy services for rehabilitation and pain management at home.",
+      link: "/physiotherapy",
+      alt: "Physiotherapy",
+      category: "Rehabilitation",
+      icon: "🏃‍♂️"
+    },
+    {
+      image: securityImage,
+      title: "Home Security Guard",
+      description: "Professional security personnel to protect your home and family with 24/7 vigilance.",
+      link: "/home-security-guard",
+      alt: "Home Security Guard",
+      category: "Security",
+      icon: "🛡️"
+    },
+    {
+      image: motherBabyImage,
+      title: "Mother and Baby Care",
+      description: "Postnatal care for mothers and comprehensive newborn care services.",
+      link: "/mother-baby-care",
+      alt: "Mother and Baby Care",
+      category: "Maternity Care",
+      icon: "👶"
+    },
+    {
+      image: paralysisImage,
+      title: "Paralysis Care",
+      description: "Specialized care and rehabilitation services for patients with paralysis conditions.",
+      link: "/paralysis-care",
+      alt: "Paralysis Care",
+      category: "Specialized Care",
+      icon: "♿"
+    },
+    {
+      image: pathologyImage,
+      title: "Pathology Care",
+      description: "Home-based pathology services including sample collection and diagnostic tests.",
+      link: "/pathology-care",
+      alt: "Pathology Care",
+      category: "Diagnostic",
+      icon: "🔬"
+    },
+    {
+      image: diabetesImage,
+      title: "Diabetes Management",
+      description: "Comprehensive diabetes care including monitoring, medication management, and lifestyle guidance.",
+      link: "/diabetes-management",
+      alt: "Diabetes Management",
+      category: "Health Management",
+      icon: "💉"
+    },
+    {
+      image: healthCheckImage,
+      title: "Health Check Up Services",
+      description: "Regular health screenings and comprehensive medical check-ups at your convenience.",
+      link: "/health-checkup",
+      alt: "Health Check Up Services",
+      category: "Preventive Care",
+      icon: "🩺"
+    },
+    {
+      image: postSurgeryImage,
+      title: "Post Surgery Care",
+      description: "Specialized post-operative care and recovery support in the comfort of your home.",
+      link: "/post-surgery-care",
+      alt: "Post Surgery Care",
+      category: "Recovery Care",
+      icon: "🏥"
     }
-  };
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: 400,
-        behavior: 'smooth'
-      });
-    }
-  };
+  ];
 
   return <>
     <section className={`py-5 ${styles["section"]}`}>
     <div className="container">
       <div className={styles["headerSection"]}>
         <h2 className={`${styles["heading"]}`}>Our Services</h2>
-        <Link to="/services" className={styles["viewAllButton"]}>
-          View all
-        </Link>
       </div>
-      <div className={styles["scrollWrapper"]}>
-        <button className={styles["scrollButton"] + " " + styles["scrollButtonLeft"]} onClick={scrollLeft}>
-          <span>‹</span>
-        </button>
-        <div className={styles["scrollContainer"]} ref={scrollContainerRef}>
-          <div className={styles["cardContainer"]}>
-          
-          <div className={styles["scrollCard"]}>
-            <img src={image1} className={`card-img-top ${styles["cardImage"]}`} alt="Home Security Guard"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Home Security Guard</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Professional security personnel to protect your home and family with 24/7 vigilance.</p>
-              <Link to="/home-security-guard" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
+      {/* Creative Services Showcase */}
+      <div className={styles["servicesShowcase"]}>
+        
+        {/* Hero Service Spotlight */}
+        <div className={styles["heroSpotlight"]}>
+          <div className={styles["spotlightImageSection"]}>
+            {/* Left Half - Quick Information */}
+            <div className={styles["quickInfoPanel"]}>
+              <div className={styles["panelHeader"]}>
+                <div className={styles["serviceIconLarge"]}>{allServices[selectedService].icon}</div>
+                <div className={styles["headerText"]}>
+                  <h4 className={styles["quickTitle"]}>Quick Info</h4>
+                  <span className={styles["categoryBadge"]}>{allServices[selectedService].category}</span>
+                </div>
+              </div>
+              
+              <div className={styles["infoCards"]}>
+                <div className={styles["infoCard"]}>
+                  <div className={styles["cardIcon"]}>💰</div>
+                  <div className={styles["cardContent"]}>
+                    <span className={styles["cardLabel"]}>Starting</span>
+                    <span className={styles["cardValue"]}>₹800/day</span>
+                  </div>
+                </div>
+                
+                <div className={styles["infoCard"]}>
+                  <div className={styles["cardIcon"]}>🕒</div>
+                  <div className={styles["cardContent"]}>
+                    <span className={styles["cardLabel"]}>Available</span>
+                    <span className={styles["cardValue"]}>24/7</span>
+                  </div>
+                </div>
+                
+                <div className={styles["infoCard"]}>
+                  <div className={styles["cardIcon"]}>📍</div>
+                  <div className={styles["cardContent"]}>
+                    <span className={styles["cardLabel"]}>Location</span>
+                    <span className={styles["cardValue"]}>Pan India</span>
+                  </div>
+                </div>
+                
+                <div className={styles["infoCard"]}>
+                  <div className={styles["cardIcon"]}>⭐</div>
+                  <div className={styles["cardContent"]}>
+                    <span className={styles["cardLabel"]}>Rating</span>
+                    <span className={styles["cardValue"]}>4.8/5</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className={styles["trustBadge"]}>
+                <span className={styles["trustIcon"]}>🛡️</span>
+                <span className={styles["trustText"]}>Trusted by 10,000+ families</span>
+              </div>
+            </div>
+            
+            {/* Right Half - Square Image */}
+            <div className={styles["spotlightImage"]}>
+              <img 
+                src={allServices[selectedService].image} 
+                alt={allServices[selectedService].alt}
+                className={styles["heroImage"]}
+              />
             </div>
           </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image2} className={`card-img-top ${styles["cardImage"]}`} alt="Parkinsons Care"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Parkinsons Care</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Specialized care and support for patients with Parkinson's disease and their families.</p>
-              <Link to="/parkinsons-care" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
+          <div className={styles["spotlightContent"]}>
+            <h3 className={styles["heroTitle"]}>{allServices[selectedService].title}</h3>
+            <p className={styles["heroDescription"]}>{allServices[selectedService].description}</p>
+            <Link 
+              to={allServices[selectedService].link} 
+              className={styles["heroButton"]}
+            >
+              Book This Service
+            </Link>
           </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image3} className={`card-img-top ${styles["cardImage"]}`} alt="Bedridden Patient Care"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Bedridden Patient Care</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Comprehensive bedridden care with daily assistance and medical support.</p>
-              <Link to="/bedridden-patient-care" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image4} className={`card-img-top ${styles["cardImage"]}`} alt="Mother and Baby Care"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Mother and Baby Care</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Postnatal care for mothers and comprehensive newborn care services.</p>
-              <Link to="/mother-baby-care" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image5} className={`card-img-top ${styles["cardImage"]}`} alt="Paralysis Care"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Paralysis Care</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Specialized care and rehabilitation services for patients with paralysis conditions.</p>
-              <Link to="/paralysis-care" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image6} className={`card-img-top ${styles["cardImage"]}`} alt="Elderly Care"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Elderly Care</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Compassionate and professional care tailored to meet the needs of seniors.</p>
-              <Link to="/elderly-care" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image7} className={`card-img-top ${styles["cardImage"]}`} alt="Nursing Care"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Nursing Care</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Professional nursing services with qualified nurses for medical care at home.</p>
-              <Link to="/nursing-care" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image8} className={`card-img-top ${styles["cardImage"]}`} alt="Pathology Care"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Pathology Care</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Home-based pathology services including sample collection and diagnostic tests.</p>
-              <Link to="/pathology-care" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image9} className={`card-img-top ${styles["cardImage"]}`} alt="Diabetes Management"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Diabetes Management</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Comprehensive diabetes care including monitoring, medication management, and lifestyle guidance.</p>
-              <Link to="/diabetes-management" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image10} className={`card-img-top ${styles["cardImage"]}`} alt="Health Check Up Services"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Health Check Up Services</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Regular health screenings and comprehensive medical check-ups at your convenience.</p>
-              <Link to="/health-checkup" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image11} className={`card-img-top ${styles["cardImage"]}`} alt="Physiotherapy"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Physiotherapy</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Professional physiotherapy services for rehabilitation and pain management at home.</p>
-              <Link to="/physiotherapy" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image12} className={`card-img-top ${styles["cardImage"]}`} alt="Post Surgery Care"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Post Surgery Care</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Specialized post-operative care and recovery support in the comfort of your home.</p>
-              <Link to="/post-surgery-care" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
-          <div className={styles["scrollCard"]}>
-            <img src={image13} className={`card-img-top ${styles["cardImage"]}`} alt="Caretaker at Home"/>
-            <div className="card-body">
-              <h5 className={`card-title ${styles["cardTitle"]}`}>Caretaker at Home</h5>
-              <p className={`card-text ${styles["cardBody"]}`}>Dedicated caretakers providing personalized assistance and companionship at home.</p>
-              <Link to="/caretaker-at-home" className={`btn btn-primary ${styles["cardButton"]}`}>Learn More</Link>
-            </div>
-          </div>
-
         </div>
+
+        {/* Interactive Services Grid */}
+        <div className={styles["servicesGrid"]}>
+          <h4 className={styles["gridTitle"]}>All Our Services</h4>
+          <div className={styles["servicesList"]}>
+            {allServices.map((service, index) => (
+              <div 
+                key={index}
+                className={`${styles["serviceItem"]} ${index === selectedService ? styles["active"] : ''}`}
+                onClick={() => setSelectedService(index)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setSelectedService(index);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Select ${service.title}`}
+              >
+                <div className={styles["serviceIcon"]}>{service.icon}</div>
+                <div className={styles["serviceInfo"]}>
+                  <h5 className={styles["serviceName"]}>{service.title}</h5>
+                  <span className={styles["serviceCategory"]}>{service.category}</span>
+                </div>
+                <div className={styles["serviceArrow"]}>
+                  {index === selectedService ? '▶' : '→'}
+                </div>
+              </div>
+            ))}
+          </div>
+          <Link to="/services" className={styles["viewAllButton"]}>
+            View all
+          </Link>
         </div>
-        <button className={styles["scrollButton"] + " " + styles["scrollButtonRight"]} onClick={scrollRight}>
-          <span>›</span>
-        </button>
+
       </div>
     </div>
   </section>

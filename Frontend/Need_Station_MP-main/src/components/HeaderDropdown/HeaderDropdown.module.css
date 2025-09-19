@@ -4,14 +4,15 @@
   left: 50%;
   transform: translateX(-50%);
   width: 86.364vw; /* Match header width */
-  background: #121212; /* Solid background - not transparent */
+  background: var(--bg-surface); /* Use theme background */
   padding: 2rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 20px var(--shadow-color);
   z-index: 99;
   top: calc(10.306vh + 40px); /* Position below header */
   border-radius: 0 0 16px 16px; /* Rounded corners at bottom */
-  border: 1px solid #00E0B8; /* Teal border */
-  border-top: 2px solid #00E0B8; /* Teal accent line at the top */
+  border: 1px solid var(--accent-tertiary); /* Use theme accent color */
+  border-top: 2px solid var(--accent-tertiary); /* Use theme accent color */
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Dropdown Rows */
@@ -24,7 +25,8 @@
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: #00E0B8; /* Primary accent color */
+  color: var(--accent-tertiary); /* Use theme accent color */
+  transition: color 0.3s ease;
 }
 
 /* Service Links (flexible grid layout) */
@@ -37,22 +39,22 @@
 .services a {
   font-size: 1.125rem;
   font-weight: 500;
-  color: #FFFFFF;
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  background-color: rgba(0, 0, 0, 0.4);
+  color: var(--text-primary);
+  border: 2px solid var(--text-secondary);
+  background-color: var(--hover-bg);
   padding: 1.1vh 1.5vw;
   margin: 0.5rem;
   border-radius: 12px;
   cursor: pointer;
   opacity: 1;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .services a:hover {
-  background: #00E0B8;
-  color: #000;
-  border-color: #00E0B8;
+  background: var(--accent-tertiary);
+  color: var(--bg-primary);
+  border-color: var(--accent-tertiary);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 224, 184, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 212, 170, 0.3);
 }

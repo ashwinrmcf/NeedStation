@@ -492,11 +492,18 @@ public class WorkerService {
             worker.setWhatsappNumber(dto.getWhatsappNumber());
         }
         
-        // Handle profile picture upload
+        // Update status
+        worker.setRegistrationStatus("STEP_1_COMPLETED");
+        
+        // Save worker FIRST to get a valid ID for image upload
+        worker = repo.save(worker);
+        System.out.println("Worker saved to database. ID: " + worker.getId());
+        
+        // Handle profile picture upload AFTER saving worker to get valid ID
         if (profilePicture != null && !profilePicture.isEmpty()) {
             try {
                 System.out.println("=== PROFILE PICTURE UPLOAD DEBUG ===");
-                System.out.println("Worker ID: " + workerId);
+                System.out.println("Worker ID: " + worker.getId());
                 System.out.println("Worker Name: " + worker.getFullName());
                 System.out.println("File size: " + profilePicture.getSize());
                 System.out.println("File type: " + profilePicture.getContentType());
@@ -508,6 +515,10 @@ public class WorkerService {
                 if (imageUrl != null && !imageUrl.isEmpty()) {
                     worker.setProfileImageUrl(imageUrl);
                     System.out.println("Profile image URL set: " + imageUrl);
+                    
+                    // Save worker again with the image URL
+                    worker = repo.save(worker);
+                    System.out.println("Worker saved again with profile image URL: " + worker.getProfileImageUrl());
                 } else {
                     System.err.println("ERROR: Cloudinary upload returned null or empty URL");
                 }
@@ -525,14 +536,6 @@ public class WorkerService {
                 System.out.println("profilePicture is empty: " + profilePicture.isEmpty());
             }
         }
-        
-        // Update status
-        worker.setRegistrationStatus("STEP_1_COMPLETED");
-        
-        // Save worker and log the result
-        worker = repo.save(worker);
-        System.out.println("Worker saved to database. ID: " + worker.getId());
-        System.out.println("Profile image URL in saved worker: " + worker.getProfileImageUrl());
         
         // Attempt to send OTP
         if (!worker.getPhoneVerified()) {
