@@ -93,14 +93,23 @@ public class WorkerService {
     public Worker saveWorker(WorkerDTO dto, String imageUrl) {
         Worker worker = new Worker();
         worker.setFullName(dto.getFullName());
-        worker.setGender(dto.getGender());
+        
+        // Convert string gender to enum
+        try {
+            worker.setGender(Worker.Gender.valueOf(dto.getGender().toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            worker.setGender(Worker.Gender.OTHER);
+        }
+        
         worker.setDob(LocalDate.parse(dto.getDob())); // Parses the DOB string into LocalDate
         worker.setPhone(dto.getPhone());
         worker.setEmail(dto.getEmail());
         worker.setWhatsappNumber(dto.getWhatsappNumber());
         worker.setProfileImageUrl(imageUrl); // Saves the profile image URL
         worker.setRegistrationDate(LocalDate.now());
-        worker.setRegistrationStatus("INCOMPLETE");
+        
+        // Convert string registration status to enum
+        worker.setRegistrationStatus(Worker.RegistrationStatus.PENDING);
         
         // Initialize OTP fields
         worker.setOtpAttempts(0);
@@ -473,7 +482,11 @@ public class WorkerService {
         }
         
         if (dto.getGender() != null) {
-            worker.setGender(dto.getGender());
+            try {
+                worker.setGender(Worker.Gender.valueOf(dto.getGender().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                worker.setGender(Worker.Gender.OTHER);
+            }
         }
         
         if (dto.getDob() != null) {
@@ -493,7 +506,7 @@ public class WorkerService {
         }
         
         // Update status
-        worker.setRegistrationStatus("STEP_1_COMPLETED");
+        worker.setRegistrationStatus(Worker.RegistrationStatus.ACTIVE);
         
         // Save worker FIRST to get a valid ID for image upload
         worker = repo.save(worker);
@@ -557,7 +570,7 @@ public class WorkerService {
         worker.setServiceAreas(dto.getServiceAreas());
         worker.setOpenToTravel(dto.getOpenToTravel());
         // worker.setLocality(dto.getLocality()); // Locality field not implemented
-        worker.setRegistrationStatus("STEP_2_COMPLETED");
+        worker.setRegistrationStatus(Worker.RegistrationStatus.ACTIVE);
         
         return repo.save(worker);
     }
@@ -572,7 +585,7 @@ public class WorkerService {
         worker.setWorkType(dto.getWorkType());
         worker.setAvailability(dto.getAvailability());
         worker.setLanguages(dto.getLanguages());
-        worker.setRegistrationStatus("STEP_3_COMPLETED");
+        worker.setRegistrationStatus(Worker.RegistrationStatus.ACTIVE);
         
         return repo.save(worker);
     }
@@ -584,7 +597,15 @@ public class WorkerService {
         Worker worker = getWorkerOrThrow(workerId);
         
         worker.setAadharNumber(dto.getAadharNumber());
-        worker.setPoliceVerificationStatus(dto.getPoliceVerificationStatus());
+        
+        // Convert string verification status to enum
+        if (dto.getPoliceVerificationStatus() != null) {
+            try {
+                worker.setPoliceVerificationStatus(Worker.VerificationStatus.valueOf(dto.getPoliceVerificationStatus().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                worker.setPoliceVerificationStatus(Worker.VerificationStatus.PENDING);
+            }
+        }
         
         // Upload ID proof if provided
         if (idProof != null && !idProof.isEmpty()) {
@@ -659,7 +680,7 @@ public class WorkerService {
         worker.setEmergencyContactNumber(dto.getEmergencyContactNumber());
         
         // Update status to pending verification
-        worker.setRegistrationStatus("PENDING_VERIFICATION");
+        worker.setRegistrationStatus(Worker.RegistrationStatus.PENDING);
         
         return repo.save(worker);
     }
@@ -667,7 +688,7 @@ public class WorkerService {
     // Finalize worker registration
     public Worker finalizeRegistration(Long workerId) {
         Worker worker = getWorkerOrThrow(workerId);
-        worker.setRegistrationStatus("VERIFIED"); // Or any other final status
+        worker.setRegistrationStatus(Worker.RegistrationStatus.ACTIVE); // Or any other final status
         return repo.save(worker);
     }
     
@@ -684,14 +705,31 @@ public class WorkerService {
         // Create a new worker with default values
         worker = new Worker();
         worker.setRegistrationDate(LocalDate.now());
-        worker.setRegistrationStatus("INCOMPLETE");
+        worker.setRegistrationStatus(Worker.RegistrationStatus.PENDING);
         
         // Explicitly set all not-null fields to prevent database constraint violations
         worker.setOpenToTravel(false);
         worker.setFullName("");
-        worker.setGender("");
+        worker.setGender(Worker.Gender.OTHER);
         worker.setPhone("");
         worker.setDob(LocalDate.now());
+        
+        // Set required enum fields with defaults
+        worker.setWorkerType(Worker.WorkerType.CARETAKER);
+        worker.setAvailabilityStatus(Worker.AvailabilityStatus.AVAILABLE);
+        worker.setPoliceVerificationStatus(Worker.VerificationStatus.PENDING);
+        worker.setMedicalCertificateStatus(Worker.VerificationStatus.PENDING);
+        
+        // Set required fields with defaults
+        worker.setCurrentAddress("");
+        worker.setCity("");
+        worker.setPincode("");
+        worker.setExperienceYears(0);
+        worker.setServiceRadiusKm(10);
+        worker.setTotalBookings(0);
+        
+        // Set agency_id to a default value (you may need to adjust this based on your business logic)
+        worker.setAgencyId(1L); // Default agency ID - adjust as needed
         
         // Initialize phone verification to false for new workers
         worker.setPhoneVerified(false);

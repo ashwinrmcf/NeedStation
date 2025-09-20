@@ -2,6 +2,9 @@ package com.example.authbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -12,81 +15,135 @@ public class Worker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Step 1: Basic Information
-    @Column(nullable = false)
+    // Agency relationship
+    @Column(name = "agency_id", nullable = false)
+    private Long agencyId;
+
+    // Personal Information
+    @Column(name = "full_name", length = 255, nullable = false)
     private String fullName = "";
     
+    private String email = "";
+    
+    @Column(unique = true, nullable = false, length = 20)
+    private String phone = "";
+    
+    @Column(name = "alternate_phone", length = 20)
+    private String alternatePhone = "";
+    
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String gender = "";
+    private Gender gender;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(nullable = false)
-    private LocalDate dob = LocalDate.now();
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
-    @Column(length = 500)
-    private String profileImageUrl = "";
-
-    @Column(unique = true, nullable = false)
-    private String phone = "";
-
-    private String email = "";
-    private String whatsappNumber = "";
-    
-    // Step 2: Contact Information
-    private String permanentAddress = "";
+    // Address Information
+    @Column(name = "current_address", columnDefinition = "TEXT", nullable = false)
     private String currentAddress = "";
+    
+    @Column(name = "permanent_address", columnDefinition = "TEXT")
+    private String permanentAddress = "";
+    
+    @Column(length = 100, nullable = false)
     private String city = "";
+    
+    @Column(length = 10, nullable = false)
     private String pincode = "";
     
-    // Service areas (comma-separated)
-    private String serviceAreas = "";
+    // Professional Information
+    @Enumerated(EnumType.STRING)
+    @Column(name = "worker_type", nullable = false)
+    private WorkerType workerType;
     
-    @Column(nullable = false)
-    private Boolean openToTravel = false;
+    @Column(name = "experience_years", nullable = false)
+    private Integer experienceYears = 0;
     
-    // Step 3: Professional Details
-    // Stored as JSON strings for flexibility
-    @Column(columnDefinition = "TEXT")
-    private String services = "{}"; // JSON of selected services
+    @Column(columnDefinition = "JSON")
+    private String specializations = "[]";
     
-    private String experience = "";
-    private String workType = ""; // Part-time, Full-time, Weekends
-
-    @Column(columnDefinition = "TEXT")
-    private String availability = "{}"; // JSON of availability days/times
+    @Column(columnDefinition = "JSON")
+    private String languages = "[]";
     
-    @Column(columnDefinition = "TEXT")
-    private String languages = "{}"; // JSON of languages
+    @Column(name = "education_qualification", length = 255)
+    private String educationQualification = "";
     
-    // Step 4: Verification
+    @Column(columnDefinition = "JSON")
+    private String certifications = "[]";
+    
+    // Verification
+    @Column(name = "aadhar_number", length = 20, unique = true)
     private String aadharNumber = "";
-    private String policeVerificationStatus = "PENDING";
+    
+    @Column(name = "pan_number", length = 20)
+    private String panNumber = "";
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "police_verification_status", nullable = false)
+    private VerificationStatus policeVerificationStatus = VerificationStatus.PENDING;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "medical_certificate_status", nullable = false)
+    private VerificationStatus medicalCertificateStatus = VerificationStatus.PENDING;
+    
+    // Platform Details
+    @Column(name = "profile_image_url", length = 500)
+    private String profileImageUrl = "";
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "availability_status", nullable = false)
+    private AvailabilityStatus availabilityStatus = AvailabilityStatus.AVAILABLE;
+    
+    @Column(name = "service_radius_km", nullable = false)
+    private Integer serviceRadiusKm = 10;
+    
+    @Column(precision = 3, scale = 2, nullable = false)
+    private BigDecimal rating = BigDecimal.valueOf(0.00);
+    
+    @Column(name = "total_bookings", nullable = false)
+    private Integer totalBookings = 0;
+    
+    // Emergency Contact
+    @Column(name = "emergency_contact_name", length = 255)
+    private String emergencyContactName = "";
+    
+    @Column(name = "emergency_contact_number", length = 20)
+    private String emergencyContactNumber = "";
+    
+    @Column(name = "emergency_contact_relation", length = 100)
+    private String emergencyContactRelation = "";
+    
+    // Status
+    @Enumerated(EnumType.STRING)
+    @Column(name = "registration_status", nullable = false)
+    private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
+    
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    // Legacy fields for backward compatibility
     @Column(length = 500)
     private String idProofUrl = "";
     @Column(length = 500)
     private String selfieWithIdUrl = "";
-    
     @Column(columnDefinition = "TEXT")
     private String certificateUrls = "{}"; // JSON array of certificate URLs
     
-    // Step 5: Payment Information
+    // Payment Information
     private String paymentMode = ""; // UPI, Bank Transfer, Cash
     private String upiId = "";
     private String bankName = "";
     private String accountNumber = "";
     private String ifscCode = "";
-    private String panCard = "";
     
-    // Emergency Contact
-    private String emergencyContactName = "";
-    private String emergencyContactNumber = "";
-    
-    // Registration status
     @Column(nullable = false)
-    private String registrationStatus = "INCOMPLETE"; // INCOMPLETE, PENDING_VERIFICATION, VERIFIED, REJECTED
-    @Column(nullable = false)
-    private LocalDate registrationDate = LocalDate.now();
-    private LocalDate verificationDate;
+    private Boolean openToTravel = false;
     
     // OTP verification fields
     private String phoneVerificationOtp;
@@ -94,13 +151,47 @@ public class Worker {
     private LocalDateTime otpExpiresAt;
     private Boolean phoneVerified = false;
     private Integer otpAttempts = 0; // Track failed attempts for security
+    private LocalDate verificationDate;
+    
+    // Enums
+    public enum Gender {
+        MALE, FEMALE, OTHER
+    }
+    
+    public enum WorkerType {
+        NURSE, CARETAKER, SECURITY_GUARD, PHYSIOTHERAPIST, PATHOLOGIST
+    }
+    
+    public enum VerificationStatus {
+        PENDING, VERIFIED, FAILED, NOT_REQUIRED
+    }
+    
+    public enum AvailabilityStatus {
+        AVAILABLE, BUSY, OFFLINE
+    }
+    
+    public enum RegistrationStatus {
+        PENDING, ACTIVE, SUSPENDED, TERMINATED
+    }
 
+    // Constructors
+    public Worker() {}
+    
+    // Getters and Setters
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+    
+    public Long getAgencyId() {
+        return agencyId;
+    }
+
+    public void setAgencyId(Long agencyId) {
+        this.agencyId = agencyId;
     }
 
     public String getFullName() {
@@ -111,20 +202,29 @@ public class Worker {
         this.fullName = fullName;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+    
+    // Legacy getter/setter for compatibility
     public LocalDate getDob() {
-        return dob;
+        return dateOfBirth;
     }
 
     public void setDob(LocalDate dob) {
-        this.dob = dob;
+        this.dateOfBirth = dob;
     }
 
     public String getProfileImageUrl() {
@@ -151,12 +251,21 @@ public class Worker {
         this.email = email;
     }
 
+    public String getAlternatePhone() {
+        return alternatePhone;
+    }
+
+    public void setAlternatePhone(String alternatePhone) {
+        this.alternatePhone = alternatePhone;
+    }
+    
+    // Legacy getter/setter for compatibility
     public String getWhatsappNumber() {
-        return whatsappNumber;
+        return alternatePhone;
     }
 
     public void setWhatsappNumber(String whatsappNumber) {
-        this.whatsappNumber = whatsappNumber;
+        this.alternatePhone = whatsappNumber;
     }
 
     public String getPermanentAddress() {
@@ -191,12 +300,44 @@ public class Worker {
         this.pincode = pincode;
     }
 
-    public String getServiceAreas() {
-        return serviceAreas;
+    public WorkerType getWorkerType() {
+        return workerType;
     }
 
-    public void setServiceAreas(String serviceAreas) {
-        this.serviceAreas = serviceAreas;
+    public void setWorkerType(WorkerType workerType) {
+        this.workerType = workerType;
+    }
+    
+    public Integer getExperienceYears() {
+        return experienceYears;
+    }
+
+    public void setExperienceYears(Integer experienceYears) {
+        this.experienceYears = experienceYears;
+    }
+    
+    public String getSpecializations() {
+        return specializations;
+    }
+
+    public void setSpecializations(String specializations) {
+        this.specializations = specializations;
+    }
+    
+    public String getEducationQualification() {
+        return educationQualification;
+    }
+
+    public void setEducationQualification(String educationQualification) {
+        this.educationQualification = educationQualification;
+    }
+    
+    public String getCertifications() {
+        return certifications;
+    }
+
+    public void setCertifications(String certifications) {
+        this.certifications = certifications;
     }
 
     public Boolean getOpenToTravel() {
@@ -207,36 +348,60 @@ public class Worker {
         this.openToTravel = openToTravel;
     }
 
-    public String getServices() {
-        return services;
+    public String getPanNumber() {
+        return panNumber;
     }
 
-    public void setServices(String services) {
-        this.services = services;
+    public void setPanNumber(String panNumber) {
+        this.panNumber = panNumber;
+    }
+    
+    public VerificationStatus getPoliceVerificationStatus() {
+        return policeVerificationStatus;
     }
 
-    public String getExperience() {
-        return experience;
+    public void setPoliceVerificationStatus(VerificationStatus policeVerificationStatus) {
+        this.policeVerificationStatus = policeVerificationStatus;
+    }
+    
+    public VerificationStatus getMedicalCertificateStatus() {
+        return medicalCertificateStatus;
     }
 
-    public void setExperience(String experience) {
-        this.experience = experience;
+    public void setMedicalCertificateStatus(VerificationStatus medicalCertificateStatus) {
+        this.medicalCertificateStatus = medicalCertificateStatus;
+    }
+    
+    public AvailabilityStatus getAvailabilityStatus() {
+        return availabilityStatus;
     }
 
-    public String getWorkType() {
-        return workType;
+    public void setAvailabilityStatus(AvailabilityStatus availabilityStatus) {
+        this.availabilityStatus = availabilityStatus;
+    }
+    
+    public Integer getServiceRadiusKm() {
+        return serviceRadiusKm;
     }
 
-    public void setWorkType(String workType) {
-        this.workType = workType;
+    public void setServiceRadiusKm(Integer serviceRadiusKm) {
+        this.serviceRadiusKm = serviceRadiusKm;
+    }
+    
+    public BigDecimal getRating() {
+        return rating;
     }
 
-    public String getAvailability() {
-        return availability;
+    public void setRating(BigDecimal rating) {
+        this.rating = rating;
+    }
+    
+    public Integer getTotalBookings() {
+        return totalBookings;
     }
 
-    public void setAvailability(String availability) {
-        this.availability = availability;
+    public void setTotalBookings(Integer totalBookings) {
+        this.totalBookings = totalBookings;
     }
 
     public String getLanguages() {
@@ -255,12 +420,12 @@ public class Worker {
         this.aadharNumber = aadharNumber;
     }
 
-    public String getPoliceVerificationStatus() {
-        return policeVerificationStatus;
+    public String getEmergencyContactRelation() {
+        return emergencyContactRelation;
     }
 
-    public void setPoliceVerificationStatus(String policeVerificationStatus) {
-        this.policeVerificationStatus = policeVerificationStatus;
+    public void setEmergencyContactRelation(String emergencyContactRelation) {
+        this.emergencyContactRelation = emergencyContactRelation;
     }
 
     public String getIdProofUrl() {
@@ -327,12 +492,28 @@ public class Worker {
         this.ifscCode = ifscCode;
     }
 
-    public String getPanCard() {
-        return panCard;
+    public RegistrationStatus getRegistrationStatus() {
+        return registrationStatus;
     }
 
-    public void setPanCard(String panCard) {
-        this.panCard = panCard;
+    public void setRegistrationStatus(RegistrationStatus registrationStatus) {
+        this.registrationStatus = registrationStatus;
+    }
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getEmergencyContactName() {
@@ -351,20 +532,78 @@ public class Worker {
         this.emergencyContactNumber = emergencyContactNumber;
     }
 
-    public String getRegistrationStatus() {
-        return registrationStatus;
+    // Legacy compatibility methods
+    public String getServices() {
+        return specializations;
     }
 
-    public void setRegistrationStatus(String registrationStatus) {
-        this.registrationStatus = registrationStatus;
+    public void setServices(String services) {
+        this.specializations = services;
+    }
+    
+    public String getExperience() {
+        return experienceYears != null ? experienceYears.toString() : "0";
     }
 
+    public void setExperience(String experience) {
+        try {
+            this.experienceYears = Integer.parseInt(experience);
+        } catch (NumberFormatException e) {
+            this.experienceYears = 0;
+        }
+    }
+    
+    public String getWorkType() {
+        return workerType != null ? workerType.toString() : "";
+    }
+
+    public void setWorkType(String workType) {
+        try {
+            this.workerType = WorkerType.valueOf(workType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            this.workerType = WorkerType.CARETAKER;
+        }
+    }
+    
+    public String getAvailability() {
+        return availabilityStatus != null ? availabilityStatus.toString() : "AVAILABLE";
+    }
+
+    public void setAvailability(String availability) {
+        try {
+            this.availabilityStatus = AvailabilityStatus.valueOf(availability.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            this.availabilityStatus = AvailabilityStatus.AVAILABLE;
+        }
+    }
+    
     public LocalDate getRegistrationDate() {
-        return registrationDate;
+        return createdAt != null ? createdAt.toLocalDate() : LocalDate.now();
     }
 
     public void setRegistrationDate(LocalDate registrationDate) {
-        this.registrationDate = registrationDate;
+        // This is now handled by createdAt timestamp
+    }
+    
+    public String getServiceAreas() {
+        return serviceRadiusKm != null ? serviceRadiusKm.toString() + "km" : "10km";
+    }
+
+    public void setServiceAreas(String serviceAreas) {
+        try {
+            String numStr = serviceAreas.replaceAll("[^0-9]", "");
+            this.serviceRadiusKm = Integer.parseInt(numStr);
+        } catch (NumberFormatException e) {
+            this.serviceRadiusKm = 10;
+        }
+    }
+    
+    public String getPanCard() {
+        return panNumber;
+    }
+
+    public void setPanCard(String panCard) {
+        this.panNumber = panCard;
     }
 
     public LocalDate getVerificationDate() {
@@ -415,7 +654,7 @@ public class Worker {
         this.otpAttempts = otpAttempts;
     }
 
-    // Missing getter/setter methods for WorkerService compatibility
+    // Additional compatibility methods for WorkerService
     public String getAddress() {
         return permanentAddress;
     }
@@ -441,32 +680,34 @@ public class Worker {
     }
 
     public String getWorkExperience() {
-        return experience;
+        return getExperience();
     }
 
     public void setWorkExperience(String workExperience) {
-        this.experience = workExperience;
+        setExperience(workExperience);
     }
 
     public String getEducation() {
-        return ""; // Add education field if needed
+        return educationQualification;
     }
 
     public void setEducation(String education) {
-        // Add education field if needed
+        this.educationQualification = education;
     }
-
-    public Worker() {
-    }
-
+    
+    // Legacy constructor for backward compatibility
     public Worker(Long id, String fullName, String gender, LocalDate dob, String profileImageUrl, String phone, String email, String whatsappNumber) {
         this.id = id;
         this.fullName = fullName;
-        this.gender = gender;
-        this.dob = dob;
+        try {
+            this.gender = Gender.valueOf(gender.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            this.gender = Gender.OTHER;
+        }
+        this.dateOfBirth = dob;
         this.profileImageUrl = profileImageUrl;
         this.phone = phone;
         this.email = email;
-        this.whatsappNumber = whatsappNumber;
+        this.alternatePhone = whatsappNumber;
     }
 }
