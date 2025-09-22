@@ -7,15 +7,18 @@ import ThemeToggle from "../ThemeToggle/ThemeToggle.jsx";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext.jsx";
 import PortalModal from "../common/PortalModal.jsx";
+import { FaBell, FaUser, FaCog, FaHistory, FaSignOutAlt } from "react-icons/fa";
 
 const Header = () => {
   const { user, logout } = useAuth();
   console.log("AuthContext user:", user);
 
   const [isTaskerDropdownOpen, setTaskerDropdownOpen] = useState(false);
+  const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const taskerButtonRef = useRef(null);
+  const profileDropdownRef = useRef(null);
   
   // Check current language on mount and when localStorage changes
   useEffect(() => {
@@ -32,6 +35,20 @@ const Header = () => {
     
     return () => {
       window.removeEventListener('storage', checkLanguage);
+    };
+  }, []);
+
+  // Handle click outside profile dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -65,12 +82,47 @@ const Header = () => {
           <div className={styles.authButtons}>
             <ThemeToggle />
             {user ? (
-              <>
-                <span className={styles.greeting}>Hello, {user.username}</span>
-                <button className={styles.logout} onClick={initiateLogout}>
-                  Logout
+              <div className={styles.userProfileContainer}>
+                {/* Notification Bell */}
+                <button className={styles.notificationButton}>
+                  <FaBell size={16} />
+                  <div className={styles.notificationDot}></div>
                 </button>
-              </>
+                
+                {/* User Profile Dropdown */}
+                <div className={styles.userProfile} ref={profileDropdownRef}>
+                  <button 
+                    className={styles.userProfileButton}
+                    onClick={() => setProfileDropdownOpen(!isProfileDropdownOpen)}
+                  >
+                    <div className={styles.userAvatar}>
+                      {user.username ? user.username.charAt(0).toUpperCase() : <FaUser size={12} />}
+                    </div>
+                    <span className={styles.userName}>{user.username || 'User'}</span>
+                  </button>
+                  
+                  {isProfileDropdownOpen && (
+                    <div className={styles.userDropdown}>
+                      <Link to="/profile" className={styles.profileLink}>
+                        <FaUser size={14} style={{ marginRight: '8px' }} />
+                        My Profile
+                      </Link>
+                      <Link to="/bookings" className={styles.profileLink}>
+                        <FaHistory size={14} style={{ marginRight: '8px' }} />
+                        My Bookings
+                      </Link>
+                      <Link to="/settings" className={styles.profileLink}>
+                        <FaCog size={14} style={{ marginRight: '8px' }} />
+                        Settings
+                      </Link>
+                      <button className={styles.logoutButton} onClick={initiateLogout}>
+                        <FaSignOutAlt size={14} />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             ) : (
               <>
                 <Link to="/login">

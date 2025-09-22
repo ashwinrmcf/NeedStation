@@ -1,0 +1,537 @@
+.settingsContainer {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding-top: 120px;
+}
+
+.settingsLayout {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
+}
+
+.settingsSidebar {
+  width: 280px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.sidebarHeader {
+  padding: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebarHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.settingsNav {
+  padding: 1rem 0;
+}
+
+.navItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  text-align: left;
+  border-left: 3px solid transparent;
+}
+
+.navItem:hover {
+  background: rgba(0, 224, 184, 0.05);
+  color: var(--text-primary);
+}
+
+.activeNavItem {
+  background: rgba(0, 224, 184, 0.1) !important;
+  color: #00E0B8 !important;
+  border-left-color: #00E0B8;
+  font-weight: 500;
+}
+
+.navIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.settingsMain {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.settingsContent h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.sectionDescription {
+  color: var(--text-secondary);
+  margin: 0 0 2rem 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.settingsGroup {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.settingsGroup h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toggleItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toggleItem:last-child {
+  border-bottom: none;
+}
+
+.toggleInfo {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.toggleLabel {
+  display: block;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.toggleDescription {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.toggleSwitch {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.toggleOn {
+  color: #00E0B8;
+}
+
+.toggleOff {
+  color: var(--text-secondary);
+}
+
+.toggleSwitch:hover {
+  transform: scale(1.1);
+}
+
+.selectGroup {
+  margin-bottom: 1rem;
+}
+
+.selectGroup:last-child {
+  margin-bottom: 0;
+}
+
+.selectGroup label {
+  display: block;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.selectInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.selectInput:focus {
+  outline: none;
+  border-color: #00E0B8;
+  box-shadow: 0 0 0 3px rgba(0, 224, 184, 0.1);
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.actionButton:hover {
+  border-color: #00E0B8;
+  color: #00E0B8;
+  transform: translateY(-1px);
+}
+
+.logoutButton:hover {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.dangerButton:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.supportLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.supportLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.supportLink:hover {
+  background: rgba(0, 224, 184, 0.05);
+  border-color: #00E0B8;
+  color: #00E0B8;
+  transform: translateY(-1px);
+}
+
+.appInfo {
+  background: var(--bg-tertiary);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.infoItem:last-child {
+  border-bottom: none;
+}
+
+.infoItem span:first-child {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.infoItem span:last-child {
+  color: var(--text-primary);
+}
+
+.saveSection {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  text-align: right;
+}
+
+.saveButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #00E0B8, #00B8A3);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 224, 184, 0.3);
+}
+
+.saveButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 224, 184, 0.4);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.confirmModal {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modalHeader {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+}
+
+.warningIcon {
+  color: #f59e0b;
+  font-size: 1.5rem;
+}
+
+.logoutIcon {
+  color: #3b82f6;
+  font-size: 1.5rem;
+}
+
+.modalContent {
+  padding: 1.5rem;
+}
+
+.modalContent p {
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.modalContent p:last-child {
+  margin-bottom: 0;
+}
+
+.modalActions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.cancelButton {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  border-color: var(--text-primary);
+}
+
+.deleteButton {
+  padding: 0.5rem 1rem;
+  border: 2px solid #ef4444;
+  border-radius: 6px;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.logoutButton {
+  padding: 0.5rem 1rem;
+  border: 2px solid #3b82f6;
+  border-radius: 6px;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.logoutButton:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settingsContainer {
+    padding-top: 100px;
+  }
+
+  .settingsLayout {
+    flex-direction: column;
+  }
+
+  .settingsSidebar {
+    width: 100%;
+    position: sticky;
+    top: 100px;
+    z-index: 10;
+    background: var(--bg-secondary);
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .sidebarHeader {
+    padding: 1rem;
+  }
+
+  .settingsNav {
+    display: flex;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+
+  .navItem {
+    white-space: nowrap;
+    padding: 0.75rem 1rem;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    flex-shrink: 0;
+  }
+
+  .activeNavItem {
+    border-left: none;
+    border-bottom-color: #00E0B8;
+  }
+
+  .settingsMain {
+    padding: 1rem;
+  }
+
+  .settingsContent h2 {
+    font-size: 1.5rem;
+  }
+
+  .toggleItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .toggleInfo {
+    margin-right: 0;
+  }
+
+  .actionButtons {
+    gap: 0.5rem;
+  }
+
+  .saveSection {
+    text-align: center;
+  }
+
+  .saveButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modalOverlay {
+    padding: 1rem;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .cancelButton,
+  .deleteButton,
+  .logoutButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .settingsGroup {
+    padding: 1rem;
+  }
+
+  .navItem span {
+    font-size: 0.9rem;
+  }
+
+  .settingsContent h2 {
+    font-size: 1.3rem;
+  }
+
+  .sectionDescription {
+    font-size: 1rem;
+  }
+}

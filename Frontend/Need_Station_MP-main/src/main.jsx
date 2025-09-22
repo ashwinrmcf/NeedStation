@@ -73,6 +73,11 @@ import HowItWorks from "./pages/HowItWorks/HowItWorks.jsx";
 import FAQ from "./pages/FAQ/FAQ.jsx";
 import Cart from "./pages/Cart/Cart.jsx";
 
+// User Profile Pages
+import Profile from "./pages/Profile/Profile.jsx";
+import MyBookings from "./pages/Bookings/MyBookings.jsx";
+import Settings from "./pages/Settings/Settings.jsx";
+
 // Hindi components
 import HindiHome from "./pages/Hindi/Home.jsx";
 import HindiAboutUs from "./pages/Hindi/AboutUs.jsx";
@@ -128,6 +133,11 @@ const router = createBrowserRouter([
       {path: "/language-settings", element: <TranslationCenter/>},
       {path: "/terms-and-services", element: <TermsAndServices/>},
       {path: "/privacy-policy", element: <PrivacyPolicy/>},
+      
+      // User Profile Routes
+      {path: "/profile", element: <Profile/>},
+      {path: "/bookings", element: <MyBookings/>},
+      {path: "/settings", element: <Settings/>},
     ],
   },
 

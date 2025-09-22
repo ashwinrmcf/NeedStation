@@ -63,6 +63,19 @@
     margin-bottom: 5px;
     /* Add spacing between buttons */
   }
+
+  .userProfileContainer {
+    gap: 8px;
+  }
+
+  .userName {
+    display: none; /* Hide username on mobile to save space */
+  }
+
+  .userDropdown {
+    width: 180px;
+    right: -10px; /* Adjust position for mobile */
+  }
 }
 
 .logo {
@@ -197,18 +210,20 @@
   position: relative;
   background: none;
   border: none;
-  color: white;
+  color: var(--text-primary);
   cursor: pointer;
-  padding: 6px;
+  padding: 8px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .notificationButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 224, 184, 0.1);
+  color: var(--accent-tertiary);
+  transform: scale(1.1);
 }
 
 .notificationDot {
@@ -229,18 +244,21 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  background-color: rgba(0, 224, 184, 0.1);
+  border: 1px solid rgba(0, 224, 184, 0.2);
+  color: var(--text-primary);
   padding: 6px 12px;
   border-radius: 24px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
 }
 
 .userProfileButton:hover {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 224, 184, 0.2);
   border-color: #00E0B8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 224, 184, 0.2);
 }
 
 .userAvatar {
@@ -268,10 +286,11 @@
   top: calc(100% + 8px);
   right: 0;
   width: 200px;
-  background-color: #0f172a;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  background-color: var(--bg-primary);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 224, 184, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 224, 184, 0.1);
+  backdrop-filter: blur(10px);
   overflow: hidden;
   z-index: 1000;
   animation: fadeIn 0.2s ease-out;
@@ -283,18 +302,20 @@
 }
 
 .profileLink {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 12px 16px;
-  color: white;
+  color: var(--text-primary);
   text-decoration: none;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 224, 184, 0.1);
 }
 
 .profileLink:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 224, 184, 0.1);
   color: #00E0B8;
+  transform: translateX(4px);
 }
 
 .logoutButton {
@@ -313,7 +334,8 @@
 }
 
 .logoutButton:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(248, 113, 113, 0.1);
+  color: #f87171;
 }
 
 /* Button effect styles */
