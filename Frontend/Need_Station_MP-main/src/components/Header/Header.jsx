@@ -17,6 +17,10 @@ const Header = () => {
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
+  const [userProfileData, setUserProfileData] = useState({
+    fullName: user?.username || 'User',
+    profileImageUrl: null
+  });
   const taskerButtonRef = useRef(null);
   const profileDropdownRef = useRef(null);
   
@@ -37,6 +41,84 @@ const Header = () => {
       window.removeEventListener('storage', checkLanguage);
     };
   }, []);
+
+  // Load user profile data (including profile image)
+  useEffect(() => {
+    const loadUserProfileData = async () => {
+      console.log('🔍 Header: Loading profile data for user:', user);
+      
+      // Always use user ID 10 for now (since that's where the image is stored)
+      const userId = 10;
+      
+      try {
+        // Try to get from localStorage first (for quick display)
+        const cached = localStorage.getItem('userBasicInfo');
+        if (cached) {
+          const cachedData = JSON.parse(cached);
+          console.log('📦 Header: Using cached data:', cachedData);
+          setUserProfileData({
+            fullName: cachedData.fullName || user?.username || 'User',
+            profileImageUrl: cachedData.profileImageUrl
+          });
+        }
+        
+        // Then fetch fresh data from backend
+        console.log(`🌐 Header: Fetching fresh data from /api/user/profile/${userId}/basic`);
+        const response = await fetch(`http://localhost:8080/api/user/profile/${userId}/basic`);
+        
+        console.log('📡 Header: API Response status:', response.status);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Header: Loaded user profile data:', data);
+          console.log('🖼️ Header: Profile image URL:', data.profileImageUrl);
+          
+          const profileData = {
+            fullName: data.fullName || user?.username || 'User',
+            profileImageUrl: data.profileImageUrl
+          };
+          
+          setUserProfileData(profileData);
+          console.log('💾 Header: Updated userProfileData:', profileData);
+          
+          // Cache the data
+          localStorage.setItem('userBasicInfo', JSON.stringify(data));
+        } else {
+          const errorText = await response.text();
+          console.error('❌ Header: API Error:', response.status, errorText);
+        }
+      } catch (error) {
+        console.error('❌ Header: Network error:', error);
+        // Fallback to user data from auth context
+        setUserProfileData({
+          fullName: user?.username || 'User',
+          profileImageUrl: null
+        });
+      }
+    };
+
+    // Load profile data when component mounts or user changes
+    if (user) {
+      loadUserProfileData();
+    }
+  }, [user]);
+
+  // Listen for profile updates from other components
+  useEffect(() => {
+    const handleProfileUpdate = (event) => {
+      console.log('Header: Profile updated event received:', event.detail);
+      setUserProfileData({
+        fullName: event.detail.fullName || user?.username || 'User',
+        profileImageUrl: event.detail.profileImageUrl
+      });
+    };
+    
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [user]);
 
   // Handle click outside profile dropdown
   useEffect(() => {
@@ -96,9 +178,34 @@ const Header = () => {
                     onClick={() => setProfileDropdownOpen(!isProfileDropdownOpen)}
                   >
                     <div className={styles.userAvatar}>
-                      {user.username ? user.username.charAt(0).toUpperCase() : <FaUser size={12} />}
+                      {userProfileData.profileImageUrl ? (
+                        <img 
+                          src={userProfileData.profileImageUrl} 
+                          alt="Profile" 
+                          className={styles.profileImage}
+                          onLoad={() => {
+                            console.log('✅ Header: Profile image loaded successfully');
+                          }}
+                          onError={(e) => {
+                            console.error('❌ Header: Profile image failed to load:', userProfileData.profileImageUrl);
+                            // Fallback to letter avatar if image fails to load
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : (
+                        console.log('🔍 Header: No profile image URL, showing letter avatar')
+                      )}
+                      <div 
+                        className={styles.letterAvatar}
+                        style={{ 
+                          display: userProfileData.profileImageUrl ? 'none' : 'flex' 
+                        }}
+                      >
+                        {userProfileData.fullName ? userProfileData.fullName.charAt(0).toUpperCase() : <FaUser size={12} />}
+                      </div>
                     </div>
-                    <span className={styles.userName}>{user.username || 'User'}</span>
+                    <span className={styles.userName}>{userProfileData.fullName}</span>
                   </button>
                   
                   {isProfileDropdownOpen && (

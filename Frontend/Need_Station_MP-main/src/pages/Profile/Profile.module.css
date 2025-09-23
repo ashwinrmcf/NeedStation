@@ -1,3 +1,32 @@
+/* Loading Styles */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 20px;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 212, 170, 0.1);
+  border-left: 4px solid #00D4AA;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingContainer p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
 .profileContainer {
   min-height: 100vh;
   background: var(--bg-primary);
@@ -18,6 +47,14 @@
   border-radius: 0 0 24px 24px;
   position: relative;
   overflow: hidden;
+}
+
+/* Light theme background adjustments */
+[data-theme="light"] .headerBackground {
+  background: linear-gradient(135deg, 
+    rgba(var(--artwork-color-1, 74, 144, 226), 0.25) 0%, 
+    rgba(var(--artwork-color-2, 80, 200, 120), 0.2) 50%, 
+    rgba(var(--artwork-color-3, 255, 179, 71), 0.15) 100%);
 }
 
 .headerBackground::before {
@@ -49,9 +86,15 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.4;
+  opacity: 0.6; /* Increased opacity for better visibility */
   animation: floatPattern 20s ease-in-out infinite;
   filter: blur(0.5px);
+}
+
+/* Light theme specific styling */
+[data-theme="light"] .artworkImage {
+  opacity: 0.8; /* Higher opacity for light theme */
+  filter: blur(0.2px); /* Less blur for light theme */
 }
 
 .artworkPattern {
@@ -418,6 +461,34 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    gap: 20px;
+  }
+
+  .loadingSpinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 212, 170, 0.1);
+    border-left: 4px solid #00D4AA;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loadingContainer p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
   .profileContainer {
     padding-top: 100px;
   }

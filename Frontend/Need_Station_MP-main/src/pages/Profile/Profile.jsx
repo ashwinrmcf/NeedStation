@@ -23,11 +23,14 @@ import lightArtwork2 from '../../assets/images/Profile Artwork/Light Theme/2 (1)
 const Profile = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [profileData, setProfileData] = useState({
     // Personal Information
     fullName: user?.username || '',
     email: user?.email || '',
-    phone: '',
+    contactNumber: '',
     dateOfBirth: '',
     gender: '',
     
@@ -38,7 +41,7 @@ const Profile = () => {
     pincode: '',
     
     // Healthcare Preferences
-    preferredLanguage: 'English',
+    preferredLanguage: 'english',
     emergencyContact: '',
     emergencyPhone: '',
     medicalConditions: '',
@@ -52,10 +55,15 @@ const Profile = () => {
     memberSince: '2024',
     totalBookings: 0,
     favoriteServices: [],
-    trustScore: 4.8
+    trustScore: 4.8,
+    profileImageUrl: null
   });
 
   const [profileImage, setProfileImage] = useState(null);
+  
+  // Get user ID - for now using 10 as the test user ID
+  // TODO: Update this when proper user ID is available in auth context
+  const userId = user?.id || 10;
   const [backgroundArtwork, setBackgroundArtwork] = useState(null);
   const [currentTheme, setCurrentTheme] = useState('dark');
 
@@ -76,6 +84,15 @@ const Profile = () => {
     lightArtwork2
   ];
 
+  // Debug: Log imported images
+  useEffect(() => {
+    console.log('🖼️ Profile: Imported artwork images:', {
+      lightArtwork1,
+      lightArtwork2,
+      darkArtworkCount: darkArtworkImages.length
+    });
+  }, []);
+
   // Detect current theme
   useEffect(() => {
     const detectTheme = () => {
@@ -84,15 +101,27 @@ const Profile = () => {
       const bodyClass = document.body.className;
       const htmlClass = document.documentElement.className;
       
+      console.log('🎨 Profile: Theme detection:', {
+        savedTheme,
+        bodyClass,
+        htmlClass,
+        systemPreference: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      });
+      
+      let detectedTheme = 'light'; // Default to light
+      
       if (savedTheme === 'light' || bodyClass.includes('light') || htmlClass.includes('light')) {
-        setCurrentTheme('light');
+        detectedTheme = 'light';
       } else if (savedTheme === 'dark' || bodyClass.includes('dark') || htmlClass.includes('dark')) {
-        setCurrentTheme('dark');
+        detectedTheme = 'dark';
       } else {
         // Check CSS custom property or system preference
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setCurrentTheme(prefersDark ? 'dark' : 'light');
+        detectedTheme = prefersDark ? 'dark' : 'light';
       }
+      
+      console.log('🎨 Profile: Detected theme:', detectedTheme);
+      setCurrentTheme(detectedTheme);
     };
 
     detectTheme();
@@ -169,6 +198,13 @@ const Profile = () => {
   useEffect(() => {
     const userState = profileData.state || 'Karnataka'; // Default to Karnataka
     
+    console.log('🖼️ Profile: Generating artwork for:', {
+      userState,
+      currentTheme,
+      lightArtworkImages: lightArtworkImages.length,
+      darkArtworkImages: darkArtworkImages.length
+    });
+    
     let selectedImageUrl;
     let selectedColors;
     let selectedPattern;
@@ -180,6 +216,13 @@ const Profile = () => {
       // Light theme colors - softer, brighter palette
       selectedColors = ['#4A90E2', '#50C878', '#FFB347', '#FF6B9D'];
       selectedPattern = 'light-theme-pattern';
+      
+      console.log('🌞 Profile: Light theme artwork selected:', {
+        randomLightIndex,
+        selectedImageUrl,
+        selectedColors,
+        selectedPattern
+      });
     } else {
       // For dark theme, use regional artwork system
       const artwork = regionalArtworks[userState] || regionalArtworks['Karnataka'];
@@ -187,16 +230,77 @@ const Profile = () => {
       selectedImageUrl = darkArtworkImages[randomImageIndex];
       selectedColors = artwork.colors.sort(() => 0.5 - Math.random()).slice(0, 3);
       selectedPattern = artwork.overlayPattern;
+      
+      console.log('🌙 Profile: Dark theme artwork selected:', {
+        randomImageIndex,
+        selectedImageUrl,
+        selectedColors,
+        selectedPattern
+      });
     }
     
-    setBackgroundArtwork({
+    const artworkData = {
       imageUrl: selectedImageUrl,
       overlayPattern: selectedPattern,
       colors: selectedColors,
       state: userState,
       theme: currentTheme
-    });
+    };
+    
+    console.log('🎨 Profile: Setting background artwork:', artworkData);
+    setBackgroundArtwork(artworkData);
   }, [profileData.state, currentTheme]);
+
+  // Load profile data from backend on component mount
+  useEffect(() => {
+    loadProfileData();
+  }, [userId]);
+
+  const loadProfileData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost:8080/api/user/profile/${userId}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Loaded profile data:', data);
+        
+        setProfileData({
+          fullName: data.fullName || '',
+          email: data.email || '',
+          contactNumber: data.contactNumber || '',
+          dateOfBirth: data.dateOfBirth || '',
+          gender: data.gender?.toLowerCase() || '',
+          address: data.address || '',
+          city: data.city || '',
+          state: data.state || '',
+          pincode: data.pincode || '',
+          preferredLanguage: data.preferredLanguage || 'english',
+          emergencyContact: data.emergencyContact || '',
+          emergencyPhone: data.emergencyPhone || '',
+          medicalConditions: data.medicalConditions || '',
+          allergies: data.allergies || '',
+          preferredServiceTime: data.preferredServiceTime?.toLowerCase() || 'morning',
+          specialInstructions: data.specialInstructions || '',
+          memberSince: data.memberSince || '2024',
+          totalBookings: data.totalBookings || 0,
+          trustScore: data.trustScore || 4.8,
+          profileImageUrl: data.profileImageUrl
+        });
+
+        // Set profile image if exists
+        if (data.profileImageUrl) {
+          setProfileImage(data.profileImageUrl);
+        }
+      } else {
+        console.error('Failed to load profile data');
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -206,26 +310,130 @@ const Profile = () => {
     }));
   };
 
-  const handleSave = () => {
-    // Here you would typically save to backend
-    console.log('Saving profile data:', profileData);
-    setIsEditing(false);
-    // Show success message
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      
+      // Step 1: Upload image if selected
+      if (selectedImage) {
+        console.log('Uploading new profile image...');
+        const imageFormData = new FormData();
+        imageFormData.append('image', selectedImage);
+        
+        const imageResponse = await fetch(`http://localhost:8080/api/user/profile/${userId}/upload-image`, {
+          method: 'POST',
+          body: imageFormData
+        });
+        
+        const imageResult = await imageResponse.json();
+        
+        if (!imageResult.success) {
+          throw new Error('Image upload failed: ' + imageResult.message);
+        }
+        
+        console.log('Image uploaded successfully:', imageResult.imageUrl);
+        setProfileImage(imageResult.imageUrl);
+      }
+      
+      // Step 2: Save form data
+      console.log('Saving profile data...');
+      const response = await fetch(`http://localhost:8080/api/user/profile/${userId}/save`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profileData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('Profile saved successfully');
+        setIsEditing(false);
+        setSelectedImage(null);
+        
+        // Update header display
+        updateHeaderDisplay();
+        
+        // Show success message
+        alert('✅ Profile saved successfully!');
+        
+        // Reload profile data to get latest from server
+        await loadProfileData();
+      } else {
+        throw new Error(result.message);
+      }
+      
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('❌ Error saving profile: ' + error.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Reset to original data
+    setSelectedImage(null);
+    // Reset profile image to original
+    if (profileData.profileImageUrl) {
+      setProfileImage(profileData.profileImageUrl);
+    }
+    // Reload original data
+    loadProfileData();
   };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size too large. Maximum 5MB allowed.');
+        return;
+      }
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+      }
+      
+      setSelectedImage(file);
+      
+      // Create preview
       const reader = new FileReader();
       reader.onload = (e) => setProfileImage(e.target.result);
       reader.readAsDataURL(file);
     }
   };
+
+  // Update header display
+  const updateHeaderDisplay = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/user/profile/${userId}/basic`);
+      if (response.ok) {
+        const basicInfo = await response.json();
+        
+        // Update localStorage and trigger header refresh
+        localStorage.setItem('userBasicInfo', JSON.stringify(basicInfo));
+        window.dispatchEvent(new CustomEvent('profileUpdated', { detail: basicInfo }));
+      }
+    } catch (error) {
+      console.error('Error updating header:', error);
+    }
+  };
+
+  // Show loading screen while data is being loaded
+  if (loading) {
+    return (
+      <div className={styles.profileContainer}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}></div>
+          <p>Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.profileContainer}>
@@ -247,7 +455,9 @@ const Profile = () => {
               <div 
                 className={styles.artworkImage}
                 style={{
-                  backgroundImage: `url(${backgroundArtwork.imageUrl})`
+                  backgroundImage: `url("${backgroundArtwork.imageUrl}")`,
+                  // Fallback with decoded URL
+                  '--fallback-image': `url("${decodeURIComponent(backgroundArtwork.imageUrl)}")`
                 }}
               ></div>
               <div className={styles.artworkPattern}></div>
@@ -297,10 +507,20 @@ const Profile = () => {
               </button>
             ) : (
               <div className={styles.editActions}>
-                <button className={styles.saveButton} onClick={handleSave}>
-                  <FaSave /> Save
+                <button 
+                  className={styles.saveButton} 
+                  onClick={handleSave}
+                  disabled={saving}
+                  style={{ opacity: saving ? 0.7 : 1 }}
+                >
+                  {saving ? '⏳ Saving...' : <><FaSave /> Save</>}
                 </button>
-                <button className={styles.cancelButton} onClick={handleCancel}>
+                <button 
+                  className={styles.cancelButton} 
+                  onClick={handleCancel}
+                  disabled={saving}
+                  style={{ opacity: saving ? 0.7 : 1 }}
+                >
                   <FaTimes /> Cancel
                 </button>
               </div>
@@ -346,8 +566,8 @@ const Profile = () => {
                   <label>Phone Number *</label>
                   <input
                     type="tel"
-                    name="phone"
-                    value={profileData.phone}
+                    name="contactNumber"
+                    value={profileData.contactNumber}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className={styles.input}

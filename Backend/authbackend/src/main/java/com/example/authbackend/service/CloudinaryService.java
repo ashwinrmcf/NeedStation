@@ -94,4 +94,44 @@ public class CloudinaryService {
             throw new IOException("Failed to upload file: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Upload file to Cloudinary with folder only (overloaded method)
+     */
+    public String uploadFile(MultipartFile file, String folder) throws IOException {
+        return uploadFile(file, folder, "file");
+    }
+
+    /**
+     * Upload user profile image specifically
+     */
+    public String uploadUserProfileImage(MultipartFile file, String userId) throws IOException {
+        try {
+            String publicId = "user_profile_" + userId + "_" + System.currentTimeMillis();
+            
+            @SuppressWarnings("unchecked")
+            Map<String, Object> uploadOptions = ObjectUtils.asMap(
+                "public_id", publicId,
+                "folder", "needstation/user_profiles",
+                "resource_type", "image",
+                "format", "jpg",
+                "quality", "auto:good",
+                "width", 400,
+                "height", 400,
+                "crop", "fill",
+                "gravity", "face"
+            );
+            
+            @SuppressWarnings("unchecked")
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), uploadOptions);
+            String imageUrl = (String) uploadResult.get("secure_url");
+            
+            System.out.println("Successfully uploaded user profile image to Cloudinary: " + imageUrl);
+            return imageUrl;
+            
+        } catch (IOException e) {
+            System.err.println("Failed to upload user profile image to Cloudinary: " + e.getMessage());
+            throw new IOException("Failed to upload user profile image: " + e.getMessage(), e);
+        }
+    }
 }
