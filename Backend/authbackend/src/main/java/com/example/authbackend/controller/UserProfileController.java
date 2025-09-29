@@ -525,4 +525,39 @@ public class UserProfileController {
         
         return profileResponse;
     }
+    
+    // Debug endpoint to list all users (for development only)
+    @GetMapping("/debug/list-users")
+    public ResponseEntity<?> listAllUsers() {
+        try {
+            logger.info("🔍 Listing all users for debugging");
+            
+            var users = userRepository.findAll();
+            var userList = users.stream()
+                .map(user -> {
+                    Map<String, Object> userInfo = new HashMap<>();
+                    userInfo.put("id", user.getId());
+                    userInfo.put("username", user.getUsername());
+                    userInfo.put("email", user.getEmail());
+                    userInfo.put("fullName", user.getFullName());
+                    userInfo.put("provider", user.getProvider());
+                    userInfo.put("createdAt", user.getCreatedAt());
+                    return userInfo;
+                })
+                .toList();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("totalUsers", userList.size());
+            response.put("users", userList);
+            
+            logger.info("✅ Found {} users", userList.size());
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("❌ Error listing users: {}", e.getMessage());
+            return ResponseEntity.internalServerError()
+                .body("Error listing users: " + e.getMessage());
+        }
+    }
 }

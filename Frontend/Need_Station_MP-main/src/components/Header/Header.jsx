@@ -156,10 +156,10 @@ const Header = () => {
             </div>
           </Link>
           <nav className={styles.navLinks}>
-            <NavLink to="/" className={({isActive}) => isActive ? styles.active : undefined}>Home</NavLink>
             <NavLink to="/services" className={({isActive}) => isActive ? styles.active : undefined}>Services</NavLink>
-            <NavLink to="/language-settings" className={({isActive}) => isActive ? styles.active : undefined}>Languages</NavLink>
-            <NavLink to="/about-us" className={({isActive}) => isActive ? styles.active : undefined}>About Us</NavLink>
+            <NavLink to="/language-settings" className={({isActive}) => isActive ? styles.active : undefined}>
+              Languages
+            </NavLink>
           </nav>
           <div className={styles.authButtons}>
             <ThemeToggle />

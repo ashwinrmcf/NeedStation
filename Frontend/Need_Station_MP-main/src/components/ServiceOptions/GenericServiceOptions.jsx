@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useBookingModal } from '../BookingModal/BookingModalProvider';
 
 const GenericServiceOptions = ({ 
   serviceName, 
@@ -11,6 +12,7 @@ const GenericServiceOptions = ({
 }) => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [animatedStats, setAnimatedStats] = useState({});
+  const { openBookingModal } = useBookingModal();
 
   // Animate numbers when component mounts
   useEffect(() => {
@@ -33,57 +35,43 @@ const GenericServiceOptions = ({
     });
   }, [trustIndicators]);
 
+  const handleBookNow = (e) => {
+    e.preventDefault();
+    openBookingModal(serviceName);
+  };
+
   const ServiceCard = ({ service, index }) => (
     <div 
-      className={`relative rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 hover:transform hover:scale-105 border-2 overflow-hidden group flex flex-col h-full ${
-        hoveredCard === index ? 'ring-4 ring-opacity-50' : ''
-      }`}
+      className={`relative rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105 border overflow-hidden group flex flex-col h-full`}
       onMouseEnter={() => setHoveredCard(index)}
       onMouseLeave={() => setHoveredCard(null)}
       style={{
         backgroundColor: 'var(--bg-surface)',
-        borderColor: hoveredCard === index ? 'var(--accent-secondary)' : 'var(--border-color)',
-        ringColor: 'var(--accent-secondary)'
+        borderColor: 'var(--border-color)'
       }}
     >
-      {/* Urgency Badge */}
-      <div className={`absolute top-4 left-4 z-20 bg-gradient-to-r ${service.gradient} text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse`}>
-        {service.urgency}
-      </div>
-
-      {/* Discount Badge */}
-      <div className="absolute top-4 right-4 z-20 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg transform rotate-12">
-        {service.discount}
-      </div>
-
       {/* Image Section */}
       <div className="relative overflow-hidden h-48">
         <img
           src={service.imgUrl}
           alt={service.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         
-        {/* Floating Icon */}
-        <div className={`absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-r ${service.gradient} rounded-full flex items-center justify-center text-2xl shadow-lg transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12`}>
-          {service.icon}
-        </div>
-
         {/* Rating Badge */}
-        <div className="absolute bottom-4 left-4 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 shadow-lg" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-          ⭐ {service.rating} ({service.bookings})
+        <div className="absolute bottom-4 left-4 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 shadow-lg" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+          ⭐ {service.rating}
         </div>
       </div>
 
       {/* Content Section */}
       <div className="p-6 flex flex-col flex-grow">
-        {/* Title & Subtitle */}
-        <div className="mb-4">
-          <h3 className="text-xl font-bold mb-1 transition-colors" style={{ color: 'var(--text-primary)' }}>
+        {/* Title */}
+        <div className="mb-3">
+          <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
             {service.title}
           </h3>
-          <p className={`text-sm font-medium bg-gradient-to-r ${service.gradient} bg-clip-text text-transparent`}>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
             {service.subtitle}
           </p>
         </div>
@@ -94,62 +82,32 @@ const GenericServiceOptions = ({
         </p>
 
         {/* Pricing */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <span className={`text-2xl font-bold bg-gradient-to-r ${service.gradient} bg-clip-text text-transparent`}>
+            <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
               {service.price}
             </span>
-            <span className="text-gray-400 text-sm">{service.duration}</span>
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{service.duration}</span>
           </div>
           <div className="text-right">
-            <span className="text-gray-500 line-through text-sm">{service.originalPrice}</span>
+            <span className="text-sm line-through" style={{ color: 'var(--text-tertiary)' }}>{service.originalPrice}</span>
           </div>
-        </div>
-
-        {/* Features */}
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          {service.features.slice(0, 4).map((feature, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent-secondary)' }}></span>
-              {feature}
-            </div>
-          ))}
-        </div>
-
-        {/* Testimonial */}
-        <div className="rounded-lg p-3 mb-4 border-l-4" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--accent-secondary)' }}>
-          <p className="text-xs italic" style={{ color: 'var(--text-secondary)' }}>"{service.testimonial}"</p>
-        </div>
-
-        {/* Availability & Guarantee */}
-        <div className="flex justify-between items-center mb-6 text-xs">
-          <span className="font-medium flex items-center gap-1" style={{ color: 'var(--accent-secondary)' }}>
-            🟢 {service.availability}
-          </span>
-          <span className="font-medium" style={{ color: 'var(--accent-tertiary)' }}>
-            🛡️ {service.guarantee}
-          </span>
         </div>
 
         {/* Push button to bottom with margin-top auto */}
         <div className="mt-auto">
           {/* CTA Button */}
-          <NavLink to="/user-details" className="block">
-            <button className={`w-full bg-gradient-to-r ${service.gradient} hover:shadow-2xl text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 relative overflow-hidden group`}>
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                Book Now - Save {service.discount.split(' ')[0]}
-                <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-              </span>
-              <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-            </button>
-          </NavLink>
+          <button 
+            onClick={handleBookNow}
+            className={`w-full bg-gradient-to-r ${service.gradient} hover:shadow-2xl text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 relative overflow-hidden group`}
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              Book Now
+              <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+            </span>
+            <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+          </button>
 
-          {/* Urgency Timer */}
-          <div className="mt-3 text-center">
-            <p className="text-xs text-red-600 font-medium animate-pulse">
-              ⏰ Limited time offer - {Math.floor(Math.random() * 50) + 10} people viewing this
-            </p>
-          </div>
         </div>
       </div>
     </div>
@@ -226,6 +184,7 @@ const GenericServiceOptions = ({
               </div>
 
               <button 
+                onClick={handleBookNow}
                 className="px-8 py-4 rounded-xl font-bold text-white transition-all duration-300 transform hover:scale-105 shadow-lg"
                 style={{ background: 'var(--gradient-primary)' }}
               >

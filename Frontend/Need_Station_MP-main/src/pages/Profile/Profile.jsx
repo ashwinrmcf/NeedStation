@@ -61,9 +61,8 @@ const Profile = () => {
 
   const [profileImage, setProfileImage] = useState(null);
   
-  // Get user ID - for now using 10 as the test user ID
-  // TODO: Update this when proper user ID is available in auth context
-  const userId = user?.id || 10;
+  // Get user ID from auth context or localStorage
+  const userId = user?.id || localStorage.getItem('userId') || null;
   const [backgroundArtwork, setBackgroundArtwork] = useState(null);
   const [currentTheme, setCurrentTheme] = useState('dark');
 
@@ -259,6 +258,15 @@ const Profile = () => {
   const loadProfileData = async () => {
     try {
       setLoading(true);
+      
+      // Check if userId is available
+      if (!userId) {
+        console.error('No user ID available. Please log in first.');
+        setError('Please log in to view your profile.');
+        setLoading(false);
+        return;
+      }
+      
       const response = await fetch(`http://localhost:8080/api/user/profile/${userId}`);
       
       if (response.ok) {
@@ -313,6 +321,14 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+      
+      // Check if userId is available
+      if (!userId) {
+        console.error('No user ID available. Please log in first.');
+        setError('Please log in to save your profile.');
+        setSaving(false);
+        return;
+      }
       
       // Step 1: Upload image if selected
       if (selectedImage) {

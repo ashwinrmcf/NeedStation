@@ -12,6 +12,7 @@ import ScrollToTop from "../hooks/ScrollToTop.jsx";
 import { ToastContainer } from "react-toastify";
 import translationService from "../services/TranslationService";
 import NeedBot from "../components/NeedBot.jsx";
+import { BookingModalProvider } from "../components/BookingModal/BookingModalProvider.jsx";
 
 import { Cloudinary } from "@cloudinary/url-gen";
 import { AdvancedImage } from '@cloudinary/react';
@@ -319,7 +320,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <>
+    <BookingModalProvider>
       <ScrollToTop />
       <Header />
       <div className="container my-4">
@@ -329,7 +330,7 @@ function App() {
       <Footer />
       <NeedBot />
       <ToastContainer />
-    </>
+    </BookingModalProvider>
   );
 }
 

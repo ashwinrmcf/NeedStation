@@ -257,17 +257,9 @@ public class AuthService {
             String deliveryTarget = "";
             
             if ("email".equals(contactType)) {
-                // For email login, try to send OTP to phone first, fallback to email
-                String phoneForOtp = user.getContactNumber();
-                if (phoneForOtp != null && !phoneForOtp.isEmpty()) {
-                    // Send SMS OTP to registered phone
-                    otpSent = smsService.sendOtpSms(phoneForOtp, otp);
-                    deliveryTarget = phoneForOtp;
-                } else {
-                    // Send email OTP if no phone number available
-                    otpSent = sendEmailOtp(contactValue, otp);
-                    deliveryTarget = contactValue;
-                }
+                // For email login, always send OTP to email address
+                otpSent = sendEmailOtp(contactValue, otp);
+                deliveryTarget = contactValue;
             } else {
                 // For phone login, send SMS OTP
                 otpSent = smsService.sendOtpSms(contactValue, otp);

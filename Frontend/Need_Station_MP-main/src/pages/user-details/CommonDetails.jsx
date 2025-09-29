@@ -46,7 +46,6 @@ const CommonDetails = ({ onDataChange, initialData = {} }) => {
       // Try to get from localStorage
       const storedService = localStorage.getItem('needstation_service_source');
       if (storedService) {
-        setServiceSource(storedService);
       }
     }
   }, [location.state]);
@@ -55,19 +54,28 @@ const CommonDetails = ({ onDataChange, initialData = {} }) => {
   const getServiceRoute = (service) => {
     const serviceRoutes = {
       'Home Security Guard': '/user-details/security-guard',
+      'Security Guard': '/user-details/security-guard',
+      'Parkinson\'s Care': '/user-details/parkinsons-care',
       'Parkinsons Care': '/user-details/parkinsons-care',
       'Bedridden Patient Care': '/user-details/bedridden-patient-care',
       'Mother and Baby Care': '/user-details/mother-baby-care',
+      'Mother & Baby Care': '/user-details/mother-baby-care',
       'Paralysis Care': '/user-details/paralysis-care',
       'Elderly Care': '/user-details/elderly-care',
       'Nursing Care': '/user-details/nursing-care',
       'Pathology Care': '/user-details/pathology-care',
       'Diabetes Management': '/user-details/diabetes-management',
       'Health Check Up Services': '/user-details/health-check-up-services',
+      'Health Checkup': '/user-details/health-check-up-services',
       'Physiotherapy': '/user-details/physiotherapy',
       'Post Surgery Care': '/user-details/post-surgery-care',
       'Caretaker at Home': '/user-details/caretaker-at-home'
     };
+    
+    // Debug log to see what service name is being passed
+    console.log('Service name received:', service);
+    console.log('Route found:', serviceRoutes[service]);
+    
     return serviceRoutes[service] || '/user-details/security-guard'; // Default fallback
   };
   
