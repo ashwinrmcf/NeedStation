@@ -1,53 +1,145 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  Heart, Shield, Clock, MapPin, Phone, Calendar, User, Star, 
+  CheckCircle, AlertCircle, Trash2, Plus, Minus, ArrowLeft, 
+  CreditCard, Smartphone, Wallet, Gift, Info, ChevronDown,
+  Activity, Stethoscope, Pill, UserCheck, Home, Zap
+} from 'lucide-react';
 import styles from './Cart.module.css';
 
 const Cart = () => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
   const [cartItems, setCartItems] = useState([
     {
       id: '1',
-      name: 'Home Deep Cleaning',
-      description: 'Complete home cleaning with kitchen, bathroom & all rooms',
+      name: 'Senior Care Specialist',
+      category: 'Elder Care',
+      specialist: 'Certified Geriatric Nurse',
+      description: 'Comprehensive elderly care including medication management, vital monitoring, and companionship',
       price: 2499,
+      originalPrice: 2999,
       quantity: 1,
-      image: 'https://images.pexels.com/photos/4239034/pexels-photo-4239034.jpeg?auto=compress&cs=tinysrgb&w=400',
+      duration: '6 hours daily',
+      rating: 4.9,
+      reviews: 342,
+      image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400',
+      urgency: 'normal',
+      scheduledDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      scheduledTime: 'morning',
+      caregiverPreference: 'female',
+      specialRequirements: 'Diabetes management experience required',
+      features: ['Medication Management', 'Vital Signs Monitoring', 'Companionship', 'Light Housekeeping'],
+      nextAvailable: 'Today 2:00 PM'
     },
     {
       id: '2',
-      name: 'AC Repair & Service',
-      description: 'AC deep cleaning, gas refill and general maintenance',
-      price: 899,
+      name: 'Physiotherapy Session',
+      category: 'Rehabilitation',
+      specialist: 'Licensed Physiotherapist',
+      description: 'Specialized orthopedic physiotherapy for post-surgery recovery and mobility improvement',
+      price: 1299,
+      originalPrice: 1599,
       quantity: 2,
-      image: 'https://images.pexels.com/photos/8005395/pexels-photo-8005395.jpeg?auto=compress&cs=tinysrgb&w=400',
+      duration: '60 min/session',
+      rating: 4.8,
+      reviews: 198,
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
+      urgency: 'urgent',
+      scheduledDate: new Date().toISOString().split('T')[0],
+      scheduledTime: 'afternoon',
+      therapyType: 'orthopedic',
+      specialRequirements: 'Post knee surgery rehabilitation',
+      features: ['Joint Mobility', 'Pain Management', 'Strength Training', 'Recovery Exercises'],
+      nextAvailable: 'Today 4:00 PM'
     },
+    {
+      id: '3',
+      name: 'Home Health Checkup',
+      category: 'Preventive Care',
+      specialist: 'Registered Nurse',
+      description: 'Comprehensive health assessment and vital signs monitoring at home',
+      price: 899,
+      originalPrice: 1199,
+      quantity: 1,
+      duration: '90 minutes',
+      rating: 4.7,
+      reviews: 156,
+      image: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400',
+      urgency: 'normal',
+      scheduledDate: '',
+      scheduledTime: '',
+      features: ['Blood Pressure Check', 'Blood Sugar Test', 'Heart Rate Monitor', 'Health Report'],
+      nextAvailable: 'Tomorrow 10:00 AM'
+    }
   ]);
 
   const [addOns, setAddOns] = useState([
     {
       id: '1',
-      name: 'Deep Cleaning Add-on',
-      description: 'Extended cleaning for cabinets, ceiling fans & balcony',
-      price: 599,
-      selected: false,
+      name: '24/7 Emergency Support',
+      description: 'Round-the-clock emergency response with medical alert system',
+      price: 799,
+      selected: true,
+      icon: <Zap className="w-5 h-5" />,
+      popular: true,
+      category: 'Safety'
     },
     {
       id: '2',
-      name: 'Premium Supplies',
-      description: 'Use of premium eco-friendly cleaning products',
-      price: 299,
-      selected: true,
+      name: 'Digital Health Tracking',
+      description: 'IoT-enabled health monitoring with real-time alerts and reports',
+      price: 599,
+      selected: false,
+      icon: <Activity className="w-5 h-5" />,
+      popular: true,
+      category: 'Technology'
     },
     {
       id: '3',
-      name: 'Extra Hour Service',
-      description: 'Additional hour of professional service',
+      name: 'Medication Management Pro',
+      description: 'Smart pill dispenser with automated reminders and tracking',
       price: 399,
       selected: false,
+      icon: <Pill className="w-5 h-5" />,
+      popular: false,
+      category: 'Medication'
     },
+    {
+      id: '4',
+      name: 'Family Connect Plus',
+      description: 'Live updates, video calls, and progress sharing with family members',
+      price: 299,
+      selected: true,
+      icon: <UserCheck className="w-5 h-5" />,
+      popular: false,
+      category: 'Communication'
+    },
+    {
+      id: '5',
+      name: 'Premium Care Package',
+      description: 'Extended service hours with specialized equipment and supplies',
+      price: 999,
+      selected: false,
+      icon: <Stethoscope className="w-5 h-5" />,
+      popular: true,
+      category: 'Premium'
+    }
   ]);
 
   const [selectedTip, setSelectedTip] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [insuranceInfo, setInsuranceInfo] = useState({
+    hasInsurance: false,
+    provider: '',
+    policyNumber: ''
+  });
+  const [showAddOns, setShowAddOns] = useState(true);
+  const [showPromoSuggestions, setShowPromoSuggestions] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [expandedItem, setExpandedItem] = useState(null);
   const [address, setAddress] = useState({
     fullName: '',
     mobile: '',
@@ -83,178 +175,326 @@ const Cart = () => {
   };
 
   const handlePromoApply = (code) => {
-    if (code.toUpperCase() === 'SAVE10') {
-      setDiscount(250);
+    const promoCodes = {
+      'WELLNESS25': { discount: 750, message: 'Wellness package discount applied!', type: 'percentage' },
+      'SENIOR30': { discount: 900, message: 'Senior citizen special discount applied!', type: 'fixed' },
+      'FIRSTCARE': { discount: 500, message: 'First-time customer discount applied!', type: 'fixed' },
+      'FAMILY20': { discount: 600, message: 'Family care bundle discount applied!', type: 'fixed' },
+      'URGENT15': { discount: 400, message: 'Urgent care discount applied!', type: 'fixed' },
+      'HEALTH50': { discount: 1200, message: 'Premium health package discount applied!', type: 'fixed' }
+    };
+    
+    const promo = promoCodes[code.toUpperCase()];
+    if (promo) {
+      setDiscount(promo.discount);
+      // Show success toast
     } else {
       setDiscount(0);
+      // Show error toast
     }
   };
 
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) +
-                   addOns.filter(addOn => addOn.selected).reduce((sum, addOn) => sum + addOn.price, 0);
-  const taxes = Math.round(subtotal * 0.18); // 18% tax
-  const total = subtotal + taxes + selectedTip - discount;
+  const handleUpdateSchedule = (id, field, value) => {
+    setCartItems(items =>
+      items.map(item =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
+  };
+
+  // Enhanced calculations
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const addOnTotal = addOns.filter(addOn => addOn.selected).reduce((sum, addOn) => sum + addOn.price, 0);
+  const totalSavings = cartItems.reduce((sum, item) => sum + ((item.originalPrice - item.price) * item.quantity), 0);
+  const convenienceFee = 99; // Platform fee
+  const taxes = Math.round((subtotal + addOnTotal + convenienceFee) * 0.18); // 18% GST
+  
+  // Dynamic pricing based on urgency and time
+  const hasUrgentItems = cartItems.some(item => item.urgency === 'urgent');
+  const emergencyFee = hasUrgentItems ? 299 : 0;
+  const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+  const weekendSurcharge = isWeekend ? 199 : 0;
+  
+  const beforeDiscount = subtotal + addOnTotal + convenienceFee + taxes + emergencyFee + weekendSurcharge + selectedTip;
+  const finalTotal = beforeDiscount - discount;
+  
+  // Insurance coverage calculation
+  const insuranceCoverage = insuranceInfo.hasInsurance ? Math.min(subtotal * 0.6, 2000) : 0;
+  const outOfPocket = finalTotal - insuranceCoverage;
 
   return (
     <div className={styles.container}>
-      {/* Header Section */}
-      <div className={styles.header}>
-        <Link to="/">
-          <div className={styles.logo}>
-            Need<span style={{ color: "#5CE1E6" }}>Station</span>
+      {/* Modern Header */}
+      <motion.header 
+        className={styles.modernHeader}
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <div className={styles.headerContent}>
+          <div className={styles.headerLeft}>
+            <button 
+              onClick={() => navigate(-1)}
+              className={styles.backButton}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <Link to="/" className={styles.modernLogo}>
+              <div className={styles.logoIcon}>
+                <Heart className="w-8 h-8" />
+              </div>
+              <div className={styles.logoText}>
+                <span className={styles.logoMain}>Need</span>
+                <span className={styles.logoAccent}>Station</span>
+              </div>
+            </Link>
           </div>
-        </Link>
-        <div className={styles["progress-bar"]}>
-          <div className={`${styles["step"]} ${styles["completed"]}`}>
-            <div className={styles["circle"]}></div>
+          
+          <div className={styles.headerCenter}>
+            <div className={styles.progressSteps}>
+              {['Services', 'Review', 'Payment', 'Confirmation'].map((step, index) => (
+                <div key={step} className={`${styles.progressStep} ${
+                  index <= 1 ? styles.completed : index === 2 ? styles.active : ''
+                }`}>
+                  <div className={styles.stepNumber}>{index + 1}</div>
+                  <span className={styles.stepLabel}>{step}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className={styles["line"]}></div>
-          <div className={`${styles["step"]} ${styles["completed"]}`}>
-            <div className={styles["circle"]}></div>
-          </div>
-          <div className={styles["line1"]}></div>
-          <span className={styles["helper-list"]}>Review Cart & Complete Order</span>
-          <div className={styles["line1"]}></div>
-          <div className={`${styles["step"]} ${styles["active"]}`}>
-            <div className={styles["circle"]}></div>
-          </div>
-          <div className={styles["line"]}></div>
-          <div className={styles["step"]}>
-            <div className={styles["circle"]}></div>
+          
+          <div className={styles.headerRight}>
+            <div className={styles.cartSummary}>
+              <span className={styles.itemCount}>{cartItems.length} items</span>
+              <span className={styles.totalAmount}>₹{finalTotal.toLocaleString()}</span>
+            </div>
           </div>
         </div>
-      </div>
+      </motion.header>
 
-      {/* Background Effects */}
-      <div className={styles.backgroundEffects}>
-        <div className={styles.effect1} />
-        <div className={styles.effect2} />
-        <div className={styles.effect3} />
+      {/* Enhanced Background */}
+      <div className={styles.backgroundPattern}>
+        <div className={styles.gridPattern}></div>
+        <div className={styles.gradientOverlay}></div>
+        <motion.div 
+          className={styles.floatingElement1}
+          animate={{ 
+            y: [0, -20, 0],
+            rotate: [0, 5, 0]
+          }}
+          transition={{ 
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className={styles.floatingElement2}
+          animate={{ 
+            y: [0, 15, 0],
+            x: [0, 10, 0]
+          }}
+          transition={{ 
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
       </div>
 
       <div className={styles.content}>
         <div className={styles.maxWidth}>
-          {/* Page Title */}
+          {/* Hero Section */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className={styles.pageTitle}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className={styles.heroSection}
           >
-            <h1 className={styles.title}>
-              Your Cart
-            </h1>
-            <p className={styles.subtitle}>Review your services and complete your order</p>
+            <div className={styles.heroContent}>
+              <div className={styles.heroLeft}>
+                <motion.h1 
+                  className={styles.heroTitle}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                >
+                  Your Healthcare Journey
+                </motion.h1>
+                <motion.p 
+                  className={styles.heroSubtitle}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
+                >
+                  Professional care services tailored for your health and wellness needs
+                </motion.p>
+                
+                <motion.div 
+                  className={styles.heroStats}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                >
+                  <div className={styles.heroStat}>
+                    <div className={styles.statNumber}>{cartItems.length}</div>
+                    <div className={styles.statLabel}>Services</div>
+                  </div>
+                  <div className={styles.heroStat}>
+                    <div className={styles.statNumber}>4.9★</div>
+                    <div className={styles.statLabel}>Rating</div>
+                  </div>
+                  <div className={styles.heroStat}>
+                    <div className={styles.statNumber}>24/7</div>
+                    <div className={styles.statLabel}>Support</div>
+                  </div>
+                </motion.div>
+              </div>
+              
+              <motion.div 
+                className={styles.heroRight}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <div className={styles.savingsHighlight}>
+                  <div className={styles.savingsIcon}>
+                    <Gift className="w-8 h-8" />
+                  </div>
+                  <div className={styles.savingsContent}>
+                    <div className={styles.savingsAmount}>₹{totalSavings.toLocaleString()}</div>
+                    <div className={styles.savingsText}>Total Savings</div>
+                  </div>
+                </div>
+                
+                {hasUrgentItems && (
+                  <div className={styles.urgentAlert}>
+                    <AlertCircle className="w-5 h-5" />
+                    <span>Urgent care needed - Priority booking</span>
+                  </div>
+                )}
+              </motion.div>
+            </div>
           </motion.div>
 
-          <div className={styles.mainGrid}>
-            {/* Left Column - Cart Content */}
-            <div className={styles.leftColumn}>
-              {/* Cart Items */}
-              <div>
-                <h2 className={styles.sectionTitle}>Selected Services</h2>
-                <div className={styles.cartItemsContainer}>
-                  {cartItems.map((item) => (
-                    <CartItem
-                      key={item.id}
-                      item={item}
-                      onUpdateQuantity={handleUpdateQuantity}
-                      onRemove={handleRemoveItem}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Scheduling & Work Details */}
-              <motion.div
+          <div className={styles.modernGrid}>
+            {/* Main Content */}
+            <div className={styles.mainContent}>
+              {/* Services Section */}
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className={styles.cartSection}
+                transition={{ delay: 0.6, duration: 0.6 }}
+                className={styles.servicesSection}
               >
-                <h2 className={styles.sectionTitle}>Scheduling & Requirements</h2>
-                
-                {cartItems.map((item, index) => (
-                  <div key={item.id} className={styles.scheduleCard}>
-                    <h3 className={styles.serviceTitle}>{item.name}</h3>
-                    
-                    <div className={styles.scheduleGrid}>
-                      <div>
-                        <label className={styles.scheduleLabel}>Preferred Date *</label>
-                        <input
-                          type="date"
-                          value={item.scheduledDate}
-                          onChange={(e) => handleUpdateSchedule(item.id, 'date', e.target.value)}
-                          min={new Date().toISOString().split('T')[0]}
-                          max={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
-                          className={styles.scheduleInput}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className={styles.scheduleLabel}>Preferred Time *</label>
-                        <select
-                          value={item.scheduledTime}
-                          onChange={(e) => handleUpdateSchedule(item.id, 'time', e.target.value)}
-                          className={styles.scheduleSelect}
-                        >
-                          <option value="">Select time slot</option>
-                          <option value="morning">Morning (8:00 AM - 12:00 PM)</option>
-                          <option value="afternoon">Afternoon (12:00 PM - 4:00 PM)</option>
-                          <option value="evening">Evening (4:00 PM - 8:00 PM)</option>
-                          <option value="flexible">Flexible</option>
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <div className={styles.workDetailsSection}>
-                      <label className={styles.scheduleLabel}>Work Details (Optional)</label>
-                      <textarea
-                        value={item.workDetails || ''}
-                        onChange={(e) => handleUpdateSchedule(item.id, 'workDetails', e.target.value)}
-                        placeholder={`Describe specific requirements for ${item.name} service...`}
-                        className={styles.workDetailsTextarea}
-                        maxLength={500}
-                      />
-                      <div className={styles.charCount}>
-                        {(item.workDetails || '').length}/500
-                      </div>
-                    </div>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>
+                    <Stethoscope className="w-6 h-6" />
+                    Your Selected Services
+                  </h2>
+                  <div className={styles.sectionMeta}>
+                    <span className={styles.serviceCount}>{cartItems.length} services</span>
+                    <span className={styles.totalValue}>₹{subtotal.toLocaleString()}</span>
                   </div>
-                ))}
-              </motion.div>
+                </div>
+                
+                <div className={styles.servicesGrid}>
+                  <AnimatePresence>
+                    {cartItems.map((item, index) => (
+                      <ModernCartItem
+                        key={item.id}
+                        item={item}
+                        index={index}
+                        onUpdateQuantity={handleUpdateQuantity}
+                        onRemove={handleRemoveItem}
+                        expanded={expandedItem === item.id}
+                        onToggleExpand={() => setExpandedItem(expandedItem === item.id ? null : item.id)}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </motion.section>
 
-              {/* Add-ons */}
-              <AddOnSection addOns={addOns} onToggleAddOn={handleToggleAddOn} />
+              {/* Enhanced Add-ons */}
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+                className={styles.addOnsSection}
+              >
+                <div className={styles.sectionHeader}>
+                  <div className={styles.sectionTitleGroup}>
+                    <h2 className={styles.sectionTitle}>
+                      <Shield className="w-6 h-6" />
+                      Enhanced Care Options
+                    </h2>
+                    <p className={styles.sectionDescription}>
+                      Upgrade your care experience with our premium add-on services
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => setShowAddOns(!showAddOns)}
+                    className={styles.toggleButton}
+                  >
+                    <ChevronDown className={`w-5 h-5 transition-transform ${
+                      showAddOns ? 'rotate-180' : ''
+                    }`} />
+                  </button>
+                </div>
+                
+                <AnimatePresence>
+                  {showAddOns && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={styles.addOnsGrid}
+                    >
+                      {addOns.map((addOn, index) => (
+                        <PremiumAddOnCard
+                          key={addOn.id}
+                          addOn={addOn}
+                          index={index}
+                          onToggle={handleToggleAddOn}
+                        />
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.section>
 
-              {/* Tip Section */}
-              <TipSection selectedTip={selectedTip} onTipChange={setSelectedTip} />
-
-              {/* Address Section */}
-              <AddressSection address={address} onAddressChange={setAddress} />
-
-              {/* Trust Indicators - Mobile */}
-              <div className={styles.trustMobile}>
-                <TrustIndicators />
+              {/* Appreciation & Insurance */}
+              <div className={styles.bottomSections}>
+                <PremiumTipSection selectedTip={selectedTip} onTipChange={setSelectedTip} />
+                <InsuranceSection insuranceInfo={insuranceInfo} setInsuranceInfo={setInsuranceInfo} />
               </div>
             </div>
 
-            {/* Right Column - Price Summary */}
-            <div className={styles.rightColumn}>
-              <div className={styles.summaryContainer}>
-                <PriceSummary
+            {/* Sidebar - Summary & Checkout */}
+            <div className={styles.sidebar}>
+              <div className={styles.stickyContainer}>
+                <PremiumSummary
                   subtotal={subtotal}
-                  discount={discount}
+                  addOnTotal={addOnTotal}
+                  convenienceFee={convenienceFee}
+                  emergencyFee={emergencyFee}
+                  weekendSurcharge={weekendSurcharge}
                   taxes={taxes}
+                  discount={discount}
                   tip={selectedTip}
-                  total={total}
+                  beforeDiscount={beforeDiscount}
+                  finalTotal={finalTotal}
+                  totalSavings={totalSavings}
+                  insuranceCoverage={insuranceCoverage}
+                  outOfPocket={outOfPocket}
                   onPromoApply={handlePromoApply}
+                  isProcessing={isProcessing}
+                  setIsProcessing={setIsProcessing}
                 />
                 
-                {/* Trust Indicators - Desktop */}
-                <div className={styles.trustDesktop}>
-                  <TrustIndicators />
-                </div>
+                <TrustBadges />
               </div>
             </div>
           </div>
@@ -264,7 +504,437 @@ const Cart = () => {
   );
 };
 
-// Cart Item Component
+// Modern Cart Item Component
+const ModernCartItem = ({ item, index, onUpdateQuantity, onRemove, expanded, onToggleExpand }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      className={styles.modernCartItem}
+    >
+      <div className={styles.itemCard}>
+        <div className={styles.itemImageContainer}>
+          <img src={item.image} alt={item.name} className={styles.itemImage} />
+          {item.urgency === 'urgent' && (
+            <div className={styles.urgencyBadge}>
+              <AlertCircle className="w-4 h-4" />
+              <span>Urgent</span>
+            </div>
+          )}
+        </div>
+        
+        <div className={styles.itemContent}>
+          <div className={styles.itemHeader}>
+            <div className={styles.itemTitleGroup}>
+              <h3 className={styles.itemTitle}>{item.name}</h3>
+              <span className={styles.itemCategory}>{item.category}</span>
+              <p className={styles.itemSpecialist}>{item.specialist}</p>
+            </div>
+            
+            <div className={styles.itemRating}>
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <span>{item.rating}</span>
+              <span className={styles.reviewCount}>({item.reviews})</span>
+            </div>
+          </div>
+          
+          <p className={styles.itemDescription}>{item.description}</p>
+          
+          <div className={styles.itemMeta}>
+            <div className={styles.metaItem}>
+              <Clock className="w-4 h-4" />
+              <span>{item.duration}</span>
+            </div>
+            <div className={styles.metaItem}>
+              <Calendar className="w-4 h-4" />
+              <span>{item.nextAvailable}</span>
+            </div>
+          </div>
+          
+          {expanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className={styles.expandedContent}
+            >
+              <div className={styles.featuresList}>
+                <h4>Included Services:</h4>
+                <div className={styles.features}>
+                  {item.features?.map((feature, idx) => (
+                    <span key={idx} className={styles.featureTag}>
+                      <CheckCircle className="w-3 h-3" />
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              {item.specialRequirements && (
+                <div className={styles.requirements}>
+                  <h4>Special Requirements:</h4>
+                  <p>{item.specialRequirements}</p>
+                </div>
+              )}
+            </motion.div>
+          )}
+          
+          <div className={styles.itemActions}>
+            <div className={styles.quantitySection}>
+              <label>Quantity:</label>
+              <div className={styles.quantityControls}>
+                <button 
+                  onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                  className={styles.quantityBtn}
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className={styles.quantity}>{item.quantity}</span>
+                <button 
+                  onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                  className={styles.quantityBtn}
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            
+            <div className={styles.actionButtons}>
+              <button onClick={onToggleExpand} className={styles.detailsBtn}>
+                {expanded ? 'Less Details' : 'More Details'}
+              </button>
+              <button onClick={() => onRemove(item.id)} className={styles.removeBtn}>
+                <Trash2 className="w-4 h-4" />
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div className={styles.itemPricing}>
+          {item.originalPrice > item.price && (
+            <span className={styles.originalPrice}>₹{(item.originalPrice * item.quantity).toLocaleString()}</span>
+          )}
+          <span className={styles.currentPrice}>₹{(item.price * item.quantity).toLocaleString()}</span>
+          {item.originalPrice > item.price && (
+            <span className={styles.savings}>
+              Save ₹{((item.originalPrice - item.price) * item.quantity).toLocaleString()}
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Premium Add-on Card Component
+const PremiumAddOnCard = ({ addOn, index, onToggle }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
+      className={`${styles.addOnCard} ${addOn.selected ? styles.selected : ''}`}
+      onClick={() => onToggle(addOn.id)}
+    >
+      <div className={styles.addOnHeader}>
+        <div className={styles.addOnIcon}>
+          {addOn.icon}
+        </div>
+        <div className={styles.addOnBadges}>
+          {addOn.popular && <span className={styles.popularBadge}>Popular</span>}
+          <span className={styles.categoryBadge}>{addOn.category}</span>
+        </div>
+      </div>
+      
+      <div className={styles.addOnContent}>
+        <h4 className={styles.addOnTitle}>{addOn.name}</h4>
+        <p className={styles.addOnDescription}>{addOn.description}</p>
+      </div>
+      
+      <div className={styles.addOnFooter}>
+        <span className={styles.addOnPrice}>₹{addOn.price.toLocaleString()}</span>
+        <div className={styles.addOnToggle}>
+          {addOn.selected ? (
+            <CheckCircle className="w-5 h-5 text-green-500" />
+          ) : (
+            <Plus className="w-5 h-5" />
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Premium Tip Section
+const PremiumTipSection = ({ selectedTip, onTipChange }) => {
+  const tipOptions = [0, 100, 200, 300, 500];
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={styles.tipSection}
+    >
+      <div className={styles.sectionHeader}>
+        <h3 className={styles.sectionTitle}>
+          <Heart className="w-5 h-5" />
+          Show Appreciation
+        </h3>
+        <p className={styles.sectionDescription}>
+          Support our healthcare professionals with a tip
+        </p>
+      </div>
+      
+      <div className={styles.tipOptions}>
+        {tipOptions.map(tip => (
+          <button
+            key={tip}
+            onClick={() => onTipChange(tip)}
+            className={`${styles.tipOption} ${selectedTip === tip ? styles.selected : ''}`}
+          >
+            {tip === 0 ? 'No Tip' : `₹${tip}`}
+          </button>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+// Insurance Section
+const InsuranceSection = ({ insuranceInfo, setInsuranceInfo }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={styles.insuranceSection}
+    >
+      <div className={styles.sectionHeader}>
+        <h3 className={styles.sectionTitle}>
+          <Shield className="w-5 h-5" />
+          Insurance Coverage
+        </h3>
+      </div>
+      
+      <div className={styles.insuranceToggle}>
+        <label className={styles.toggleLabel}>
+          <input
+            type="checkbox"
+            checked={insuranceInfo.hasInsurance}
+            onChange={(e) => setInsuranceInfo(prev => ({ ...prev, hasInsurance: e.target.checked }))}
+          />
+          <span>I have health insurance</span>
+        </label>
+      </div>
+      
+      {insuranceInfo.hasInsurance && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className={styles.insuranceForm}
+        >
+          <input
+            type="text"
+            placeholder="Insurance Provider"
+            value={insuranceInfo.provider}
+            onChange={(e) => setInsuranceInfo(prev => ({ ...prev, provider: e.target.value }))}
+            className={styles.insuranceInput}
+          />
+          <input
+            type="text"
+            placeholder="Policy Number"
+            value={insuranceInfo.policyNumber}
+            onChange={(e) => setInsuranceInfo(prev => ({ ...prev, policyNumber: e.target.value }))}
+            className={styles.insuranceInput}
+          />
+        </motion.div>
+      )}
+    </motion.div>
+  );
+};
+
+// Premium Summary Component
+const PremiumSummary = ({ 
+  subtotal, addOnTotal, convenienceFee, emergencyFee, weekendSurcharge, 
+  taxes, discount, tip, beforeDiscount, finalTotal, totalSavings, 
+  insuranceCoverage, outOfPocket, onPromoApply, isProcessing, setIsProcessing 
+}) => {
+  const [promoCode, setPromoCode] = useState('');
+  const [showBreakdown, setShowBreakdown] = useState(false);
+  
+  const handleCheckout = async () => {
+    setIsProcessing(true);
+    // Simulate processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      // Navigate to payment
+    }, 2000);
+  };
+  
+  return (
+    <div className={styles.premiumSummary}>
+      <div className={styles.summaryHeader}>
+        <h3 className={styles.summaryTitle}>Booking Summary</h3>
+        {totalSavings > 0 && (
+          <div className={styles.savingsBadge}>
+            You save ₹{totalSavings.toLocaleString()}!
+          </div>
+        )}
+      </div>
+      
+      <div className={styles.summaryContent}>
+        <div className={styles.mainTotal}>
+          <span>Total Amount</span>
+          <span className={styles.totalAmount}>₹{finalTotal.toLocaleString()}</span>
+        </div>
+        
+        {insuranceCoverage > 0 && (
+          <div className={styles.insuranceRow}>
+            <span>Insurance Coverage</span>
+            <span className={styles.coverage}>-₹{insuranceCoverage.toLocaleString()}</span>
+          </div>
+        )}
+        
+        <div className={styles.outOfPocket}>
+          <span>Your Payment</span>
+          <span className={styles.finalAmount}>₹{outOfPocket.toLocaleString()}</span>
+        </div>
+        
+        <button 
+          onClick={() => setShowBreakdown(!showBreakdown)}
+          className={styles.breakdownToggle}
+        >
+          {showBreakdown ? 'Hide' : 'Show'} breakdown
+          <ChevronDown className={`w-4 h-4 transition-transform ${
+            showBreakdown ? 'rotate-180' : ''
+          }`} />
+        </button>
+        
+        <AnimatePresence>
+          {showBreakdown && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className={styles.breakdown}
+            >
+              <div className={styles.breakdownItem}>
+                <span>Services</span>
+                <span>₹{subtotal.toLocaleString()}</span>
+              </div>
+              {addOnTotal > 0 && (
+                <div className={styles.breakdownItem}>
+                  <span>Add-ons</span>
+                  <span>₹{addOnTotal.toLocaleString()}</span>
+                </div>
+              )}
+              <div className={styles.breakdownItem}>
+                <span>Platform Fee</span>
+                <span>₹{convenienceFee}</span>
+              </div>
+              {emergencyFee > 0 && (
+                <div className={styles.breakdownItem}>
+                  <span>Emergency Fee</span>
+                  <span>₹{emergencyFee}</span>
+                </div>
+              )}
+              {weekendSurcharge > 0 && (
+                <div className={styles.breakdownItem}>
+                  <span>Weekend Surcharge</span>
+                  <span>₹{weekendSurcharge}</span>
+                </div>
+              )}
+              <div className={styles.breakdownItem}>
+                <span>GST (18%)</span>
+                <span>₹{taxes.toLocaleString()}</span>
+              </div>
+              {tip > 0 && (
+                <div className={styles.breakdownItem}>
+                  <span>Tip</span>
+                  <span>₹{tip}</span>
+                </div>
+              )}
+              {discount > 0 && (
+                <div className={styles.breakdownItem}>
+                  <span>Discount</span>
+                  <span className={styles.discount}>-₹{discount.toLocaleString()}</span>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      
+      <div className={styles.promoSection}>
+        <div className={styles.promoInput}>
+          <input
+            type="text"
+            placeholder="Enter promo code"
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value)}
+          />
+          <button onClick={() => onPromoApply(promoCode)}>
+            Apply
+          </button>
+        </div>
+      </div>
+      
+      <button 
+        onClick={handleCheckout}
+        disabled={isProcessing}
+        className={styles.checkoutButton}
+      >
+        {isProcessing ? (
+          <div className={styles.processing}>
+            <div className={styles.spinner}></div>
+            Processing...
+          </div>
+        ) : (
+          <>
+            <CreditCard className="w-5 h-5" />
+            Secure Checkout - ₹{outOfPocket.toLocaleString()}
+          </>
+        )}
+      </button>
+    </div>
+  );
+};
+
+// Trust Badges Component
+const TrustBadges = () => {
+  return (
+    <div className={styles.trustBadges}>
+      <h4 className={styles.trustTitle}>Why Choose NeedStation?</h4>
+      <div className={styles.trustGrid}>
+        <div className={styles.trustBadge}>
+          <Shield className="w-6 h-6" />
+          <div>
+            <h5>Verified Professionals</h5>
+            <p>Background checked & certified</p>
+          </div>
+        </div>
+        <div className={styles.trustBadge}>
+          <Heart className="w-6 h-6" />
+          <div>
+            <h5>Compassionate Care</h5>
+            <p>Trained in empathy & care</p>
+          </div>
+        </div>
+        <div className={styles.trustBadge}>
+          <Clock className="w-6 h-6" />
+          <div>
+            <h5>24/7 Support</h5>
+            <p>Always here when you need us</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Original Cart Item Component (keeping for compatibility)
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   return (
     <motion.div
@@ -274,36 +944,79 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     >
       <div className={styles.itemImage}>
         <img src={item.image} alt={item.name} />
+        {item.urgency === 'urgent' && (
+          <div className={styles.urgencyBadge}>
+            <AlertCircle size={14} />
+            Urgent
+          </div>
+        )}
       </div>
+      
       <div className={styles.itemDetails}>
-        <h3 className={styles.itemName}>{item.name}</h3>
+        <div className={styles.itemHeader}>
+          <div>
+            <h3 className={styles.itemName}>{item.name}</h3>
+            <span className={styles.itemCategory}>{item.category}</span>
+          </div>
+          <div className={styles.itemRating}>
+            <Star className={styles.starIcon} fill="#fbbf24" />
+            <span>{item.rating}</span>
+            <span className={styles.reviewCount}>({item.reviews})</span>
+          </div>
+        </div>
+        
         <p className={styles.itemDescription}>{item.description}</p>
+        
+        <div className={styles.itemMeta}>
+          <div className={styles.metaItem}>
+            <Clock size={14} />
+            <span>{item.duration}</span>
+          </div>
+          {item.caregiverPreference && (
+            <div className={styles.metaItem}>
+              <User size={14} />
+              <span>{item.caregiverPreference} caregiver</span>
+            </div>
+          )}
+        </div>
+        
         <div className={styles.itemActions}>
           <div className={styles.quantityControls}>
             <button 
               onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
               className={styles.quantityBtn}
             >
-              -
+              <Minus size={14} />
             </button>
             <span className={styles.quantity}>{item.quantity}</span>
             <button 
               onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
               className={styles.quantityBtn}
             >
-              +
+              <Plus size={14} />
             </button>
           </div>
+          
           <button 
             onClick={() => onRemove(item.id)}
             className={styles.removeBtn}
           >
+            <Trash2 size={16} />
             Remove
           </button>
         </div>
       </div>
-      <div className={styles.itemPrice}>
-        ₹{item.price * item.quantity}
+      
+      <div className={styles.itemPricing}>
+        {item.originalPrice > item.price && (
+          <span className={styles.originalPrice}>₹{item.originalPrice * item.quantity}</span>
+        )}
+        <span className={styles.itemPrice}>₹{item.price * item.quantity}</span>
+        {item.originalPrice > item.price && (
+          <span className={styles.savings}>
+            Save ₹{(item.originalPrice - item.price) * item.quantity}
+          </span>
+        )}
       </div>
     </motion.div>
   );
@@ -311,29 +1024,65 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
 
 // Add-on Section Component
 const AddOnSection = ({ addOns, onToggleAddOn }) => {
+  const popularAddOns = addOns.filter(addOn => addOn.popular);
+  const regularAddOns = addOns.filter(addOn => !addOn.popular);
+  
   return (
-    <div className={styles.addOnSection}>
-      <h2 className={styles.sectionTitle}>Add-ons</h2>
-      <div className={styles.addOnList}>
-        {addOns.map((addOn) => (
-          <div key={addOn.id} className={styles.addOnItem}>
-            <div className={styles.addOnInfo}>
-              <label className={styles.addOnLabel}>
-                <input
-                  type="checkbox"
-                  checked={addOn.selected}
-                  onChange={() => onToggleAddOn(addOn.id)}
-                  className={styles.addOnCheckbox}
-                />
-                <div>
-                  <h4 className={styles.addOnName}>{addOn.name}</h4>
-                  <p className={styles.addOnDescription}>{addOn.description}</p>
-                </div>
-              </label>
-            </div>
-            <div className={styles.addOnPrice}>₹{addOn.price}</div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className={styles.addOnSection}
+    >
+      <div className={styles.sectionHeader}>
+        <h2 className={styles.sectionTitle}>Healthcare Add-ons</h2>
+        <p className={styles.sectionSubtitle}>Enhance your care experience</p>
+      </div>
+      
+      {popularAddOns.length > 0 && (
+        <div className={styles.popularAddOns}>
+          <h3 className={styles.popularTitle}>🔥 Most Popular</h3>
+          <div className={styles.addOnGrid}>
+            {popularAddOns.map((addOn) => (
+              <AddOnCard key={addOn.id} addOn={addOn} onToggle={onToggleAddOn} />
+            ))}
           </div>
-        ))}
+        </div>
+      )}
+      
+      <div className={styles.regularAddOns}>
+        <div className={styles.addOnGrid}>
+          {regularAddOns.map((addOn) => (
+            <AddOnCard key={addOn.id} addOn={addOn} onToggle={onToggleAddOn} />
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Add-on Card Component
+const AddOnCard = ({ addOn, onToggle }) => {
+  return (
+    <div className={`${styles.addOnCard} ${addOn.selected ? styles.selected : ''}`}>
+      <div className={styles.addOnHeader}>
+        <span className={styles.addOnIcon}>{addOn.icon}</span>
+        {addOn.popular && <span className={styles.popularBadge}>Popular</span>}
+      </div>
+      
+      <div className={styles.addOnContent}>
+        <h4 className={styles.addOnName}>{addOn.name}</h4>
+        <p className={styles.addOnDescription}>{addOn.description}</p>
+      </div>
+      
+      <div className={styles.addOnFooter}>
+        <span className={styles.addOnPrice}>₹{addOn.price}</span>
+        <button
+          onClick={() => onToggle(addOn.id)}
+          className={`${styles.addOnToggle} ${addOn.selected ? styles.selected : ''}`}
+        >
+          {addOn.selected ? 'Added' : 'Add'}
+        </button>
       </div>
     </div>
   );
@@ -430,58 +1179,123 @@ const AddressSection = ({ address, onAddressChange }) => {
 };
 
 // Price Summary Component
-const PriceSummary = ({ subtotal, discount, taxes, tip, total, onPromoApply }) => {
+const PriceSummary = ({ subtotal, addOnTotal, discount, taxes, tip, emergencyFee, finalTotal, totalSavings, onPromoApply }) => {
   const [promoCode, setPromoCode] = useState('');
+  const [showPromoSuggestions, setShowPromoSuggestions] = useState(false);
+  
+  const promoSuggestions = ['HEALTH10', 'SENIOR20', 'NEWUSER', 'FAMILY15'];
 
   return (
     <div className={styles.priceSummary}>
-      <h2 className={styles.sectionTitle}>Order Summary</h2>
-      <div className={styles.summaryDetails}>
-        <div className={styles.summaryRow}>
-          <span>Subtotal</span>
-          <span>₹{subtotal}</span>
-        </div>
-        {discount > 0 && (
-          <div className={styles.summaryRow}>
-            <span>Discount</span>
-            <span className={styles.discount}>-₹{discount}</span>
+      <div className={styles.summaryHeader}>
+        <h2 className={styles.sectionTitle}>Booking Summary</h2>
+        {totalSavings > 0 && (
+          <div className={styles.totalSavings}>
+            <span>You're saving ₹{totalSavings}!</span>
           </div>
         )}
+      </div>
+      
+      <div className={styles.summaryDetails}>
         <div className={styles.summaryRow}>
-          <span>Taxes & Fees</span>
+          <span>Services Subtotal</span>
+          <span>₹{subtotal}</span>
+        </div>
+        
+        {addOnTotal > 0 && (
+          <div className={styles.summaryRow}>
+            <span>Add-ons</span>
+            <span>₹{addOnTotal}</span>
+          </div>
+        )}
+        
+        {emergencyFee > 0 && (
+          <div className={styles.summaryRow}>
+            <span>Emergency Service Fee</span>
+            <span>₹{emergencyFee}</span>
+          </div>
+        )}
+        
+        <div className={styles.summaryRow}>
+          <span>GST (18%)</span>
           <span>₹{taxes}</span>
         </div>
+        
         {tip > 0 && (
           <div className={styles.summaryRow}>
-            <span>Tip</span>
+            <span>Appreciation Tip</span>
             <span>₹{tip}</span>
           </div>
         )}
+        
+        {discount > 0 && (
+          <div className={styles.summaryRow}>
+            <span>Promo Discount</span>
+            <span className={styles.discount}>-₹{discount}</span>
+          </div>
+        )}
+        
+        <div className={styles.summaryDivider}></div>
+        
         <div className={styles.summaryTotal}>
-          <span>Total</span>
-          <span>₹{total}</span>
+          <span>Total Amount</span>
+          <span>₹{finalTotal}</span>
         </div>
       </div>
       
       <div className={styles.promoSection}>
-        <input
-          type="text"
-          placeholder="Enter promo code"
-          value={promoCode}
-          onChange={(e) => setPromoCode(e.target.value)}
-          className={styles.promoInput}
-        />
-        <button 
-          onClick={() => onPromoApply(promoCode)}
-          className={styles.promoBtn}
-        >
-          Apply
-        </button>
+        <div className={styles.promoInputContainer}>
+          <input
+            type="text"
+            placeholder="Enter promo code"
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value)}
+            onFocus={() => setShowPromoSuggestions(true)}
+            className={styles.promoInput}
+          />
+          <button 
+            onClick={() => onPromoApply(promoCode)}
+            className={styles.promoBtn}
+          >
+            Apply
+          </button>
+        </div>
+        
+        {showPromoSuggestions && (
+          <div className={styles.promoSuggestions}>
+            <p className={styles.promoSuggestionsTitle}>Try these codes:</p>
+            <div className={styles.promoTags}>
+              {promoSuggestions.map(code => (
+                <button
+                  key={code}
+                  onClick={() => {
+                    setPromoCode(code);
+                    setShowPromoSuggestions(false);
+                  }}
+                  className={styles.promoTag}
+                >
+                  {code}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <button className={styles.checkoutBtn}>
-        Proceed to Payment
+        <Shield className={styles.checkoutIcon} />
+        Secure Checkout - ₹{finalTotal}
       </button>
+      
+      <div className={styles.paymentMethods}>
+        <span>We accept:</span>
+        <div className={styles.paymentIcons}>
+          <span>💳</span>
+          <span>🏦</span>
+          <span>📱</span>
+          <span>💰</span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -490,17 +1304,62 @@ const PriceSummary = ({ subtotal, discount, taxes, tip, total, onPromoApply }) =
 const TrustIndicators = () => {
   return (
     <div className={styles.trustIndicators}>
-      <div className={styles.trustItem}>
-        <span className={styles.trustIcon}>🔒</span>
-        <span>Secure Payment</span>
+      <h3 className={styles.trustTitle}>Why Choose NeedStation?</h3>
+      <div className={styles.trustGrid}>
+        <div className={styles.trustItem}>
+          <div className={styles.trustIcon}>
+            <Shield className={styles.trustIconSvg} />
+          </div>
+          <div className={styles.trustContent}>
+            <h4>Verified Professionals</h4>
+            <p>Background checked & certified healthcare providers</p>
+          </div>
+        </div>
+        
+        <div className={styles.trustItem}>
+          <div className={styles.trustIcon}>
+            <Heart className={styles.trustIconSvg} />
+          </div>
+          <div className={styles.trustContent}>
+            <h4>Compassionate Care</h4>
+            <p>Trained in empathy and patient-centered approach</p>
+          </div>
+        </div>
+        
+        <div className={styles.trustItem}>
+          <div className={styles.trustIcon}>
+            <Clock className={styles.trustIconSvg} />
+          </div>
+          <div className={styles.trustContent}>
+            <h4>24/7 Support</h4>
+            <p>Round-the-clock assistance and emergency response</p>
+          </div>
+        </div>
+        
+        <div className={styles.trustItem}>
+          <div className={styles.trustIcon}>
+            <CheckCircle className={styles.trustIconSvg} />
+          </div>
+          <div className={styles.trustContent}>
+            <h4>Quality Assured</h4>
+            <p>Regular monitoring and quality checks</p>
+          </div>
+        </div>
       </div>
-      <div className={styles.trustItem}>
-        <span className={styles.trustIcon}>✅</span>
-        <span>Verified Taskers</span>
-      </div>
-      <div className={styles.trustItem}>
-        <span className={styles.trustIcon}>💯</span>
-        <span>100% Satisfaction</span>
+      
+      <div className={styles.trustStats}>
+        <div className={styles.statItem}>
+          <span className={styles.statNumber}>10,000+</span>
+          <span className={styles.statLabel}>Happy Families</span>
+        </div>
+        <div className={styles.statItem}>
+          <span className={styles.statNumber}>4.9★</span>
+          <span className={styles.statLabel}>Average Rating</span>
+        </div>
+        <div className={styles.statItem}>
+          <span className={styles.statNumber}>500+</span>
+          <span className={styles.statLabel}>Certified Professionals</span>
+        </div>
       </div>
     </div>
   );

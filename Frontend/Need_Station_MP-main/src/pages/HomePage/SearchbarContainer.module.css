@@ -201,7 +201,8 @@
   width: 50vw;
   min-height: 7.382vh;
   border: 0.106rem rgba(255, 255, 255, 0.6);
-  margin-top: 12vh;
+  margin-top: 15vh; /* Increased from 12vh for more spacing */
+  margin-bottom: 8vh; /* Added bottom margin for spacing to services */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -322,17 +323,19 @@
     width: 85%; /* Wider for better mobile experience */
     margin-left: 7.5%; /* Center the container */
     flex-direction: row; /* Keep horizontal on tablet */
-    margin-top: 50px;
-    gap: 20px;
+    margin-top: 40px; /* Increased from 30px for more spacing */
+    margin-bottom: 40px; /* Added bottom margin for spacing to services */
+    gap: 15px; /* Reduced from 20px */
     justify-content: space-around;
     background: linear-gradient(135deg, var(--bg-secondary), rgba(0, 212, 170, 0.03));
-    padding: 25px 20px;
-    border-radius: 20px;
+    padding: 15px 15px; /* Reduced from 25px 20px */
+    border-radius: 16px; /* Reduced from 20px */
     border: 1px solid rgba(0, 212, 170, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); /* Reduced shadow */
     backdrop-filter: blur(10px);
     position: relative;
     overflow: hidden;
+    min-height: auto; /* Remove fixed height */
   }
 
   .info::before {
@@ -537,17 +540,19 @@
   .info {
     width: 90%;
     margin-left: 5%;
-    margin-top: 40px;
-    gap: 20px;
-    padding: 20px 15px;
-    flex-direction: column;
-    border-radius: 18px;
+    margin-top: 35px; /* Increased from 25px for more spacing */
+    margin-bottom: 35px; /* Added bottom margin for spacing to services */
+    gap: 10px; /* Reduced from 20px */
+    padding: 12px 10px; /* Reduced from 20px 15px */
+    flex-direction: row; /* Changed from column to row for more compact */
+    border-radius: 14px; /* Reduced from 18px */
     background: linear-gradient(135deg, var(--bg-secondary), rgba(0, 212, 170, 0.02));
     border: 1px solid rgba(0, 212, 170, 0.1);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04); /* Reduced shadow */
     backdrop-filter: blur(8px);
     position: relative;
     overflow: hidden;
+    min-height: auto; /* Remove fixed height */
   }
 
   .info::before {
@@ -561,14 +566,15 @@
   }
 
   .info .number {
-    font-size: 1.3rem;
+    font-size: 1.1rem; /* Reduced from 1.3rem */
     text-align: center;
     font-weight: 700;
     color: var(--text-primary); /* Use desktop color */
+    margin-bottom: 2px; /* Reduced spacing */
   }
 
   .info .text {
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Reduced from 0.75rem */
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -576,27 +582,27 @@
     max-width: 100%;
     font-weight: 500;
     opacity: 0.9;
-    margin-top: 4px;
+    margin-top: 2px; /* Reduced from 4px */
   }
 
   .divider {
-    width: 60%;
-    height: 2px;
-    margin: 15px auto;
-    background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.3), transparent);
+    width: 2px; /* Changed to vertical divider */
+    height: 40px; /* Height for vertical divider */
+    margin: 0; /* Remove auto margin */
+    background: linear-gradient(180deg, transparent, rgba(0, 200, 255, 0.3), transparent);
     border-radius: 1px;
   }
 
   .infoData {
     margin-top: 0;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px; /* Reduced from 8px */
     display: flex;
     align-items: center;
     text-align: center;
-    width: 100%;
+    flex: 1; /* Use flex instead of width 100% */
     position: relative;
-    padding: 10px 0;
+    padding: 5px 0; /* Reduced from 10px 0 */
   }
 
   .infoData::after {

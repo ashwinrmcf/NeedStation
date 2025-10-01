@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { X, ArrowLeft, ArrowRight, MapPin, Clock, User, Phone, Calendar } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, MapPin, Clock, User, Phone, Calendar, Shield } from 'lucide-react';
 import { getServiceConfiguration } from '../../data/ServiceConfigurations';
+import LeafletMapPicker from '../Map/LeafletMapPicker';
 import styles from './BookingModal.module.css';
 
-const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete }) => {
+const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userProfile }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    // Step 1: Basic Info
-    fullName: '',
+    // Step 1: Contact & Location Info
     phone: '',
-    location: '',
+    alternatePhone: '',
+    latitude: null,
+    longitude: null,
+    address: '',
+    pincode: '',
+    landmark: '',
     
     // Step 2: Service Details (dynamic based on service)
     serviceDetails: {},
@@ -22,26 +27,42 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete }) => {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   // Get service configuration for dynamic fields
   const serviceConfig = getServiceConfiguration(serviceName?.toUpperCase().replace(/\s+/g, '_') || '');
 
-  // Reset form when modal opens
+  // Auto-fill phone number from user profile and reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setCurrentStep(1);
+      const phoneFromProfile = userProfile?.phone || userProfile?.mobile || '';
+      const isPhoneVerified = phoneFromProfile && userProfile?.phoneVerified;
+      
       setFormData({
-        fullName: '',
-        phone: '',
-        location: '',
+        phone: phoneFromProfile,
+        alternatePhone: '',
+        latitude: null,
+        longitude: null,
+        address: '',
+        pincode: '',
+        landmark: '',
         serviceDetails: {},
         preferredDate: '',
         preferredTime: '',
         urgency: 'normal'
       });
       setErrors({});
+      setPhoneVerified(isPhoneVerified);
+      setOtpSent(false);
+      setOtp('');
+      setSelectedLocation(null);
     }
-  }, [isOpen]);
+  }, [isOpen, userProfile]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -80,16 +101,82 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete }) => {
     }));
   };
 
+  // Handle location selection from map
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location);
+    // Don't auto-save, wait for user to click Save Location button
+  };
+
+  // Save selected location
+  const saveLocation = () => {
+    if (selectedLocation) {
+      setFormData(prev => ({
+        ...prev,
+        latitude: selectedLocation.lat,
+        longitude: selectedLocation.lng
+      }));
+      // Clear location error if it exists
+      if (errors.location) {
+        setErrors(prev => ({ ...prev, location: '' }));
+      }
+    }
+  };
+
+  // Send OTP (static for now)
+  const sendOtp = async () => {
+    if (!formData.phone || !/^[6-9]\d{9}$/.test(formData.phone)) {
+      setErrors(prev => ({ ...prev, phone: 'Enter valid 10-digit mobile number' }));
+      return;
+    }
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setOtpSent(true);
+      setErrors(prev => ({ ...prev, phone: '' }));
+    } catch (error) {
+      setErrors(prev => ({ ...prev, phone: 'Failed to send OTP. Please try again.' }));
+    }
+  };
+
+  // Verify OTP (static: 123456)
+  const verifyOtp = async () => {
+    if (otp !== '123456') {
+      setErrors(prev => ({ ...prev, otp: 'Invalid OTP. Please try again.' }));
+      return;
+    }
+    
+    setIsVerifyingOtp(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setPhoneVerified(true);
+      setErrors(prev => ({ ...prev, otp: '' }));
+    } catch (error) {
+      setErrors(prev => ({ ...prev, otp: 'Verification failed. Please try again.' }));
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
   const validateStep = (step) => {
     const newErrors = {};
 
     if (step === 1) {
-      if (!formData.fullName.trim()) newErrors.fullName = 'Name is required';
       if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
       if (formData.phone && !/^[6-9]\d{9}$/.test(formData.phone)) {
         newErrors.phone = 'Enter valid 10-digit mobile number';
       }
-      if (!formData.location.trim()) newErrors.location = 'Location is required';
+      if (!phoneVerified) newErrors.phone = 'Please verify your phone number';
+      if (!formData.latitude || !formData.longitude) newErrors.location = 'Please select location on map';
+      if (!formData.address.trim()) newErrors.address = 'Address is required';
+      if (!formData.pincode.trim()) newErrors.pincode = 'Pincode is required';
+      if (formData.pincode && !/^\d{6}$/.test(formData.pincode)) {
+        newErrors.pincode = 'Enter valid 6-digit pincode';
+      }
+      if (formData.alternatePhone && !/^[6-9]\d{9}$/.test(formData.alternatePhone)) {
+        newErrors.alternatePhone = 'Enter valid 10-digit alternate number';
+      }
     }
 
     if (step === 3) {
@@ -195,54 +282,189 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete }) => {
         <div className={styles.modalContent}>
           {currentStep === 1 && (
             <div>
-              <h3 className={styles.stepTitle}>Basic Information</h3>
+              <h3 className={styles.stepTitle}>Contact & Location Information</h3>
               
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  placeholder="Enter your full name"
-                  className={`${styles.formInput} ${errors.fullName ? styles.error : ''}`}
-                />
-                {errors.fullName && (
-                  <p className={styles.errorMessage}>{errors.fullName}</p>
-                )}
-              </div>
-
+              {/* Phone Number Section */}
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>
                   Phone Number *
                 </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="Enter 10-digit mobile number"
-                  className={`${styles.formInput} ${errors.phone ? styles.error : ''}`}
-                />
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="Enter 10-digit mobile number"
+                    className={`${styles.formInput} ${errors.phone ? styles.error : ''}`}
+                    disabled={phoneVerified}
+                    style={{ flex: 1 }}
+                  />
+                  {!phoneVerified && !otpSent && (
+                    <button
+                      type="button"
+                      onClick={sendOtp}
+                      className={styles.otpButton}
+                      disabled={!formData.phone || !/^[6-9]\d{9}$/.test(formData.phone)}
+                    >
+                      Send OTP
+                    </button>
+                  )}
+                  {phoneVerified && (
+                    <div className={styles.verifiedBadge}>
+                      <Shield size={16} /> Verified
+                    </div>
+                  )}
+                </div>
                 {errors.phone && (
                   <p className={styles.errorMessage}>{errors.phone}</p>
                 )}
               </div>
 
+              {/* OTP Verification */}
+              {otpSent && !phoneVerified && (
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>
+                    Enter OTP (Use: 123456) *
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter 6-digit OTP"
+                      className={`${styles.formInput} ${errors.otp ? styles.error : ''}`}
+                      maxLength="6"
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={verifyOtp}
+                      className={styles.verifyButton}
+                      disabled={isVerifyingOtp || otp.length !== 6}
+                    >
+                      {isVerifyingOtp ? 'Verifying...' : 'Verify'}
+                    </button>
+                  </div>
+                  {errors.otp && (
+                    <p className={styles.errorMessage}>{errors.otp}</p>
+                  )}
+                  <p className={styles.otpHint}>OTP sent to {formData.phone}</p>
+                </div>
+              )}
+
+              {/* Alternate Phone Number */}
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>
-                  Location *
+                  Alternate Phone Number (Optional)
                 </label>
                 <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="Enter your address"
-                  className={`${styles.formInput} ${errors.location ? styles.error : ''}`}
+                  type="tel"
+                  value={formData.alternatePhone}
+                  onChange={(e) => handleInputChange('alternatePhone', e.target.value)}
+                  placeholder="Enter alternate mobile number"
+                  className={`${styles.formInput} ${errors.alternatePhone ? styles.error : ''}`}
                 />
+                {errors.alternatePhone && (
+                  <p className={styles.errorMessage}>{errors.alternatePhone}</p>
+                )}
+              </div>
+
+              {/* Map Location Picker */}
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>
+                  Select Location on Map *
+                </label>
+                <div className={styles.mapContainer}>
+                  <LeafletMapPicker onLocationSelect={handleLocationSelect} />
+                </div>
+                
+                {/* Save Location Button */}
+                {selectedLocation && (
+                  <div className={styles.locationActions}>
+                    <div className={styles.locationPreview}>
+                      <p className={styles.locationInfo}>
+                        📍 Selected: {selectedLocation.address}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={saveLocation}
+                      className={`${styles.saveLocationButton} ${
+                        formData.latitude && formData.longitude ? styles.saved : ''
+                      }`}
+                      disabled={formData.latitude && formData.longitude}
+                    >
+                      {formData.latitude && formData.longitude ? (
+                        <>
+                          <Shield size={16} /> Location Saved
+                        </>
+                      ) : (
+                        <>
+                          <MapPin size={16} /> Save Location
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+                
+                {!selectedLocation && (
+                  <p className={styles.mapHint}>
+                    Click on the map to select your location
+                  </p>
+                )}
+                
                 {errors.location && (
                   <p className={styles.errorMessage}>{errors.location}</p>
                 )}
+              </div>
+
+              {/* Address Fields */}
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>
+                  Full Address *
+                </label>
+                <textarea
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  placeholder="Enter your complete address"
+                  className={`${styles.formTextarea} ${errors.address ? styles.error : ''}`}
+                  rows="3"
+                />
+                {errors.address && (
+                  <p className={styles.errorMessage}>{errors.address}</p>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div className={styles.formGroup} style={{ flex: 1 }}>
+                  <label className={styles.formLabel}>
+                    Pincode *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.pincode}
+                    onChange={(e) => handleInputChange('pincode', e.target.value)}
+                    placeholder="Enter 6-digit pincode"
+                    className={`${styles.formInput} ${errors.pincode ? styles.error : ''}`}
+                    maxLength="6"
+                  />
+                  {errors.pincode && (
+                    <p className={styles.errorMessage}>{errors.pincode}</p>
+                  )}
+                </div>
+
+                <div className={styles.formGroup} style={{ flex: 1 }}>
+                  <label className={styles.formLabel}>
+                    Landmark (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.landmark}
+                    onChange={(e) => handleInputChange('landmark', e.target.value)}
+                    placeholder="Enter nearby landmark"
+                    className={styles.formInput}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -264,6 +486,22 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete }) => {
                     if (typeof fieldConfig === 'string' && fieldConfig.includes('/')) {
                       // Dropdown
                       const options = fieldConfig.split('/');
+                      
+                      // Special handling for therapy_type to add descriptions
+                      const getOptionDisplay = (option, fieldKey) => {
+                        if (fieldKey === 'therapy_type') {
+                          const therapyDescriptions = {
+                            'orthopedic': 'Orthopedic - Bone/Joint',
+                            'neurological': 'Neurological - Brain/Nerve',
+                            'pediatric': 'Pediatric - Child Care',
+                            'geriatric': 'Geriatric - Elder Care',
+                            'chest': 'Chest - Breathing/Lung'
+                          };
+                          return therapyDescriptions[option] || option.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        }
+                        return option.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                      };
+                      
                       return (
                         <div key={fieldName} className={styles.formGroup}>
                           <label className={styles.formLabel}>
@@ -277,7 +515,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete }) => {
                             <option value="">Select {fieldKey.replace(/_/g, ' ')}</option>
                             {options.map(option => (
                               <option key={option} value={option}>
-                                {option.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                {getOptionDisplay(option, fieldKey)}
                               </option>
                             ))}
                           </select>

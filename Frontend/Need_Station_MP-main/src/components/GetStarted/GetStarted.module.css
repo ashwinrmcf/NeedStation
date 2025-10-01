@@ -65,26 +65,74 @@
 }
 
 @media screen and (max-width: 768px) {
-  .service-section{
+  .service-section {
     flex-direction: column;
     align-items: center;
     min-height: auto;
+    width: 90%; /* Reduced from 80vw */
+    margin-left: 5%; /* Adjusted for centering */
+    margin-top: 30px; /* Reduced from 10vh */
+    margin-bottom: 30px; /* Reduced from 10vh */
+    padding: 20px 15px; /* Reduced padding */
   }
 
-  .main-text{
+  .text {
+    text-align: center;
     width: 100%;
-    font-size: 5.5vw;
-    margin-left: 1vw;
   }
 
-  .sub-text{
-    width: 90%;
+  .main-text {
+    width: 100%;
+    font-size: 1.5rem; /* Fixed size instead of vw */
+    margin-left: 0; /* Remove margin */
+    margin-bottom: 10px;
+    line-height: 1.3;
   }
 
-  .button{
-    width: 20vw;
-    height: 7.5vh;
-    margin-left: 12vw;
-    margin-top: 4vh;
+  .sub-text {
+    width: 100%;
+    font-size: 1rem;
+    margin-left: 0; /* Remove margin */
+    margin-top: 8px;
+    margin-bottom: 20px;
+  }
+
+  .button {
+    width: 120px; /* Fixed width instead of vw */
+    height: 45px; /* Fixed height instead of vh */
+    margin: 0; /* Remove all margins */
+    border-radius: 8px;
+  }
+
+  .button-text {
+    font-size: 1rem;
+  }
+}
+
+/* Small mobile devices */
+@media screen and (max-width: 480px) {
+  .service-section {
+    width: 95%;
+    margin-left: 2.5%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 15px 10px;
+  }
+
+  .main-text {
+    font-size: 1.3rem;
+  }
+
+  .sub-text {
+    font-size: 0.9rem;
+  }
+
+  .button {
+    width: 100px;
+    height: 40px;
+  }
+
+  .button-text {
+    font-size: 0.9rem;
   }
 }

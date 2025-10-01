@@ -20,12 +20,14 @@
   border-radius: 12px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 480px;
+  max-width: 650px; /* Increased from 480px for more space */
   margin: 1rem;
   max-height: 90vh;
   overflow: hidden;
   animation: slideUp 0.3s ease-out;
   border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column; /* Ensure proper layout structure */
 }
 
 /* Dark mode specific styling to match your theme */
@@ -50,7 +52,7 @@
 }
 
 .headerContent h2 {
-  font-size: 1.25rem;
+  font-size: 1.5rem; /* Increased from 1.25rem for better readability */
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -60,6 +62,7 @@
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin: 0.25rem 0 0 0;
+  display: none; /* Hide "Quick & Easy Booking" text */
 }
 
 .closeButton {
@@ -78,7 +81,7 @@
 }
 
 .progressSection {
-  padding: 1.5rem;
+  padding: 0.75rem 1.5rem; /* Reduced padding to make it smaller */
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
 }
@@ -104,10 +107,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem; /* Reduced from 2rem */
+  height: 1.5rem; /* Reduced from 2rem */
   border-radius: 50%;
-  font-size: 0.875rem;
+  font-size: 0.75rem; /* Reduced from 0.875rem */
   font-weight: 600;
   transition: all 0.3s ease;
 }
@@ -134,9 +137,9 @@
 }
 
 .stepConnector {
-  width: 3rem;
+  width: 2rem; /* Reduced from 3rem */
   height: 2px;
-  margin: 0 0.5rem;
+  margin: 0 0.25rem; /* Reduced margin */
   transition: all 0.3s ease;
 }
 
@@ -153,7 +156,7 @@
 }
 
 .progressText {
-  font-size: 0.75rem;
+  font-size: 0.7rem; /* Reduced from 0.75rem */
   color: var(--text-secondary);
   text-align: center;
   font-weight: 500;
@@ -162,7 +165,8 @@
 .modalContent {
   padding: 1.5rem;
   overflow-y: auto;
-  max-height: 400px;
+  flex: 1; /* Take available space but don't push footer out */
+  min-height: 0; /* Allow content to shrink if needed */
 }
 
 [data-theme="dark"] .modalContent {
@@ -170,10 +174,10 @@
 }
 
 .stepTitle {
-  font-size: 1.125rem;
+  font-size: 1.375rem; /* Increased from 1.125rem for better readability */
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem; /* Slightly increased margin */
 }
 
 .formGroup {
@@ -182,7 +186,7 @@
 
 .formLabel {
   display: block;
-  font-size: 0.875rem;
+  font-size: 1rem; /* Increased from 0.875rem for better readability */
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 0.5rem;
@@ -190,12 +194,12 @@
 
 .formInput {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.25rem; /* Increased padding for larger touch targets */
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 1rem; /* Increased from 0.875rem for better readability */
   transition: all 0.2s ease;
 }
 
@@ -221,12 +225,12 @@
 
 .formSelect {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.25rem; /* Increased padding for larger touch targets */
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 1rem; /* Increased from 0.875rem for better readability */
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -245,13 +249,13 @@
 
 .errorMessage {
   color: var(--error-color, #ef4444);
-  font-size: 0.75rem;
+  font-size: 0.875rem; /* Increased from 0.75rem for better visibility */
   margin-top: 0.25rem;
 }
 
 .urgencyOptions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr); /* Changed from 3 to 2 columns for better spacing */
   gap: 0.75rem;
   margin-top: 0.5rem;
 }
@@ -284,11 +288,11 @@
 
 .urgencyLabel {
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: 1rem; /* Increased from 0.875rem */
 }
 
 .urgencyDescription {
-  font-size: 0.75rem;
+  font-size: 0.875rem; /* Increased from 0.75rem */
   color: var(--text-secondary);
   margin-top: 0.25rem;
 }
@@ -301,6 +305,8 @@
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0; /* Prevent footer from shrinking */
+  margin-top: auto; /* Push footer to bottom */
 }
 
 [data-theme="dark"] .modalFooter {
@@ -330,6 +336,16 @@
   border: 1px solid var(--border-color);
   flex: 0 0 140px;
   font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 0.875rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
 }
 
 .cancelButton:hover {
@@ -343,6 +359,216 @@
   border: 1px solid #00c8ff;
   flex: 1;
   font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 0.875rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+}
+
+/* New styles for OTP and verification */
+.otpButton {
+  background: #00c8ff;
+  color: white;
+  border: 1px solid #00c8ff;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.otpButton:hover:not(:disabled) {
+  background: #00b8ef;
+  border-color: #00b8ef;
+}
+
+.otpButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.verifyButton {
+  background: #10b981;
+  color: white;
+  border: 1px solid #10b981;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.verifyButton:hover:not(:disabled) {
+  background: #059669;
+  border-color: #059669;
+}
+
+.verifyButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.verifiedBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .verifiedBadge {
+  background: #064e3b;
+  color: #6ee7b7;
+}
+
+.otpHint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+.mapContainer {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .mapContainer {
+  border: 1px solid #2A2D3A;
+}
+
+.locationActions {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.locationPreview {
+  flex: 1;
+}
+
+.locationInfo {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  border-left: 3px solid #00c8ff;
+}
+
+[data-theme="dark"] .locationInfo {
+  background: #242738;
+}
+
+.saveLocationButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #00c8ff;
+  color: white;
+  border: 1px solid #00c8ff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.saveLocationButton:hover:not(:disabled) {
+  background: #00b8ef;
+  border-color: #00b8ef;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 200, 255, 0.3);
+}
+
+.saveLocationButton.saved {
+  background: #10b981;
+  border-color: #10b981;
+  cursor: default;
+}
+
+.saveLocationButton.saved:hover {
+  background: #10b981;
+  border-color: #10b981;
+  transform: none;
+  box-shadow: none;
+}
+
+.saveLocationButton:disabled {
+  opacity: 0.8;
+  cursor: default;
+}
+
+.mapHint {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  border: 1px dashed var(--border-color);
+}
+
+[data-theme="dark"] .mapHint {
+  background: #242738;
+  border-color: #2A2D3A;
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .formTextarea {
+  background: #242738;
+  border: 1px solid #2A2D3A;
+  color: #FFFFFF;
+}
+
+.formTextarea:focus {
+  outline: none;
+  border-color: #00c8ff;
+  box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.1);
+}
+
+.formTextarea.error {
+  border-color: #ef4444;
+}
+
+.formTextarea::placeholder {
+  color: var(--text-secondary);
 }
 
 .primaryButton:hover {

@@ -41,7 +41,7 @@ const VideoAdvertisement = () => {
         <div className={`${styles["ad-right"]} scroll-animate`}>
           <CustomVideoPlayer
             src="https://res.cloudinary.com/dchmvabfy/video/upload/v1757630426/needstation_ad_eqf2sk.mp4"
-            width="120%"
+            width="100%"
             height="400px"
           />
           <div className={styles["video-info"]}>
