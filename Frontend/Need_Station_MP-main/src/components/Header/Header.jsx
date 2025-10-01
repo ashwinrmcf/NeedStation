@@ -7,7 +7,7 @@ import ThemeToggle from "../ThemeToggle/ThemeToggle.jsx";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext.jsx";
 import PortalModal from "../common/PortalModal.jsx";
-import { FaBell, FaUser, FaCog, FaHistory, FaSignOutAlt } from "react-icons/fa";
+import { FaBell, FaUser, FaCog, FaHistory, FaSignOutAlt, FaBars, FaTimes, FaHandsHelping, FaUserTie } from "react-icons/fa";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -15,6 +15,8 @@ const Header = () => {
 
   const [isTaskerDropdownOpen, setTaskerDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isWorkerDropdownOpen, setWorkerDropdownOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const [userProfileData, setUserProfileData] = useState({
@@ -23,6 +25,7 @@ const Header = () => {
   });
   const taskerButtonRef = useRef(null);
   const profileDropdownRef = useRef(null);
+  const workerButtonRef = useRef(null);
   
   // Check current language on mount and when localStorage changes
   useEffect(() => {
@@ -134,6 +137,21 @@ const Header = () => {
     };
   }, []);
 
+  // Handle window resize to close mobile dropdowns on desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setMobileMenuOpen(false);
+        setWorkerDropdownOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
 
   const initiateLogout = () => {
     setShowLogoutConfirmation(true);
@@ -141,6 +159,14 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   const location = useLocation();
@@ -163,6 +189,46 @@ const Header = () => {
           </nav>
           <div className={styles.authButtons}>
             <ThemeToggle />
+            {/* Services Icon - Only visible on mobile when not logged in */}
+            {!user && (
+              <Link to="/services" className={styles.servicesIconLink}>
+                <button className={styles.servicesIcon} aria-label="Services">
+                  <FaHandsHelping size={18} />
+                </button>
+              </Link>
+            )}
+            {/* Worker Dropdown - Only visible on mobile when not logged in */}
+            {!user && (
+              <div 
+                className={styles.workerContainer}
+                onMouseEnter={() => setWorkerDropdownOpen(true)}
+                onMouseLeave={() => setWorkerDropdownOpen(false)}
+                onClick={() => setWorkerDropdownOpen(!isWorkerDropdownOpen)}
+                ref={workerButtonRef}
+              >
+                <button className={styles.workerIcon} aria-label="Worker Options">
+                  <FaUserTie size={18} />
+                </button>
+                {isWorkerDropdownOpen && (
+                  <div className={styles.workerDropdown}>
+                    <Link to="/worker-login" className={styles.workerDropdownItem}>
+                      Worker Login
+                    </Link>
+                    <Link to="/worker-registration" className={styles.workerDropdownItem}>
+                      Become a Worker
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+            {/* Mobile Menu Button - Only visible on mobile */}
+            <button 
+              className={styles.mobileMenuButton}
+              onClick={toggleMobileMenu}
+              aria-label="Toggle mobile menu"
+            >
+              {isMobileMenuOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
+            </button>
             {user ? (
               <div className={styles.userProfileContainer}>
                 {/* Notification Bell */}
@@ -257,6 +323,53 @@ const Header = () => {
             )}
           </div>
         </header>
+
+        {/* Mobile Menu Dropdown - Only visible on mobile */}
+        {isMobileMenuOpen && (
+          <>
+            <div className={styles.mobileMenuOverlay} onClick={closeMobileMenu}></div>
+            <div className={styles.mobileMenu}>
+              <div className={styles.mobileNavLinks}>
+                <NavLink 
+                  to="/services" 
+                  className={({isActive}) => isActive ? styles.active : undefined}
+                  onClick={closeMobileMenu}
+                >
+                  Services
+                </NavLink>
+                <NavLink 
+                  to="/language-settings" 
+                  className={({isActive}) => isActive ? styles.active : undefined}
+                  onClick={closeMobileMenu}
+                >
+                  Languages
+                </NavLink>
+              </div>
+              
+              {!user && (
+                <div className={styles.mobileAuthButtons}>
+                  <Link to="/login" onClick={closeMobileMenu}>
+                    <button className={styles.login}>Log in</button>
+                  </Link>
+                  <Link to="/signup" onClick={closeMobileMenu}>
+                    <button className={styles.signup}>Sign up</button>
+                  </Link>
+                  <div className={styles.mobileTaskerContainer}>
+                    <button 
+                      className={styles.becomeTasker}
+                      onClick={() => {
+                        closeMobileMenu();
+                        // Handle become tasker action
+                      }}
+                    >
+                      Become a Tasker
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Logout Confirmation Modal */}

@@ -160,17 +160,133 @@
 }
 
 
+/* Mobile Responsive */
 @media screen and (max-width: 768px) {
-  .footer-top{
-    flex-direction: column;
+  .footer {
+    padding: 40px 15px;
+    min-height: auto;
   }
 
-  .payment-tagline{
-    max-width: 100%;
+  .footer-top {
+    flex-direction: column;
+    width: 100%;
+    gap: 30px;
   }
-  .FirstBreakPoint{
+
+  .footer-logo {
+    text-align: left;
+  }
+
+  .footer-logo h2 {
+    font-size: 1.5rem;
+  }
+
+  .payment-tagline {
+    max-width: 100%;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+
+  .FirstBreakPoint {
     display: flex;
     flex-direction: row;
-    margin-top: 2vh;
+    gap: 40px;
+    margin-top: 0;
+  }
+
+  .footer-links,
+  .footer-contact {
+    flex: 1;
+  }
+
+  .footer-links h3,
+  .footer-contact h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+
+  .footer-links li,
+  .footer-contact p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .footer-separator {
+    width: 100%;
+    margin: 30px 0 20px 0;
+  }
+
+  .footer-bottom {
+    width: 100%;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .footer-bottom p {
+    font-size: 0.8rem;
+  }
+
+  .social-media {
+    justify-content: center;
+  }
+
+  .social-media span {
+    margin-right: 20px;
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .footer {
+    padding: 30px 10px;
+  }
+
+  .footer-top {
+    gap: 25px;
+  }
+
+  .footer-logo h2 {
+    font-size: 1.3rem;
+  }
+
+  .payment-tagline {
+    font-size: 0.8rem;
+  }
+
+  .FirstBreakPoint {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .footer-links h3,
+  .footer-contact h3 {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+
+  .footer-links li,
+  .footer-contact p {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+  }
+
+  .footer-contact p span {
+    margin-left: 8px;
+  }
+
+  .footer-separator {
+    margin: 25px 0 15px 0;
+  }
+
+  .footer-bottom p {
+    font-size: 0.75rem;
+  }
+
+  .social-media span {
+    margin-right: 15px;
+    font-size: 0.9rem;
   }
 }

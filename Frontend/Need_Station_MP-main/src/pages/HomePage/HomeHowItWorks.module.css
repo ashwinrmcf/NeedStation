@@ -16,11 +16,24 @@
 
 @media screen and (max-width: 768px) {
   .how-it-works-container {
-      flex-direction: column;
+    flex-direction: column;
+    width: 90%;
+    margin-left: 5%;
+    padding: 40px 15px;
+    margin-top: 40px;
+    margin-bottom: 40px;
   }
 
-  .how-it-works-text{
+  .how-it-works-text {
     width: 100%;
+    text-align: center; /* Center align content */
+  }
+
+  .how-it-works-text h2 {
+    font-size: 1.8rem; /* Match "Connecting Helpers" size */
+    line-height: 1.3;
+    margin-bottom: 30px;
+    text-align: center;
   }
 }
 
@@ -102,16 +115,205 @@
 
 
 @media screen and (max-width: 768px) {
-  .how-it-works-text{
-    width: 100%;
+  .steps {
+    position: relative;
+    height: 180px; /* Fixed height for animation container */
+    overflow: hidden;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .how-it-works-image img{
-    width: 100%;
+  .steps .step {
+    position: absolute;
+    width: 90%;
+    max-width: 320px;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 0;
+    padding: 25px 20px;
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(0, 200, 255, 0.03));
+    border-radius: 16px;
+    border: 1px solid rgba(0, 200, 255, 0.15);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transform: translateX(100px) scale(0.9);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
   }
 
-  .step-number{
-    width: 4vw;
+  .steps .step.active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    z-index: 2;
+  }
+
+  .steps .step.prev {
+    opacity: 0.3;
+    transform: translateX(-100px) scale(0.8);
+    z-index: 1;
+  }
+
+  .steps .step.next {
+    opacity: 0.3;
+    transform: translateX(100px) scale(0.8);
+    z-index: 1;
+  }
+
+  .step-number {
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+    margin-right: 0;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #00c8ff, #00CED1);
+    box-shadow: 0 6px 20px rgba(0, 200, 255, 0.4);
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .steps .step.active .step-number {
+    animation: bounceIn 0.6s ease-out;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .step p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease 0.3s;
+  }
+
+  .steps .step.active p {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Navigation dots */
+  .stepIndicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .stepDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(0, 200, 255, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .stepDot.active {
+    background: #00c8ff;
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+  }
+
+  .get-started {
+    margin-top: 30px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    align-self: center;
+    background: linear-gradient(135deg, #00c8ff, #00CED1);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 200, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .get-started:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 200, 255, 0.4);
+  }
+
+  .how-it-works-image {
+    margin-top: 30px;
+  }
+
+  .how-it-works-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .how-it-works-container {
+    padding: 25px 10px;
+  }
+
+  .how-it-works-text h2 {
     font-size: 1.5rem;
+  }
+
+  .steps {
+    height: 160px; /* Smaller height for mobile */
+    padding: 8px 0;
+  }
+
+  .steps .step {
+    width: 95%;
+    max-width: 280px;
+    padding: 20px 15px;
+    border-radius: 12px;
+  }
+
+  .step-number {
+    width: 42px;
+    height: 42px;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 15px rgba(0, 200, 255, 0.3);
+  }
+
+  .step p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .stepIndicators {
+    margin-top: 15px;
+    gap: 6px;
+  }
+
+  .stepDot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .get-started {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    margin-top: 25px;
+  }
+
+  .how-it-works-image {
+    margin-top: 25px;
+  }
+
+  .how-it-works-image img {
+    border-radius: 12px;
   }
 }
