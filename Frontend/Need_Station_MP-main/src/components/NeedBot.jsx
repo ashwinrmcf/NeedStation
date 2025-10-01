@@ -448,12 +448,7 @@ const NeedBot = () => {
             <h3>
               <span className="need-text">Need</span>
               <span className="station-text">Bot</span>
-              <span className="bot-version"> v2.0</span>
             </h3>
-            <small>
-              <FiGlobe size={12} style={{marginRight: '4px'}} />
-              Smart • Fast • Cost-effective • Multilingual
-            </small>
           </div>
           
           <div className="chat-messages">

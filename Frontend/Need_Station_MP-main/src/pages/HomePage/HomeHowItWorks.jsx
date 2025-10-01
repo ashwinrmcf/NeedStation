@@ -3,11 +3,15 @@ import image from '../../assets/images/HomeHowItWorksImage.jpeg';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../store/AuthContext';
 import { useState, useEffect } from 'react';
+import useScrollAnimation from '../../hooks/useScrollAnimation';
 
 const HomeHowItWorks = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
+  
+  // Initialize scroll animations
+  useScrollAnimation();
 
   const steps = [
     { number: 1, text: "Choose a Tasker by price, skills, and reviews" },
@@ -40,8 +44,8 @@ const HomeHowItWorks = () => {
 
   return <>
     
-<div className={`${styles["how-it-works-container"]}`}>
-  <div className={`${styles["how-it-works-text"]}`}>
+<div className={`${styles["how-it-works-container"]} scroll-animate`}>
+  <div className={`${styles["how-it-works-text"]} scroll-animate`}>
       <h2>How it works</h2>
       <div className={`${styles["steps"]}`}>
           {steps.map((step, index) => (
@@ -51,7 +55,8 @@ const HomeHowItWorks = () => {
                 index === currentStep ? styles.active : 
                 index === (currentStep - 1 + steps.length) % steps.length ? styles.prev :
                 index === (currentStep + 1) % steps.length ? styles.next : ''
-              }`}
+              } scroll-animate`}
+              style={{ animationDelay: `${index * 0.2}s` }}
             >
               <span className={`${styles["step-number"]}`}>{step.number}</span>
               <p>{step.text}</p>
@@ -77,7 +82,7 @@ const HomeHowItWorks = () => {
         Get Started
       </button>
   </div>
-  <div className={`${styles["how-it-works-image"]}`}>
+  <div className={`${styles["how-it-works-image"]} scroll-animate`}>
       <img src={image} alt="People discussing tasks" />
   </div>
 </div>

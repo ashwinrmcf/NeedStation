@@ -1,4 +1,49 @@
 
+/* Scroll Animation Base Styles */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-animate.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* How it works specific animations */
+.how-it-works-text.scroll-animate {
+  transform: translateX(-30px);
+  transition-delay: 0.2s;
+}
+
+.how-it-works-image.scroll-animate {
+  transform: translateX(30px);
+  transition-delay: 0.4s;
+}
+
+/* Steps alternating animation */
+.step.scroll-animate:nth-child(odd) {
+  transform: translateX(-40px);
+}
+
+.step.scroll-animate:nth-child(even) {
+  transform: translateX(40px);
+}
+
+.step.scroll-animate.animate {
+  transform: translateX(0);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-animate {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
 
 .how-it-works-container {
   display: flex;
@@ -11,7 +56,12 @@
   /* border-radius: 46px; */
   margin-left: 13vw;
   margin-top: 10vh;
-  margin-bottom: 10vh;
+  transition: color 0.3s ease;
+}
+
+/* Hide step indicators on desktop */
+.stepIndicators {
+  display: none;
 }
 
 @media screen and (max-width: 768px) {
@@ -55,7 +105,13 @@
   transition: color 0.3s ease;
 }
 
-/* Step container */
+/* Step container - Desktop styles */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2.786vh;
+}
+
 .steps .step {
   display: flex;
   align-items: center;
@@ -64,6 +120,9 @@
   padding: 0.625rem;
   border-radius: 0.5rem;
   width: 90%;
+  position: relative;
+  opacity: 1;
+  transform: none;
 }
 
 .step-number {
@@ -88,6 +147,8 @@
   letter-spacing: 0.01em;
   margin: 0;
   transition: color 0.3s ease;
+  opacity: 1;
+  transform: none;
 }
 
 /* Get Started button */

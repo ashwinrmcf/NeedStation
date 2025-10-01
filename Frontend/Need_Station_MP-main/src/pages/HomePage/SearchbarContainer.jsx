@@ -2,6 +2,7 @@ import styles from "./SearchbarContainer.module.css";
 import { FaSearch } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import useScrollAnimation from "../../hooks/useScrollAnimation";
 
 const SearchbarContainer = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,6 +15,9 @@ const SearchbarContainer = () => {
   
   // State to hold the randomized services
   const [shuffledServices, setShuffledServices] = useState([]);
+  
+  // Initialize scroll animations
+  useScrollAnimation();
   
   // Initialize with comprehensive list of services with appropriate articles
   useEffect(() => {
@@ -130,11 +134,11 @@ const SearchbarContainer = () => {
 
   return (
     <>
-      <div className={styles.tagline}>
+      <div className={`${styles.tagline} scroll-animate`}>
         Connecting Helpers and Clients for a Better Community
       </div>
 
-      <div className={`${styles.searchbarContainer} ${showDropdown && filteredServices.length > 0 ? styles.expanded : ''}`}>
+      <div className={`${styles.searchbarContainer} ${showDropdown && filteredServices.length > 0 ? styles.expanded : ''} scroll-animate`}>
         <form onSubmit={handleSearch} className={styles.searchForm}>
           <div className={styles.searchbar}>
             <FaSearch className={styles.searchIcon} />
@@ -185,14 +189,14 @@ const SearchbarContainer = () => {
         )}
       </div>
 
-      <div className={styles.info}>
+      <div className={`${styles.info} scroll-animate`}>
         <div className={styles.infoData}>
-          <div className={styles.number}>2500+</div>
+          <div className={`${styles.number} scroll-animate`}>2500+</div>
           <div className={styles.text}>Regular Users</div>
         </div>
         <div className={styles.divider}></div>
         <div className={styles.infoData}>
-          <div className={styles.number}>700+</div>
+          <div className={`${styles.number} scroll-animate`}>700+</div>
           
             <div className={styles.text}>Verified Helpers</div>
           

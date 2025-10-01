@@ -18,6 +18,32 @@
   --accent-tertiary: #00D4AA;
   --border-color: transparent;
   --hover-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* Global Scroll Animation Styles */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-animate.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-animate {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Continue with existing CSS variables */
+:root {
   --shadow-color: rgba(92, 225, 230, 0.75);
   --button-shadow-color: rgba(0, 0, 0, 0.0);
   --gradient-primary: linear-gradient(90.78deg, #EC83BB 8.06%, #B664DB 73.25%);

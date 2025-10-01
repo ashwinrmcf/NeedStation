@@ -4,12 +4,14 @@
   right: 20px;
   z-index: 1000;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --primary-color: #0ea5e9; /* Teal blue color from your site */
-  --dark-bg: #020617; /* Dark blue/black from your site background */
+  --primary-color: var(--accent-tertiary, #0ea5e9); /* Use site's teal color */
+  --chat-bg: var(--bg-primary); /* Use site's background */
+  --chat-secondary-bg: var(--bg-secondary); /* Use site's secondary background */
+  --chat-text: var(--text-primary); /* Use site's text color */
+  --chat-border: var(--border-color); /* Use site's border color */
   --light-accent: #38bdf8; /* Lighter teal for accents */
-  --text-light: #f9fafb;
-  --bot-message-bg: #1e293b; /* Dark blue for bot messages */
-  --user-message-bg: #0ea5e9; /* Teal for user messages */
+  --bot-message-bg: var(--bg-secondary); /* Use secondary background for bot messages */
+  --user-message-bg: var(--accent-tertiary, #0ea5e9); /* Teal for user messages */
   --hover-color: #0284c7;
 }
 
@@ -51,20 +53,20 @@
   right: 0;
   width: 350px;
   height: 500px;
-  background-color: var(--dark-bg);
+  background-color: var(--chat-bg);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--chat-border);
   backdrop-filter: blur(10px);
   animation: slideIn 0.3s ease-out;
 }
 
 .chat-header {
   background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
-  color: var(--text-light);
+  color: white;
   padding: 16px;
   text-align: center;
   font-weight: bold;
@@ -110,11 +112,11 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: var(--dark-bg);
-  background-image: radial-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+  background-color: var(--chat-bg);
+  background-image: radial-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  scrollbar-color: var(--chat-border) transparent;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -126,12 +128,12 @@
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--chat-border);
   border-radius: 3px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: var(--primary-color);
 }
 
 .message {
@@ -165,7 +167,7 @@
   align-items: center;
   flex-shrink: 0;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--chat-border);
 }
 
 .user-message .message-avatar {
@@ -202,24 +204,24 @@
 
 .user-message .message-text {
   background-color: var(--user-message-bg);
-  color: var(--text-light);
+  color: white;
   border-bottom-right-radius: 4px;
   border-top-right-radius: 4px;
 }
 
 .bot-message .message-text {
-  background-color: #0d3a5c; /* Darker blue for better contrast with dark background */
-  color: var(--text-light);
+  background-color: var(--bot-message-bg);
+  color: var(--chat-text);
   border-bottom-left-radius: 4px;
   border-top-left-radius: 4px;
-  border-left: 2px solid var(--light-accent);
+  border-left: 2px solid var(--primary-color);
 }
 
 .chat-input {
   padding: 14px 16px;
   display: flex;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: rgba(17, 24, 39, 0.7);
+  border-top: 1px solid var(--chat-border);
+  background-color: var(--chat-secondary-bg);
   backdrop-filter: blur(10px);
 }
 
@@ -353,9 +355,9 @@
 .chat-input input {
   flex: 1;
   padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-light);
+  border: 1px solid var(--chat-border);
+  background-color: var(--chat-bg);
+  color: var(--chat-text);
   border-radius: 24px;
   margin-right: 10px;
   font-size: 14px;
@@ -364,13 +366,13 @@
 }
 
 .chat-input input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary, rgba(128, 128, 128, 0.7));
 }
 
 .chat-input input:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25);
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--chat-secondary-bg);
 }
 
 .chat-input button {

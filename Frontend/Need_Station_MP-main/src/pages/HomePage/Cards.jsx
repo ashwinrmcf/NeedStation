@@ -1,5 +1,6 @@
 import styles from './Cards.module.css';
 import { useState } from 'react';
+import useScrollAnimation from '../../hooks/useScrollAnimation';
 
 // Real service images
 import securityImage from '../../assets/images/services/realservices/se.png';
@@ -19,6 +20,9 @@ import { Link } from 'react-router-dom';
 
 const Cards = () => {
   const [selectedService, setSelectedService] = useState(0);
+  
+  // Initialize scroll animations
+  useScrollAnimation();
 
   // All services data
   const allServices = [
@@ -144,14 +148,14 @@ const Cards = () => {
   return <>
     <section className={`py-5 ${styles["section"]}`}>
     <div className="container">
-      <div className={styles["headerSection"]}>
+      <div className={`${styles["headerSection"]} scroll-animate`}>
         <h2 className={`${styles["heading"]}`}>Our Services</h2>
       </div>
       {/* Creative Services Showcase */}
       <div className={styles["servicesShowcase"]}>
         
         {/* Hero Service Spotlight */}
-        <div className={styles["heroSpotlight"]}>
+        <div className={`${styles["heroSpotlight"]} scroll-animate`}>
           <div className={styles["spotlightImageSection"]}>
             {/* Left Half - Quick Information */}
             <div className={styles["quickInfoPanel"]}>
@@ -225,13 +229,14 @@ const Cards = () => {
         </div>
 
         {/* Interactive Services Grid */}
-        <div className={styles["servicesGrid"]}>
+        <div className={`${styles["servicesGrid"]} scroll-animate`}>
           <h4 className={styles["gridTitle"]}>All Our Services</h4>
           <div className={styles["servicesList"]}>
             {allServices.map((service, index) => (
               <div 
                 key={index}
-                className={`${styles["serviceItem"]} ${index === selectedService ? styles["active"] : ''}`}
+                className={`${styles["serviceItem"]} ${index === selectedService ? styles["active"] : ''} scroll-animate`}
+                style={{ animationDelay: `${index * 0.1}s` }}
                 onClick={() => setSelectedService(index)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {

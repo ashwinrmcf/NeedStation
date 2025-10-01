@@ -1,3 +1,66 @@
+/* Scroll Animation Base Styles */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-animate.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero section specific animations */
+.tagline.scroll-animate {
+  transform: translateY(20px);
+  transition-delay: 0.2s;
+}
+
+.searchbarContainer.scroll-animate {
+  transform: translateY(25px);
+  transition-delay: 0.4s;
+}
+
+.info.scroll-animate {
+  transform: translateY(20px);
+  transition-delay: 0.6s;
+}
+
+/* Stats counter animation */
+.number.scroll-animate {
+  transform: scale(0.8);
+  transition-delay: 0.8s;
+}
+
+.number.scroll-animate.animate {
+  transform: scale(1);
+  animation: countUp 1s ease-out 0.8s forwards;
+}
+
+@keyframes countUp {
+  0% { 
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-animate {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
 .tagline {
   width: 60vw;
   /* height: 33.426vh; */
