@@ -1,6 +1,5 @@
 import styles from './Cards.module.css';
 import { useState } from 'react';
-import useScrollAnimation from '../../hooks/useScrollAnimation';
 
 // Real service images
 import securityImage from '../../assets/images/services/realservices/se.png';
@@ -21,8 +20,6 @@ import { Link } from 'react-router-dom';
 const Cards = () => {
   const [selectedService, setSelectedService] = useState(0);
   
-  // Initialize scroll animations
-  useScrollAnimation();
 
   // All services data
   const allServices = [
@@ -30,7 +27,7 @@ const Cards = () => {
       image: elderlyCareImage,
       title: "Elderly Care",
       description: "Compassionate and professional care tailored to meet the needs of seniors.",
-      link: "/elderly-care",
+      link: "/services/elderly-care",
       alt: "Elderly Care",
       category: "Elder Care",
       icon: "👴"
@@ -39,7 +36,7 @@ const Cards = () => {
       image: nursingImage,
       title: "Nursing Care",
       description: "Professional nursing services with qualified nurses for medical care at home.",
-      link: "/nursing-care",
+      link: "/services/nursing-care",
       alt: "Nursing Care",
       category: "Medical Care",
       icon: "👩‍⚕️"
@@ -48,7 +45,7 @@ const Cards = () => {
       image: caregiverImage,
       title: "Caretaker at Home",
       description: "Dedicated caretakers providing personalized assistance and companionship at home.",
-      link: "/caretaker-at-home",
+      link: "/services/caretaker-at-home",
       alt: "Caretaker at Home",
       category: "Personal Care",
       icon: "🤝"
@@ -57,7 +54,7 @@ const Cards = () => {
       image: bedriddenImage,
       title: "Bedridden Patient Care",
       description: "Comprehensive bedridden care with daily assistance and medical support.",
-      link: "/bedridden-patient-care",
+      link: "/services/bedridden-patient-care",
       alt: "Bedridden Patient Care",
       category: "Specialized Care",
       icon: "🛏️"
@@ -66,7 +63,7 @@ const Cards = () => {
       image: parkinsonsImage,
       title: "Parkinsons Care",
       description: "Specialized care and support for patients with Parkinson's disease and their families.",
-      link: "/parkinsons-care",
+      link: "/services/parkinsons-care",
       alt: "Parkinsons Care",
       category: "Specialized Care",
       icon: "🧠"
@@ -75,7 +72,7 @@ const Cards = () => {
       image: physiotherapyImage,
       title: "Physiotherapy",
       description: "Professional physiotherapy services for rehabilitation and pain management at home.",
-      link: "/physiotherapy",
+      link: "/services/physiotherapy",
       alt: "Physiotherapy",
       category: "Rehabilitation",
       icon: "🏃‍♂️"
@@ -84,7 +81,7 @@ const Cards = () => {
       image: securityImage,
       title: "Home Security Guard",
       description: "Professional security personnel to protect your home and family with 24/7 vigilance.",
-      link: "/home-security-guard",
+      link: "/services/security-guard",
       alt: "Home Security Guard",
       category: "Security",
       icon: "🛡️"
@@ -93,7 +90,7 @@ const Cards = () => {
       image: motherBabyImage,
       title: "Mother and Baby Care",
       description: "Postnatal care for mothers and comprehensive newborn care services.",
-      link: "/mother-baby-care",
+      link: "/services/mother-baby-care",
       alt: "Mother and Baby Care",
       category: "Maternity Care",
       icon: "👶"
@@ -102,7 +99,7 @@ const Cards = () => {
       image: paralysisImage,
       title: "Paralysis Care",
       description: "Specialized care and rehabilitation services for patients with paralysis conditions.",
-      link: "/paralysis-care",
+      link: "/services/paralysis-care",
       alt: "Paralysis Care",
       category: "Specialized Care",
       icon: "♿"
@@ -111,7 +108,7 @@ const Cards = () => {
       image: pathologyImage,
       title: "Pathology Care",
       description: "Home-based pathology services including sample collection and diagnostic tests.",
-      link: "/pathology-care",
+      link: "/services/pathology-care",
       alt: "Pathology Care",
       category: "Diagnostic",
       icon: "🔬"
@@ -120,7 +117,7 @@ const Cards = () => {
       image: diabetesImage,
       title: "Diabetes Management",
       description: "Comprehensive diabetes care including monitoring, medication management, and lifestyle guidance.",
-      link: "/diabetes-management",
+      link: "/services/diabetes-management",
       alt: "Diabetes Management",
       category: "Health Management",
       icon: "💉"
@@ -129,7 +126,7 @@ const Cards = () => {
       image: healthCheckImage,
       title: "Health Check Up Services",
       description: "Regular health screenings and comprehensive medical check-ups at your convenience.",
-      link: "/health-checkup",
+      link: "/services/health-check-up-services",
       alt: "Health Check Up Services",
       category: "Preventive Care",
       icon: "🩺"
@@ -138,7 +135,7 @@ const Cards = () => {
       image: postSurgeryImage,
       title: "Post Surgery Care",
       description: "Specialized post-operative care and recovery support in the comfort of your home.",
-      link: "/post-surgery-care",
+      link: "/services/post-surgery-care",
       alt: "Post Surgery Care",
       category: "Recovery Care",
       icon: "🏥"
@@ -148,14 +145,14 @@ const Cards = () => {
   return <>
     <section className={`py-5 ${styles["section"]}`}>
     <div className="container">
-      <div className={`${styles["headerSection"]} scroll-animate`}>
+      <div className={styles["headerSection"]}>
         <h2 className={`${styles["heading"]}`}>Our Services</h2>
       </div>
       {/* Creative Services Showcase */}
       <div className={styles["servicesShowcase"]}>
         
         {/* Hero Service Spotlight */}
-        <div className={`${styles["heroSpotlight"]} scroll-animate`}>
+        <div className={styles["heroSpotlight"]}>
           <div className={styles["spotlightImageSection"]}>
             {/* Left Half - Quick Information */}
             <div className={styles["quickInfoPanel"]}>
@@ -229,23 +226,17 @@ const Cards = () => {
         </div>
 
         {/* Interactive Services Grid */}
-        <div className={`${styles["servicesGrid"]} scroll-animate`}>
+        <div className={styles["servicesGrid"]}>
           <h4 className={styles["gridTitle"]}>All Our Services</h4>
           <div className={styles["servicesList"]}>
             {allServices.map((service, index) => (
-              <div 
+              <Link 
                 key={index}
-                className={`${styles["serviceItem"]} ${index === selectedService ? styles["active"] : ''} scroll-animate`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => setSelectedService(index)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setSelectedService(index);
-                  }
-                }}
-                tabIndex={0}
+                to={service.link}
+                className={`${styles["serviceItem"]} ${index === selectedService ? styles["active"] : ''}`}
+                onMouseEnter={() => setSelectedService(index)}
                 role="button"
-                aria-label={`Select ${service.title}`}
+                aria-label={`Go to ${service.title} service page`}
               >
                 <div className={styles["serviceIcon"]}>{service.icon}</div>
                 <div className={styles["serviceInfo"]}>
@@ -255,7 +246,7 @@ const Cards = () => {
                 <div className={styles["serviceArrow"]}>
                   {index === selectedService ? '▶' : '→'}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           <Link to="/services" className={styles["viewAllButton"]}>

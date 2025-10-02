@@ -1,0 +1,181 @@
+.demoContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  color: white;
+  padding: 2rem;
+}
+
+.demoContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.demoTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #ffffff 0%, #5CE1E6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.demoDescription {
+  text-align: center;
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.serviceCard {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(92, 225, 230, 0.1);
+  margin-bottom: 3rem;
+}
+
+.serviceHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.serviceIcon {
+  font-size: 3rem;
+  background: rgba(92, 225, 230, 0.2);
+  padding: 1rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.serviceInfo h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.5rem 0;
+}
+
+.serviceInfo p {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.serviceActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.bookButton {
+  background: linear-gradient(135deg, #5CE1E6, #22d3ee);
+  color: #0f172a;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(92, 225, 230, 0.3);
+}
+
+.bookButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(92, 225, 230, 0.4);
+}
+
+.moreInfoButton {
+  background: rgba(92, 225, 230, 0.1);
+  color: #5CE1E6;
+  border: 1px solid rgba(92, 225, 230, 0.3);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.moreInfoButton:hover {
+  background: rgba(92, 225, 230, 0.2);
+  transform: translateY(-1px);
+}
+
+.features {
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 2rem;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.featureItem {
+  background: rgba(51, 65, 85, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(92, 225, 230, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.featureItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(92, 225, 230, 0.15);
+  border-color: rgba(92, 225, 230, 0.3);
+}
+
+.featureIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .demoContainer {
+    padding: 1rem;
+  }
+  
+  .demoTitle {
+    font-size: 2rem;
+  }
+  
+  .serviceCard {
+    padding: 1.5rem;
+  }
+  
+  .serviceHeader {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .serviceActions {
+    flex-direction: column;
+  }
+  
+  .featureGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .featureItem {
+    flex-direction: column;
+    text-align: center;
+  }
+}

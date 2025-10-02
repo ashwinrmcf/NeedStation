@@ -72,6 +72,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
 import HowItWorks from "./pages/HowItWorks/HowItWorks.jsx";
 import FAQ from "./pages/FAQ/FAQ.jsx";
 import Cart from "./pages/Cart/Cart.jsx";
+import ServiceModalDemo from "./pages/ServiceModalDemo/ServiceModalDemo.jsx";
 
 // User Profile Pages
 import Profile from "./pages/Profile/Profile.jsx";
@@ -138,6 +139,7 @@ const router = createBrowserRouter([
       {path: "/profile", element: <Profile/>},
       {path: "/bookings", element: <MyBookings/>},
       {path: "/settings", element: <Settings/>},
+      {path: "/service-modal-demo", element: <ServiceModalDemo/>},
     ],
   },
 
