@@ -137,8 +137,8 @@ const GenericServiceOptions = ({
         </div>
       </div>
 
-      {/* Content Section - Increased padding and height */}
-      <div className="contentSection p-8 flex flex-col flex-grow min-h-96">
+      {/* Content Section - Professional business layout */}
+      <div className="contentSection p-6 flex flex-col flex-grow">
         {/* Title and Description */}
         <div className="mb-4">
           <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
@@ -148,53 +148,65 @@ const GenericServiceOptions = ({
             {service.subtitle}
           </p>
           
-          {/* Service information */}
-          <div className="mb-6">
-            <h4 className="font-semibold text-base mb-3" style={{ color: 'var(--text-primary)' }}>What's Included:</h4>
-            <div className="space-y-2">
-              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                <span className="text-green-600 font-medium">✓</span>
-                <span>Professional assessment and personalized care planning</span>
+          {/* Professional Service Package */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>ENTERPRISE PACKAGE</h4>
+              <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ 
+                backgroundColor: 'rgba(34, 197, 94, 0.1)', 
+                color: '#22c55e' 
+              }}>
+                PREMIUM
+              </span>
+            </div>
+            
+            {/* Key Business Features */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-1 font-medium mb-1">
+                  <span className="text-blue-600">📊</span>
+                  <span>ROI Tracking</span>
+                </div>
+                <div>Performance metrics</div>
               </div>
-              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                <span className="text-green-600 font-medium">✓</span>
-                <span>24/7 emergency support and family communication</span>
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-1 font-medium mb-1">
+                  <span className="text-green-600">🛡️</span>
+                  <span>Risk Management</span>
+                </div>
+                <div>Compliance assured</div>
               </div>
-              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                <span className="text-green-600 font-medium">✓</span>
-                <span>Regular health monitoring and medication management</span>
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-1 font-medium mb-1">
+                  <span className="text-purple-600">⚡</span>
+                  <span>Rapid Deployment</span>
+                </div>
+                <div>24-48hr setup</div>
               </div>
-              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                <span className="text-green-600 font-medium">✓</span>
-                <span>Companionship and emotional support services</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                <span className="text-green-600 font-medium">✓</span>
-                <span>Light housekeeping and meal preparation assistance</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                <span className="text-green-600 font-medium">✓</span>
-                <span>Specialized equipment and safety assessments</span>
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-1 font-medium mb-1">
+                  <span className="text-orange-600">📞</span>
+                  <span>Executive Support</span>
+                </div>
+                <div>Dedicated manager</div>
               </div>
             </div>
             
-            {/* Service Details */}
-            <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t" style={{ borderColor: 'var(--border-color)' }}>
-              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                <div className="font-medium mb-1">⏰ Duration</div>
-                <div>Flexible timing available</div>
+            {/* Business Value Proposition */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-lg border" style={{ borderColor: 'var(--border-color)' }}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Business Impact:</span>
+                <span className="text-xs px-2 py-1 rounded" style={{ 
+                  backgroundColor: 'var(--accent-secondary)', 
+                  color: 'white' 
+                }}>
+                  Cost Reduction: 35%
+                </span>
               </div>
-              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                <div className="font-medium mb-1">🏠 Location</div>
-                <div>At your home</div>
-              </div>
-              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                <div className="font-medium mb-1">✅ Quality</div>
-                <div>Verified professionals</div>
-              </div>
-              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                <div className="font-medium mb-1">📞 Support</div>
-                <div>24/7 assistance</div>
+              <div className="text-xs space-y-1" style={{ color: 'var(--text-secondary)' }}>
+                <div>• Streamlined operations & reduced overhead</div>
+                <div>• Enhanced productivity & client satisfaction</div>
+                <div>• Scalable solution with enterprise-grade security</div>
               </div>
             </div>
           </div>

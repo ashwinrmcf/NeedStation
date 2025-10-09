@@ -8,7 +8,7 @@
   overflow: hidden;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  min-height: 24rem; /* Significantly increased card height */
+  min-height: 18rem; /* Reduced card height for professional look */
 }
 
 .serviceCard:hover {
