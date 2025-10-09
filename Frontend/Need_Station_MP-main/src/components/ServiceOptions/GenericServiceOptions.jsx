@@ -73,37 +73,20 @@ const GenericServiceOptions = ({
 
   const addToCart = (service) => {
     const existingItem = cartItems.find(item => item.id === service.id);
-    if (existingItem) {
-      setCartItems(cartItems.map(item => 
-        item.id === service.id 
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
-    } else {
-      setCartItems([...cartItems, { ...service, quantity: 1 }]);
+    if (!existingItem) {
+      setCartItems([...cartItems, { ...service }]);
     }
+    // Don't add duplicate services since these are human services, not products
   };
 
   const removeFromCart = (serviceId) => {
     setCartItems(cartItems.filter(item => item.id !== serviceId));
   };
 
-  const updateQuantity = (serviceId, quantity) => {
-    if (quantity === 0) {
-      removeFromCart(serviceId);
-    } else {
-      setCartItems(cartItems.map(item => 
-        item.id === serviceId 
-          ? { ...item, quantity }
-          : item
-      ));
-    }
-  };
-
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => {
       const price = parseInt(item.price.replace(/[₹,]/g, ''));
-      return total + (price * item.quantity);
+      return total + price;
     }, 0);
   };
 
@@ -214,9 +197,9 @@ const GenericServiceOptions = ({
 
         {/* Price and Actions Row */}
         <div className="flex items-center justify-between mt-auto">
-          {/* Price Section */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+          {/* Price Section - Moved more to the left */}
+          <div className="flex items-baseline gap-2 mr-6">
+            <span className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
               {service.price}
             </span>
             <span className="text-sm line-through" style={{ color: 'var(--text-muted)' }}>
@@ -224,23 +207,15 @@ const GenericServiceOptions = ({
             </span>
           </div>
 
-          {/* Professional Action Buttons */}
+          {/* Flat Rectangular Action Buttons */}
           <div className="flex gap-3">
             <button 
               onClick={() => addToCart(service)}
-              className={`${styles.actionButton} ${styles.secondaryButton} px-5 py-3 font-medium rounded-lg flex-1 transition-all duration-200`}
+              className="px-6 py-3 font-medium border-2 transition-all duration-200 bg-white hover:bg-teal-500 hover:text-white"
               style={{
-                background: 'var(--bg-surface)',
-                border: '2px solid var(--accent-secondary)',
-                color: 'var(--accent-secondary)'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = 'var(--accent-secondary)';
-                e.target.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'var(--bg-surface)';
-                e.target.style.color = 'var(--accent-secondary)';
+                borderColor: 'var(--accent-secondary)',
+                color: 'var(--accent-secondary)',
+                borderRadius: '6px'
               }}
             >
               Add to Cart
@@ -248,20 +223,11 @@ const GenericServiceOptions = ({
             
             <button 
               onClick={handleBookNow}
-              className={`${styles.actionButton} ${styles.primaryButton} px-6 py-3 font-semibold rounded-lg flex-1 transition-all duration-200`}
+              className="px-6 py-3 font-semibold text-white transition-all duration-200 hover:opacity-90"
               style={{
-                background: 'linear-gradient(135deg, var(--accent-secondary), #4fd1c7)',
-                border: 'none',
-                color: 'white',
-                boxShadow: '0 4px 12px rgba(92, 225, 230, 0.3)'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 20px rgba(92, 225, 230, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 12px rgba(92, 225, 230, 0.3)';
+                backgroundColor: 'var(--accent-secondary)',
+                borderRadius: '6px',
+                border: 'none'
               }}
             >
               Book Now
@@ -401,24 +367,9 @@ const GenericServiceOptions = ({
                             <h4 className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{item.title}</h4>
                             <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{item.price}</p>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-sm font-bold"
-                            >
-                              -
-                            </button>
-                            <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold"
-                            >
-                              +
-                            </button>
-                          </div>
                           <button 
                             onClick={() => removeFromCart(item.id)}
-                            className="text-red-500 hover:text-red-700 text-sm"
+                            className="text-red-500 hover:text-red-700 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors"
                           >
                             ✕
                           </button>

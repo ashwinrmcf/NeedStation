@@ -127,8 +127,9 @@
 
 .stickyContainer {
   position: sticky;
-  top: 1.5rem;
+  top: 6rem; /* Adjusted to account for header height + margin */
   padding-bottom: 1rem; /* Further reduced padding to minimize gap with footer */
+  z-index: 50; /* Ensure sidebars stay below header (header has z-index: 100) */
 }
 
 /* Enhanced Card Grid */
@@ -167,6 +168,7 @@
   .stickyContainer {
     position: static;
     padding-bottom: 2rem;
+    z-index: auto; /* Reset z-index on mobile */
   }
   
   .serviceCard {

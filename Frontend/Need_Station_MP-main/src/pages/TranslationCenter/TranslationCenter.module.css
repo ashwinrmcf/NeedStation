@@ -1,7 +1,13 @@
 .translationHeader {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 0.75rem;
+  margin-top: 0.5rem;
   position: relative;
+  padding: 2rem 1rem;
+  background-color: var(--bg-surface);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .headerAccent {
@@ -13,11 +19,12 @@
 }
 
 .languageSection {
-  background-color: #111827;
+  background-color: var(--bg-secondary);
   padding: 2rem 1rem;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  margin-bottom: 3rem;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 }
 
 .gridContainer {
@@ -69,8 +76,8 @@
 }
 
 .languageCard {
-  background-color: #1a2234;
-  border: 2px solid #2d3748;
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border-color);
   border-radius: 16px;
   cursor: pointer;
   text-align: center;
@@ -79,9 +86,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 6px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.05);
   position: relative;
-  color: white;
+  color: var(--text-primary);
   /* Enhanced for background images */
   min-height: 300px;
   background-size: cover !important;
@@ -173,13 +180,13 @@
   z-index: 3;
   color: white;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 1);
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
-  backdrop-filter: blur(1px);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
+  backdrop-filter: blur(2px);
   border-radius: 12px;
   margin: 0.75rem;
   /* More opaque overlay for high visibility */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
   /* Create depth with subtle 3D transform */
   transform: translateZ(20px);
@@ -304,13 +311,13 @@
 
 .code {
   font-size: 0.8rem;
-  color: #e2e8f0;
+  color: rgba(255, 255, 255, 0.9);
   letter-spacing: 1px;
 }
 
 .countryName {
   font-size: 0.9rem;
-  color: #e2e8f0;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 5px;
 }
 
@@ -378,10 +385,12 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #1a2234;
+  background-color: var(--bg-surface);
   border-radius: 12px;
+  border: 2px solid var(--border-color);
   margin-top: 2rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
 }
 
 @media screen and (max-width: 900px) {
@@ -401,7 +410,7 @@
 
 .infoHeader {
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #2d3748;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 1rem;
 }
 
@@ -414,19 +423,20 @@
 .infoParagraph {
   line-height: 1.7;
   font-size: 1.1rem;
-  color: #e2e8f0;
+  color: var(--text-secondary);
   margin-bottom: 2rem;
 }
 
 .note {
   margin-top: 20px;
   padding: 1.5rem;
-  background-color: #111827;
-  border-left: 4px solid #4fd1c5;
+  background-color: var(--bg-primary);
+  border-left: 4px solid var(--accent-secondary);
   border-radius: 8px;
   display: flex;
   align-items: flex-start;
   gap: 1rem;
+  color: var(--text-primary);
 }
 
 .noteIcon {
@@ -437,9 +447,9 @@
 .selectButton {
   margin-top: 10px;
   padding: 8px 10px;
-  background-color: #1a1e2c;
-  border: 1px solid #374151;
-  color: white;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   border-radius: 4px;
   text-align: center;
   transition: all 0.2s;
@@ -459,13 +469,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(11, 17, 32, 0.9);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  color: white;
+  color: var(--text-primary);
   padding: 0 20px;
   text-align: center;
 }
@@ -489,7 +499,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, rgba(11, 17, 32, 0.1), rgba(11, 17, 32, 0.5));
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6));
   z-index: 2;
   opacity: 0.6;
   border-radius: 10px;
@@ -505,11 +515,11 @@
 }
 
 .languageCard:hover .cardOverlay {
-  background: linear-gradient(to bottom, rgba(11, 17, 32, 0.1), rgba(11, 17, 32, 0.6));
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7));
 }
 
 .languageCard.active .cardOverlay {
-  background: linear-gradient(to bottom, rgba(0, 224, 184, 0.1), rgba(11, 17, 32, 0.7));
+  background: linear-gradient(to bottom, rgba(0, 224, 184, 0.2), rgba(0, 0, 0, 0.7));
 }
 
 /* Language background classes - Enhanced with image filters for better quality */
@@ -632,6 +642,96 @@
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+/* Light mode specific overrides */
+[data-theme="light"] .languageSection {
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .languageCard {
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08), 0 6px 6px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .infoSection {
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .note {
+  background-color: var(--bg-primary);
+  border-left: 4px solid var(--accent-secondary);
+}
+
+[data-theme="light"] .selectButton {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .selectButton:hover {
+  background-color: var(--accent-secondary);
+  color: white;
+}
+
+/* Dark mode specific styles - Brightened for better visibility */
+[data-theme="dark"] .languageSection {
+  background-color: #2a2f3a;
+  border: 2px solid #4a5568;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .languageCard {
+  background-color: #374151;
+  border: 2px solid #4a5568;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6), 0 6px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .infoSection {
+  background-color: #2a2f3a;
+  border: 2px solid #4a5568;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Header theme support */
+[data-theme="light"] .translationHeader {
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .translationHeader {
+  background-color: #2a2f3a;
+  border: 2px solid #4a5568;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .note {
+  background-color: #374151;
+  border-left: 4px solid var(--accent-secondary);
+}
+
+/* Override container spacing for translation center */
+.translationContainer {
+  padding-top: 0.5rem !important;
+}
+
+/* Mobile responsive adjustments */
+@media screen and (max-width: 768px) {
+  .translationHeader {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+    padding: 1.5rem 1rem;
+  }
+  
+  .translationContainer {
+    padding-top: 0.25rem !important;
   }
 }
 

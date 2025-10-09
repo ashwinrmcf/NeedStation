@@ -229,10 +229,10 @@ export default function TranslationCenter() {
   };
 
   return (
-    <div className="container page-content-spacing">
+    <div className={`container page-content-spacing ${styles.translationContainer}`}>
       <div className={styles.translationHeader}>
-        <h1 className="text-4xl font-bold mb-2 text-white">{isHindiRoute ? 'भाषा' : 'Language'} <span className="text-teal-400">{isHindiRoute ? 'सेटिंग्स' : 'Settings'}</span></h1>
-        <p className="text-lg mb-5 text-white">{currentContent.subtitle}</p>
+        <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{isHindiRoute ? 'भाषा' : 'Language'} <span className="text-teal-400">{isHindiRoute ? 'सेटिंग्स' : 'Settings'}</span></h1>
+        <p className="text-lg mb-5" style={{ color: 'var(--text-secondary)' }}>{currentContent.subtitle}</p>
         <div className={styles.headerAccent}></div>
       </div>
 
@@ -301,7 +301,7 @@ export default function TranslationCenter() {
           <div className={styles.noteIcon}>ℹ️</div>
           <div>
             <h3 className="font-bold text-lg">{currentContent.noteTitle}</h3>
-            <p className="text-white">{currentContent.noteText}</p>
+            <p style={{ color: 'var(--text-secondary)' }}>{currentContent.noteText}</p>
           </div>
         </div>
       </div>
