@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useBookingModal } from '../BookingModal/BookingModalProvider';
+import styles from './GenericServiceOptions.module.css';
 
 const GenericServiceOptions = ({ 
   serviceName, 
@@ -116,13 +117,10 @@ const GenericServiceOptions = ({
 
   const ServiceCard = ({ service, index }) => (
     <div 
-      className="relative rounded-xl border hover:shadow-md transition-all duration-200 overflow-hidden flex flex-row bg-white"
-      style={{
-        borderColor: '#e5e7eb'
-      }}
+      className={`${styles.serviceCard} relative flex flex-row overflow-hidden`}
     >
-      {/* Image Section */}
-      <div className="relative overflow-hidden w-32 h-24 flex-shrink-0">
+      {/* Image Section - Increased height */}
+      <div className="imageSection relative overflow-hidden w-40 h-48 flex-shrink-0">
         <img
           src={service.imgUrl}
           alt={service.title}
@@ -130,54 +128,129 @@ const GenericServiceOptions = ({
         />
         
         {/* Rating Badge */}
-        <div className="absolute top-2 left-2 bg-white px-2 py-1 rounded text-xs font-medium flex items-center gap-1 shadow-sm">
+        <div className="absolute top-2 left-2 px-2 py-1 rounded text-xs font-medium flex items-center gap-1 shadow-sm" style={{
+          backgroundColor: 'var(--bg-surface)',
+          color: 'var(--text-primary)',
+          border: '1px solid var(--border-color)'
+        }}>
           ⭐ {service.rating}
         </div>
       </div>
 
-      {/* Content Section */}
-      <div className="p-4 flex flex-col flex-grow">
+      {/* Content Section - Increased padding and height */}
+      <div className="contentSection p-8 flex flex-col flex-grow min-h-96">
         {/* Title and Description */}
-        <div className="mb-3">
-          <h3 className="text-lg font-semibold mb-1 text-gray-900">
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
             {service.title}
           </h3>
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>
             {service.subtitle}
           </p>
+          
+          {/* Service information */}
+          <div className="mb-6">
+            <h4 className="font-semibold text-base mb-3" style={{ color: 'var(--text-primary)' }}>What's Included:</h4>
+            <div className="space-y-2">
+              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <span className="text-green-600 font-medium">✓</span>
+                <span>Professional assessment and personalized care planning</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <span className="text-green-600 font-medium">✓</span>
+                <span>24/7 emergency support and family communication</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <span className="text-green-600 font-medium">✓</span>
+                <span>Regular health monitoring and medication management</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <span className="text-green-600 font-medium">✓</span>
+                <span>Companionship and emotional support services</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <span className="text-green-600 font-medium">✓</span>
+                <span>Light housekeeping and meal preparation assistance</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <span className="text-green-600 font-medium">✓</span>
+                <span>Specialized equipment and safety assessments</span>
+              </div>
+            </div>
+            
+            {/* Service Details */}
+            <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t" style={{ borderColor: 'var(--border-color)' }}>
+              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                <div className="font-medium mb-1">⏰ Duration</div>
+                <div>Flexible timing available</div>
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                <div className="font-medium mb-1">🏠 Location</div>
+                <div>At your home</div>
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                <div className="font-medium mb-1">✅ Quality</div>
+                <div>Verified professionals</div>
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                <div className="font-medium mb-1">📞 Support</div>
+                <div>24/7 assistance</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Price and Actions Row */}
         <div className="flex items-center justify-between mt-auto">
           {/* Price Section */}
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
               {service.price}
             </span>
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-sm line-through" style={{ color: 'var(--text-muted)' }}>
               {service.originalPrice}
             </span>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            <button 
-              onClick={() => setSelectedService(service)}
-              className="px-3 py-2 border border-gray-300 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200"
-            >
-              View Details
-            </button>
-            
+          {/* Professional Action Buttons */}
+          <div className="flex gap-3">
             <button 
               onClick={() => addToCart(service)}
-              className="px-3 py-2 border border-teal-500 text-teal-600 text-sm font-medium rounded-lg hover:bg-teal-50 transition-colors duration-200"
+              className={`${styles.actionButton} ${styles.secondaryButton} px-5 py-3 font-medium rounded-lg flex-1 transition-all duration-200`}
+              style={{
+                background: 'var(--bg-surface)',
+                border: '2px solid var(--accent-secondary)',
+                color: 'var(--accent-secondary)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'var(--accent-secondary)';
+                e.target.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'var(--bg-surface)';
+                e.target.style.color = 'var(--accent-secondary)';
+              }}
             >
               Add to Cart
             </button>
             
             <button 
               onClick={handleBookNow}
-              className="px-3 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors duration-200"
+              className={`${styles.actionButton} ${styles.primaryButton} px-6 py-3 font-semibold rounded-lg flex-1 transition-all duration-200`}
+              style={{
+                background: 'linear-gradient(135deg, var(--accent-secondary), #4fd1c7)',
+                border: 'none',
+                color: 'white',
+                boxShadow: '0 4px 12px rgba(92, 225, 230, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 6px 20px rgba(92, 225, 230, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 12px rgba(92, 225, 230, 0.3)';
+              }}
             >
               Book Now
             </button>
@@ -188,9 +261,9 @@ const GenericServiceOptions = ({
   );
 
   return (
-    <section className="py-8" style={{ background: 'var(--bg-primary)' }}>
+    <section className="py-8 pt-20" style={{ background: 'var(--bg-primary)' }}>
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 mb-8">
+      <div className="max-w-7xl mx-auto px-4 mb-6">
         <div className="text-center mb-12">
           <h2 className="text-6xl font-bold mb-6 leading-tight" style={{ color: 'var(--text-primary)' }}>
             <span style={{ background: 'var(--gradient-text)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{serviceName}</span> Services
@@ -215,10 +288,10 @@ const GenericServiceOptions = ({
         </div>
 
         {/* Three Column Layout */}
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className={styles.threeColumnLayout}>
           {/* Left Navigation Panel */}
-          <div className="w-full lg:w-80 lg:flex-shrink-0">
-            <div className="sticky top-6 space-y-6">
+          <div className={styles.leftPanel}>
+            <div className={styles.stickyContainer}>
               {/* Search Container */}
               <div className="rounded-2xl p-6 shadow-lg" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
                 <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Search Services</h3>
@@ -278,19 +351,20 @@ const GenericServiceOptions = ({
           </div>
 
           {/* Center Content Area */}
-          <div className="flex-1">
-            {/* Services Grid - Single Column */}
-            <div className="space-y-6">
+          <div className={styles.centerPanel}>
+            {/* Services Grid - Single Column with increased size */}
+            <div className={styles.serviceGrid}>
               {filteredServices.map((service, index) => (
-                <ServiceCard key={service.id} service={service} index={index} />
+                <div key={service.id} className={styles.serviceCardWrapper}>
+                  <ServiceCard service={service} index={index} />
+                </div>
               ))}
             </div>
-
           </div>
 
           {/* Right Cart Panel */}
-          <div className="w-full lg:w-80 lg:flex-shrink-0">
-            <div className="sticky top-6">
+          <div className={styles.rightPanel}>
+            <div className={styles.stickyContainer}>
               <div className="rounded-2xl p-6 shadow-lg" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Service Cart</h3>
