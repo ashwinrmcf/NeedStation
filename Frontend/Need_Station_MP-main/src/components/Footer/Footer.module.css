@@ -161,7 +161,7 @@
 
 
 /* Mobile Responsive */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 795px) {
   .footer {
     padding: 40px 15px;
     min-height: auto;

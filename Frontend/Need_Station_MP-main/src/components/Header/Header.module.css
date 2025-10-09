@@ -47,7 +47,7 @@
 }
 
 /* Hide mobile dropdowns on desktop */
-@media (min-width: 769px) {
+@media (min-width: 796px) {
   .workerDropdown {
     display: none !important;
   }
@@ -59,7 +59,7 @@
 
 
 /* Mobile-First Business Header Design */
-@media (max-width: 768px) {
+@media (max-width: 795px) {
   .headerContainer {
     position: fixed;
     top: 0;
@@ -400,7 +400,7 @@
 }
 
 /* Ensure body has top margin for fixed header */
-@media (max-width: 768px) {
+@media (max-width: 795px) {
   body {
     padding-top: 60px;
   }

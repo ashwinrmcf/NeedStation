@@ -218,7 +218,7 @@
 }
 
 /* Mobile Responsive Styles */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 795px) {
   .tagline {
     width: 95%;
     margin-left: 2.5%;

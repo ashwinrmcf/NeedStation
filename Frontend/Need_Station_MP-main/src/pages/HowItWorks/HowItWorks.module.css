@@ -391,7 +391,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .heroStats {
     gap: 30px;
   }
@@ -418,5 +418,45 @@
   .secondaryBtn {
     width: 100%;
     max-width: 300px;
+  }
+}
+
+/* Nest Hub (1024x600) - Force Desktop View */
+@media screen and (width: 1024px) and (height: 600px) {
+  .heroStats {
+    gap: 60px;
+  }
+  
+  .statCard {
+    padding: 30px 20px;
+    max-width: none;
+  }
+  
+  .statNumber {
+    font-size: 2.5rem;
+  }
+  
+  .statLabel {
+    font-size: 1rem;
+  }
+}
+
+/* Nest Hub Max (1280x800) - Force Desktop View */
+@media screen and (width: 1280px) and (height: 800px) {
+  .heroStats {
+    gap: 60px;
+  }
+  
+  .statCard {
+    padding: 30px 20px;
+    max-width: none;
+  }
+  
+  .statNumber {
+    font-size: 2.5rem;
+  }
+  
+  .statLabel {
+    font-size: 1rem;
   }
 }

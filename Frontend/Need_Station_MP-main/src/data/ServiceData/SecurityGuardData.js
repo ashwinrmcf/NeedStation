@@ -34,7 +34,8 @@ export const securityGuardData = {
       icon: "🏠",
       gradient: "from-blue-500 to-cyan-500",
       availability: "Available today",
-      guarantee: "Background Verified"
+      guarantee: "Background Verified",
+      category: "residential"
     },
     {
       id: 2,
@@ -54,7 +55,8 @@ export const securityGuardData = {
       icon: "🏢",
       gradient: "from-indigo-500 to-purple-500",
       availability: "Available tomorrow",
-      guarantee: "Corporate Trained"
+      guarantee: "Corporate Trained",
+      category: "corporate"
     },
     {
       id: 3,
@@ -74,7 +76,8 @@ export const securityGuardData = {
       icon: "👤",
       gradient: "from-red-500 to-pink-500",
       availability: "Available in 4 hours",
-      guarantee: "Elite Training"
+      guarantee: "Elite Training",
+      category: "personal"
     },
     {
       id: 4,
@@ -94,7 +97,8 @@ export const securityGuardData = {
       icon: "🌙",
       gradient: "from-gray-600 to-gray-800",
       availability: "Available tonight",
-      guarantee: "Night Trained"
+      guarantee: "Night Trained",
+      category: "night"
     }
   ],
 

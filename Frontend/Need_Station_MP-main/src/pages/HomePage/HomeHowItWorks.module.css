@@ -64,7 +64,7 @@
   display: none;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1200px) {
   .how-it-works-container {
     flex-direction: column;
     width: 90%;
@@ -80,10 +80,12 @@
   }
 
   .how-it-works-text h2 {
-    font-size: 1.5rem; /* Reduced from 1.8rem */
-    line-height: 1.3;
-    margin-bottom: 15px; /* Reduced from 30px */
+    font-size: 1.8rem; /* Increased for better readability */
+    line-height: 1.2;
+    margin-bottom: 20px;
     text-align: center;
+    font-weight: 700;
+    letter-spacing: -0.5px;
   }
 }
 
@@ -175,7 +177,7 @@
 }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1200px) {
   .steps {
     position: relative;
     height: 140px; /* Reduced from 180px */
@@ -320,6 +322,41 @@
   }
 }
 
+/* iPhone 12 Pro specific (390px width) */
+@media screen and (max-width: 390px) {
+  .how-it-works-container {
+    padding: 20px 15px;
+    margin-top: 15px;
+  }
+
+  .how-it-works-text h2 {
+    font-size: 1.6rem;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    word-spacing: -2px;
+  }
+}
+
+/* iPhone 12 Pro and similar devices */
+@media screen and (max-width: 430px) {
+  .how-it-works-container {
+    padding: 20px 15px;
+    margin-top: 15px;
+  }
+
+  .how-it-works-text h2 {
+    font-size: 1.7rem;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+  }
+}
+
 @media screen and (max-width: 480px) {
   .how-it-works-container {
     padding: 25px 10px;
@@ -327,6 +364,8 @@
 
   .how-it-works-text h2 {
     font-size: 1.5rem;
+    line-height: 1.3;
+    text-align: center;
   }
 
   .steps {
@@ -376,5 +415,348 @@
 
   .how-it-works-image img {
     border-radius: 12px;
+  }
+}
+
+/* Nest Hub (1024x600) - Force Desktop View - NO ANIMATIONS */
+@media screen and (width: 1024px) and (height: 600px) {
+  /* Disable all scroll animations */
+  .scroll-animate {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .how-it-works-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 80vw;
+    min-height: 64.206vh;
+    gap: 1.337vw;
+    padding: 1.25rem;
+    margin-left: 13vw;
+    margin-top: 10vh;
+    transition: none;
+  }
+
+  .how-it-works-text {
+    width: 38.102vw;
+    text-align: left;
+    transition: none;
+  }
+
+  .how-it-works-text h2 {
+    font-size: 3rem;
+    font-weight: 600;
+    line-height: 10.7vh;
+    letter-spacing: 0.01em;
+    margin-bottom: 2.786vh;
+    text-align: left;
+    transition: none;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2.786vh;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .steps .step {
+    position: static;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2.786vh;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    opacity: 1 !important;
+    transform: none !important;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    flex-direction: row;
+    text-align: left;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .step-number {
+    font-size: 2rem;
+    font-weight: 400;
+    background-color: #00CED1;
+    color: white;
+    width: 2.5vw;
+    height: 5vh;
+    margin-right: 1vw;
+    margin-bottom: 0;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .step p {
+    font-size: 1.4rem;
+    font-weight: 200;
+    line-height: 4.32vh;
+    margin: 0;
+    opacity: 1 !important;
+    transform: none !important;
+    text-align: left;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .stepIndicators {
+    display: none;
+  }
+
+  .how-it-works-image img {
+    width: 37.701vw;
+    height: 61.281vh;
+    border-radius: 2.875rem;
+    transition: none;
+    animation: none;
+  }
+
+  /* Disable all animations and transitions */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Nest Hub Max (1280x800) - Force Desktop View - NO ANIMATIONS */
+@media screen and (width: 1280px) and (height: 800px) {
+  /* Disable all scroll animations */
+  .scroll-animate {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .how-it-works-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 80vw;
+    min-height: 64.206vh;
+    gap: 1.337vw;
+    padding: 1.25rem;
+    margin-left: 13vw;
+    margin-top: 10vh;
+    transition: none;
+  }
+
+  .how-it-works-text {
+    width: 38.102vw;
+    text-align: left;
+    transition: none;
+  }
+
+  .how-it-works-text h2 {
+    font-size: 3rem;
+    font-weight: 600;
+    line-height: 10.7vh;
+    letter-spacing: 0.01em;
+    margin-bottom: 2.786vh;
+    text-align: left;
+    transition: none;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2.786vh;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .steps .step {
+    position: static;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2.786vh;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    opacity: 1 !important;
+    transform: none !important;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    flex-direction: row;
+    text-align: left;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .step-number {
+    font-size: 2rem;
+    font-weight: 400;
+    background-color: #00CED1;
+    color: white;
+    width: 2.5vw;
+    height: 5vh;
+    margin-right: 1vw;
+    margin-bottom: 0;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .step p {
+    font-size: 1.4rem;
+    font-weight: 200;
+    line-height: 4.32vh;
+    margin: 0;
+    opacity: 1 !important;
+    transform: none !important;
+    text-align: left;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .stepIndicators {
+    display: none;
+  }
+
+  .how-it-works-image img {
+    width: 37.701vw;
+    height: 61.281vh;
+    border-radius: 2.875rem;
+    transition: none;
+    animation: none;
+  }
+
+  /* Disable all animations and transitions */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* iPad Mini specific (768x1024 portrait and 1024x768 landscape) */
+@media screen and (width: 768px) and (height: 1024px), 
+       screen and (width: 1024px) and (height: 768px) {
+  .how-it-works-container {
+    flex-direction: column;
+    width: 90%;
+    margin-left: 5%;
+    padding: 30px 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    gap: 2rem;
+  }
+
+  .how-it-works-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  .how-it-works-text h2 {
+    font-size: 2.2rem;
+    line-height: 1.2;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    word-spacing: -1px;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .steps .step {
+    position: static;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 15px;
+    border-radius: 12px;
+    width: 100%;
+    opacity: 1;
+    transform: none;
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(0, 200, 255, 0.03));
+    border: 1px solid rgba(0, 200, 255, 0.15);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    flex-direction: row;
+    text-align: left;
+    transition: none;
+    animation: none;
+  }
+
+  .step-number {
+    font-size: 1.6rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #00c8ff, #00CED1);
+    color: white;
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+    margin-bottom: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    animation: none;
+    transition: none;
+  }
+
+  .step p {
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+    opacity: 1;
+    transform: none;
+    text-align: left;
+    color: var(--text-primary);
+    transition: none;
+    animation: none;
+  }
+
+  .stepIndicators {
+    display: none;
+  }
+
+  .get-started {
+    margin-top: 25px;
+    padding: 14px 28px;
+    font-size: 1.1rem;
+    align-self: center;
+    background: linear-gradient(135deg, #00c8ff, #00CED1);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 200, 255, 0.3);
+    transition: none;
+  }
+
+  .how-it-works-image {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .how-it-works-image img {
+    width: 80%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 20px;
+    transition: none;
+    animation: none;
   }
 }

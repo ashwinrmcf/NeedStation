@@ -543,8 +543,11 @@
   }
   
   .heading {
-    font-size: 1.8rem; /* Match "Connecting Helpers" size */
+    font-size: 1.9rem; /* Slightly larger for better prominence */
     text-align: center;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.2px;
   }
   
   .viewAllButton {
@@ -647,6 +650,40 @@
   .heroButton {
     padding: 14px 28px;
     font-size: 15px;
+  }
+}
+
+/* iPhone 12 Pro specific (390px width) */
+@media screen and (max-width: 390px) {
+  .headerSection {
+    padding: 0 15px;
+    margin-bottom: 1.2rem;
+  }
+  
+  .heading {
+    font-size: 1.7rem;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    text-align: center;
+  }
+  
+  .servicesShowcase {
+    gap: 18px;
+    margin-top: 1rem;
+    padding: 0 12px;
+  }
+  
+  .servicesGrid {
+    padding: 16px;
+    max-height: 320px;
+    border-radius: 14px;
+  }
+  
+  .gridTitle {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    font-weight: 700;
   }
 }
 

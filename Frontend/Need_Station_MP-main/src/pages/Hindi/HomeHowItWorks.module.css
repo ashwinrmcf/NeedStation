@@ -13,7 +13,7 @@
   margin-bottom: 10vh;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1200px) {
   .how-it-works-container {
       flex-direction: column;
   }
@@ -99,7 +99,7 @@
 }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1200px) {
   .how-it-works-text{
     width: 100%;
   }
@@ -111,5 +111,159 @@
   .step-number{
     width: 4vw;
     font-size: 1.5rem;
+  }
+}
+
+/* Nest Hub (1024x600) - Force Desktop View - NO ANIMATIONS */
+@media screen and (width: 1024px) and (height: 600px) {
+  .how-it-works-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 80vw;
+    min-height: 64.206vh;
+    gap: 1.337vw;
+    padding: 1.25rem;
+    margin-left: 13vw;
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+    transition: none;
+  }
+
+  .how-it-works-text {
+    width: 38.102vw;
+    transition: none;
+  }
+
+  .how-it-works-text h2 {
+    font-size: 3rem;
+    font-weight: 600;
+    line-height: 10.7vh;
+    letter-spacing: 0.01em;
+    margin-bottom: 2.786vh;
+    transition: none;
+  }
+
+  .steps .step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2.786vh;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .step-number {
+    font-size: 2rem;
+    font-weight: 400;
+    background-color: #00CED1;
+    color: white;
+    width: 2.5vw;
+    height: 5vh;
+    margin-right: 1vw;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .step p {
+    font-size: 1.4rem;
+    font-weight: 200;
+    line-height: 4.32vh;
+    margin: 0;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .how-it-works-image img {
+    width: 37.701vw;
+    height: 61.281vh;
+    border-radius: 2.875rem;
+    transition: none;
+    animation: none;
+  }
+
+  /* Disable all animations and transitions */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Nest Hub Max (1280x800) - Force Desktop View - NO ANIMATIONS */
+@media screen and (width: 1280px) and (height: 800px) {
+  .how-it-works-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 80vw;
+    min-height: 64.206vh;
+    gap: 1.337vw;
+    padding: 1.25rem;
+    margin-left: 13vw;
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+    transition: none;
+  }
+
+  .how-it-works-text {
+    width: 38.102vw;
+    transition: none;
+  }
+
+  .how-it-works-text h2 {
+    font-size: 3rem;
+    font-weight: 600;
+    line-height: 10.7vh;
+    letter-spacing: 0.01em;
+    margin-bottom: 2.786vh;
+    transition: none;
+  }
+
+  .steps .step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2.786vh;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .step-number {
+    font-size: 2rem;
+    font-weight: 400;
+    background-color: #00CED1;
+    color: white;
+    width: 2.5vw;
+    height: 5vh;
+    margin-right: 1vw;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .step p {
+    font-size: 1.4rem;
+    font-weight: 200;
+    line-height: 4.32vh;
+    margin: 0;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .how-it-works-image img {
+    width: 37.701vw;
+    height: 61.281vh;
+    border-radius: 2.875rem;
+    transition: none;
+    animation: none;
+  }
+
+  /* Disable all animations and transitions */
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }

@@ -20,7 +20,19 @@ import caregiverImage from '../../assets/images/services/realservices/caregiver.
 const Services = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [expandedService, setExpandedService] = useState(null);
+    const [modalService, setModalService] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     // Removed viewMode - only using detailed view now
+
+    const openModal = (service) => {
+        setModalService(service);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalService(null);
+        setIsModalOpen(false);
+    };
 
     const services = [
         {
@@ -288,7 +300,10 @@ const Services = () => {
                                     <Link to={service.link} className={styles["bookBtn"]}>
                                         Book Now
                                     </Link>
-                                    <button className={styles["infoBtn"]}>
+                                    <button 
+                                        className={styles["infoBtn"]}
+                                        onClick={() => openModal(service)}
+                                    >
                                         More Info
                                     </button>
                                 </div>
@@ -296,6 +311,65 @@ const Services = () => {
                         </div>
                     ))}
                 </div>
+
+                {/* Modal */}
+                {isModalOpen && modalService && (
+                    <div className={styles["modalOverlay"]} onClick={closeModal}>
+                        <div className={styles["modalContent"]} onClick={(e) => e.stopPropagation()}>
+                            <div className={styles["modalHeader"]}>
+                                <h3 className={styles["modalTitle"]}>{modalService.title}</h3>
+                                <button className={styles["closeBtn"]} onClick={closeModal}>
+                                    ✕
+                                </button>
+                            </div>
+                            
+                            <div className={styles["modalBody"]}>
+                                <div className={styles["modalImage"]}>
+                                    <img src={modalService.image} alt={modalService.title} />
+                                </div>
+                                
+                                <div className={styles["modalInfo"]}>
+                                    <p className={styles["modalDescription"]}>
+                                        {modalService.detailedDescription}
+                                    </p>
+                                    
+                                    <div className={styles["modalDetails"]}>
+                                        <div className={styles["detailItem"]}>
+                                            <span className={styles["detailLabel"]}>Duration:</span>
+                                            <span className={styles["detailValue"]}>{modalService.duration}</span>
+                                        </div>
+                                        <div className={styles["detailItem"]}>
+                                            <span className={styles["detailLabel"]}>Availability:</span>
+                                            <span className={styles["detailValue"]}>{modalService.availability}</span>
+                                        </div>
+                                        <div className={styles["detailItem"]}>
+                                            <span className={styles["detailLabel"]}>Price:</span>
+                                            <span className={styles["detailValue"]}>{modalService.price}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className={styles["modalFeatures"]}>
+                                        <h4>Key Features:</h4>
+                                        <ul>
+                                            {modalService.features.map((feature, index) => (
+                                                <li key={index}>{feature}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    
+                                    <div className={styles["modalActions"]}>
+                                        <Link to={modalService.link} className={styles["modalBookBtn"]}>
+                                            Book Now
+                                        </Link>
+                                        <button className={styles["modalCloseBtn"]} onClick={closeModal}>
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
     );

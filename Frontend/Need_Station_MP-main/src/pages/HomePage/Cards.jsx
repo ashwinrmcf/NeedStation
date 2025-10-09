@@ -30,7 +30,7 @@ const Cards = () => {
       link: "/services/elderly-care",
       alt: "Elderly Care",
       category: "Elder Care",
-      icon: "👴"
+      icon: "👨‍⚕️"
     },
     {
       image: nursingImage,
@@ -39,7 +39,7 @@ const Cards = () => {
       link: "/services/nursing-care",
       alt: "Nursing Care",
       category: "Medical Care",
-      icon: "👩‍⚕️"
+      icon: "🏥"
     },
     {
       image: caregiverImage,
@@ -48,7 +48,7 @@ const Cards = () => {
       link: "/services/caretaker-at-home",
       alt: "Caretaker at Home",
       category: "Personal Care",
-      icon: "🤝"
+      icon: "👥"
     },
     {
       image: bedriddenImage,
@@ -57,7 +57,7 @@ const Cards = () => {
       link: "/services/bedridden-patient-care",
       alt: "Bedridden Patient Care",
       category: "Specialized Care",
-      icon: "🛏️"
+      icon: "🏠"
     },
     {
       image: parkinsonsImage,
@@ -66,7 +66,7 @@ const Cards = () => {
       link: "/services/parkinsons-care",
       alt: "Parkinsons Care",
       category: "Specialized Care",
-      icon: "🧠"
+      icon: "⚕️"
     },
     {
       image: physiotherapyImage,
@@ -75,7 +75,7 @@ const Cards = () => {
       link: "/services/physiotherapy",
       alt: "Physiotherapy",
       category: "Rehabilitation",
-      icon: "🏃‍♂️"
+      icon: "💪"
     },
     {
       image: securityImage,
@@ -84,7 +84,7 @@ const Cards = () => {
       link: "/services/security-guard",
       alt: "Home Security Guard",
       category: "Security",
-      icon: "🛡️"
+      icon: "🔒"
     },
     {
       image: motherBabyImage,
@@ -93,7 +93,7 @@ const Cards = () => {
       link: "/services/mother-baby-care",
       alt: "Mother and Baby Care",
       category: "Maternity Care",
-      icon: "👶"
+      icon: "👩‍👧‍👦"
     },
     {
       image: paralysisImage,
@@ -102,7 +102,7 @@ const Cards = () => {
       link: "/services/paralysis-care",
       alt: "Paralysis Care",
       category: "Specialized Care",
-      icon: "♿"
+      icon: "🩺"
     },
     {
       image: pathologyImage,
@@ -111,7 +111,7 @@ const Cards = () => {
       link: "/services/pathology-care",
       alt: "Pathology Care",
       category: "Diagnostic",
-      icon: "🔬"
+      icon: "🧪"
     },
     {
       image: diabetesImage,
@@ -120,7 +120,7 @@ const Cards = () => {
       link: "/services/diabetes-management",
       alt: "Diabetes Management",
       category: "Health Management",
-      icon: "💉"
+      icon: "📊"
     },
     {
       image: healthCheckImage,
@@ -129,7 +129,7 @@ const Cards = () => {
       link: "/services/health-check-up-services",
       alt: "Health Check Up Services",
       category: "Preventive Care",
-      icon: "🩺"
+      icon: "✅"
     },
     {
       image: postSurgeryImage,
@@ -138,7 +138,7 @@ const Cards = () => {
       link: "/services/post-surgery-care",
       alt: "Post Surgery Care",
       category: "Recovery Care",
-      icon: "🏥"
+      icon: "🔄"
     }
   ];
 
@@ -166,7 +166,7 @@ const Cards = () => {
               
               <div className={styles["infoCards"]}>
                 <div className={styles["infoCard"]}>
-                  <div className={styles["cardIcon"]}>💰</div>
+                  <div className={styles["cardIcon"]}>💳</div>
                   <div className={styles["cardContent"]}>
                     <span className={styles["cardLabel"]}>Starting</span>
                     <span className={styles["cardValue"]}>₹800/day</span>
@@ -174,7 +174,7 @@ const Cards = () => {
                 </div>
                 
                 <div className={styles["infoCard"]}>
-                  <div className={styles["cardIcon"]}>🕒</div>
+                  <div className={styles["cardIcon"]}>⏰</div>
                   <div className={styles["cardContent"]}>
                     <span className={styles["cardLabel"]}>Available</span>
                     <span className={styles["cardValue"]}>24/7</span>
@@ -182,7 +182,7 @@ const Cards = () => {
                 </div>
                 
                 <div className={styles["infoCard"]}>
-                  <div className={styles["cardIcon"]}>📍</div>
+                  <div className={styles["cardIcon"]}>🌍</div>
                   <div className={styles["cardContent"]}>
                     <span className={styles["cardLabel"]}>Location</span>
                     <span className={styles["cardValue"]}>Pan India</span>
@@ -199,7 +199,7 @@ const Cards = () => {
               </div>
               
               <div className={styles["trustBadge"]}>
-                <span className={styles["trustIcon"]}>🛡️</span>
+                <span className={styles["trustIcon"]}>✓</span>
                 <span className={styles["trustText"]}>Trusted by 10,000+ families</span>
               </div>
             </div>

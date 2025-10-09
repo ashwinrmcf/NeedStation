@@ -79,7 +79,7 @@
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (max-width: 795px) {
   .toggleContainer {
     width: 50px;
     height: 25px;
