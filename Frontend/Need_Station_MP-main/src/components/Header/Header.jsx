@@ -6,11 +6,13 @@ import TaskerDropdown from "../TaskerDropdown/TaskerDropdown.jsx";
 import ThemeToggle from "../ThemeToggle/ThemeToggle.jsx";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext.jsx";
+import { useCart } from "../../store/CartContext.jsx";
 import PortalModal from "../common/PortalModal.jsx";
-import { FaBell, FaUser, FaCog, FaHistory, FaSignOutAlt, FaBars, FaTimes, FaHandsHelping, FaUserTie } from "react-icons/fa";
+import { FaBell, FaUser, FaCog, FaHistory, FaSignOutAlt, FaBars, FaTimes, FaHandsHelping, FaUserTie, FaShoppingCart } from "react-icons/fa";
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const { cartCount } = useCart();
   console.log("AuthContext user:", user);
 
   const [isTaskerDropdownOpen, setTaskerDropdownOpen] = useState(false);
@@ -50,8 +52,8 @@ const Header = () => {
     const loadUserProfileData = async () => {
       console.log('🔍 Header: Loading profile data for user:', user);
       
-      // Always use user ID 10 for now (since that's where the image is stored)
-      const userId = 10;
+      // Use the actual user ID from your database
+      const userId = 11;
       
       try {
         // Try to get from localStorage first (for quick display)
@@ -231,6 +233,14 @@ const Header = () => {
             </button>
             {user ? (
               <div className={styles.userProfileContainer}>
+                {/* Cart Icon */}
+                <Link to="/cart" className={styles.cartButton}>
+                  <FaShoppingCart size={16} />
+                  {cartCount > 0 && (
+                    <div className={styles.cartBadge}>{cartCount}</div>
+                  )}
+                </Link>
+                
                 {/* Notification Bell */}
                 <button className={styles.notificationButton}>
                   <FaBell size={16} />

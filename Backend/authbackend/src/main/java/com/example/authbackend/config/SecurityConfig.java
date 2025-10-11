@@ -55,9 +55,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/otp/**").permitAll()
                 .requestMatchers("/api/worker/otp/**").permitAll()
                 
-                // User profile endpoints - allow access (for testing, you can add authentication later)
-                .requestMatchers("/api/user/profile/**").permitAll()
-                .requestMatchers("/api/user/update-form-data").permitAll()
+                // User endpoints - allow access (for testing, you can add authentication later)
+                .requestMatchers("/api/user/**").permitAll()
+                
+                // Booking endpoints - allow access for testing
+                .requestMatchers("/api/bookings/**").permitAll()
                 
                 // Worker registration endpoints - public access
                 .requestMatchers("/api/worker/register/**").permitAll()

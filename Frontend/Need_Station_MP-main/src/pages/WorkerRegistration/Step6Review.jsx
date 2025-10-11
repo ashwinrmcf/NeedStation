@@ -15,6 +15,26 @@ export default function WorkerProfileSummary({ workerId, prev, data }) {
   
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
   
+  // Function to get proper service labels
+  const getServiceLabel = (service) => {
+    const serviceLabels = {
+      elderlyCare: 'Elderly Care',
+      nursingCare: 'Nursing Care',
+      caretakerAtHome: 'Caretaker at Home',
+      bedriddenPatientCare: 'Bedridden Patient Care',
+      parkinsonsCare: 'Parkinsons Care',
+      physiotherapy: 'Physiotherapy',
+      homeSecurityGuard: 'Home Security Guard',
+      motherBabyCare: 'Mother and Baby Care',
+      paralysisCare: 'Paralysis Care',
+      pathologyCare: 'Pathology Care',
+      diabetesManagement: 'Diabetes Management',
+      healthCheckUpServices: 'Health Check Up Services',
+      postSurgeryCare: 'Post Surgery Care'
+    };
+    return serviceLabels[service] || service;
+  };
+  
   useEffect(() => {
     // Always fetch from API to get latest data, even if form data exists
     if (workerId) {
@@ -415,12 +435,9 @@ export default function WorkerProfileSummary({ workerId, prev, data }) {
                                 return <span className="text-gray-400">No services selected</span>;
                               }
                               
-                              // Format service names for display (camelCase to Title Case)
+                              // Format service names for display using proper labels
                               return enabledServices.map((service, idx) => {
-                                // Convert camelCase to Title Case (e.g., furnitureAssembly → Furniture Assembly)
-                                const formattedService = service
-                                  .replace(/([A-Z])/g, ' $1') // Add space before capital letters
-                                  .replace(/^./, str => str.toUpperCase()); // Capitalize first letter
+                                const formattedService = getServiceLabel(service);
                                   
                                 return (
                                   <span key={idx} className="bg-teal-700 text-white px-4 py-2 rounded-md">
@@ -466,7 +483,7 @@ export default function WorkerProfileSummary({ workerId, prev, data }) {
                   
                   <div>
                     <p className="text-gray-400">Availability</p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-2">
+                    <div className="space-y-3 mt-2">
                       {workerData?.availability ? (
                         (() => {
                           try {
@@ -476,14 +493,39 @@ export default function WorkerProfileSummary({ workerId, prev, data }) {
                             
                             // Days of the week
                             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                            const timeSlots = ['morning', 'afternoon', 'evening'];
                             
-                            return days.map(day => (
-                              <div key={day} className={`px-3 py-2 rounded-md ${availData[day] ? 'bg-teal-700 text-white' : 'bg-gray-800 text-gray-400'}`}>
-                                <span className="capitalize">{day}</span>
-                                <span className="ml-2">{availData[day] ? '✓' : '✗'}</span>
+                            return (
+                              <div className="space-y-3">
+                                {/* Days */}
+                                <div>
+                                  <p className="text-sm text-gray-500 mb-2">Days Available:</p>
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                    {days.map(day => (
+                                      <div key={day} className={`px-3 py-2 rounded-md text-sm ${availData[day] ? 'bg-teal-700 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                                        <span className="capitalize">{day}</span>
+                                        <span className="ml-2">{availData[day] ? '✓' : '✗'}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                
+                                {/* Time Slots */}
+                                <div>
+                                  <p className="text-sm text-gray-500 mb-2">Time Slots:</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {timeSlots.map(slot => (
+                                      <div key={slot} className={`px-3 py-2 rounded-md text-sm ${availData[slot] ? 'bg-teal-700 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                                        <span className="capitalize">{slot}</span>
+                                        <span className="ml-2">{availData[slot] ? '✓' : '✗'}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
                               </div>
-                            ));
+                            );
                           } catch (e) {
+                            console.error('Availability parsing error:', e);
                             return <span className="text-gray-400">Availability format not recognized</span>;
                           }
                         })()

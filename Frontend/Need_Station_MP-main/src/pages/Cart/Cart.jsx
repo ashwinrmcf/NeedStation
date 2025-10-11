@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../../store/CartContext';
 import { 
   Heart, Shield, Clock, MapPin, Phone, Calendar, User, Star, 
   CheckCircle, AlertCircle, Trash2, Plus, Minus, ArrowLeft, 
@@ -11,8 +12,11 @@ import styles from './Cart.module.css';
 
 const Cart = () => {
   const navigate = useNavigate();
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
   const [currentStep, setCurrentStep] = useState(1);
-  const [cartItems, setCartItems] = useState([
+  
+  // If cart is empty, show sample items for demo purposes
+  const displayItems = cartItems.length > 0 ? cartItems : [
     {
       id: '1',
       name: 'Senior Care Specialist',
@@ -74,7 +78,7 @@ const Cart = () => {
       features: ['Blood Pressure Check', 'Blood Sugar Test', 'Heart Rate Monitor', 'Health Report'],
       nextAvailable: 'Tomorrow 10:00 AM'
     }
-  ]);
+  ];
 
   const [addOns, setAddOns] = useState([
     {
@@ -155,15 +159,11 @@ const Cart = () => {
   const [discount, setDiscount] = useState(0);
 
   const handleUpdateQuantity = (id, quantity) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+    updateQuantity(id, quantity);
   };
 
   const handleRemoveItem = (id) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+    removeFromCart(id);
   };
 
   const handleToggleAddOn = (id) => {
@@ -203,14 +203,17 @@ const Cart = () => {
   };
 
   // Enhanced calculations
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = displayItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
   const addOnTotal = addOns.filter(addOn => addOn.selected).reduce((sum, addOn) => sum + addOn.price, 0);
-  const totalSavings = cartItems.reduce((sum, item) => sum + ((item.originalPrice - item.price) * item.quantity), 0);
+  const totalSavings = displayItems.reduce((sum, item) => {
+    const originalPrice = item.originalPrice || item.price;
+    return sum + ((originalPrice - item.price) * (item.quantity || 1));
+  }, 0);
   const convenienceFee = 99; // Platform fee
   const taxes = Math.round((subtotal + addOnTotal + convenienceFee) * 0.18); // 18% GST
   
   // Dynamic pricing based on urgency and time
-  const hasUrgentItems = cartItems.some(item => item.urgency === 'urgent');
+  const hasUrgentItems = displayItems.some(item => item.urgency === 'urgent');
   const emergencyFee = hasUrgentItems ? 299 : 0;
   const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
   const weekendSurcharge = isWeekend ? 199 : 0;
@@ -265,7 +268,7 @@ const Cart = () => {
           
           <div className={styles.headerRight}>
             <div className={styles.cartSummary}>
-              <span className={styles.itemCount}>{cartItems.length} items</span>
+              <span className={styles.itemCount}>{displayItems.length} items</span>
               <span className={styles.totalAmount}>₹{finalTotal.toLocaleString()}</span>
             </div>
           </div>
@@ -338,7 +341,7 @@ const Cart = () => {
                   transition={{ delay: 0.4, duration: 0.6 }}
                 >
                   <div className={styles.heroStat}>
-                    <div className={styles.statNumber}>{cartItems.length}</div>
+                    <div className={styles.statNumber}>{displayItems.length}</div>
                     <div className={styles.statLabel}>Services</div>
                   </div>
                   <div className={styles.heroStat}>
@@ -394,14 +397,14 @@ const Cart = () => {
                     Your Selected Services
                   </h2>
                   <div className={styles.sectionMeta}>
-                    <span className={styles.serviceCount}>{cartItems.length} services</span>
+                    <span className={styles.serviceCount}>{displayItems.length} services</span>
                     <span className={styles.totalValue}>₹{subtotal.toLocaleString()}</span>
                   </div>
                 </div>
                 
                 <div className={styles.servicesGrid}>
                   <AnimatePresence>
-                    {cartItems.map((item, index) => (
+                    {displayItems.map((item, index) => (
                       <ModernCartItem
                         key={item.id}
                         item={item}

@@ -24,23 +24,47 @@ public class UserController {
     @PostMapping("/update-location")
     public ResponseEntity<String> updateLocation(@RequestBody LocationDTO locationDTO) {
         try {
+            System.out.println("🔍 Backend: Received location update request");
+            System.out.println("🔍 Backend: LocationDTO: " + locationDTO);
+            System.out.println("🔍 Backend: UserIdentifier: " + locationDTO.getUserIdentifier());
+            System.out.println("🔍 Backend: Lat: " + locationDTO.getLat());
+            System.out.println("🔍 Backend: Lng: " + locationDTO.getLng());
+            System.out.println("🔍 Backend: Address: " + locationDTO.getAddress());
+            
             User user = null;
             
-            // First try to find by email, then by username
-            if (locationDTO.getUserIdentifier() != null) {
+            // First try to find by direct user ID (preferred method)
+            if (locationDTO.getUserId() != null) {
+                System.out.println("🔍 Backend: Searching for user by ID: " + locationDTO.getUserId());
+                Optional<User> userOpt = userRepository.findById(locationDTO.getUserId());
+                if (userOpt.isPresent()) {
+                    user = userOpt.get();
+                    System.out.println("✅ Backend: User found by ID: " + user.getUsername());
+                }
+            }
+            
+            // Fallback: try to find by email, then by username (legacy method)
+            if (user == null && locationDTO.getUserIdentifier() != null) {
+                System.out.println("🔍 Backend: Searching for user by email: " + locationDTO.getUserIdentifier());
                 Optional<User> userOpt = userRepository.findByEmail(locationDTO.getUserIdentifier());
                 if (userOpt.isPresent()) {
                     user = userOpt.get();
+                    System.out.println("✅ Backend: User found by email: " + user.getUsername());
                 } else {
+                    System.out.println("❌ Backend: User not found by email, trying username...");
                     userOpt = userRepository.findByUsername(locationDTO.getUserIdentifier());
                     if (userOpt.isPresent()) {
                         user = userOpt.get();
+                        System.out.println("✅ Backend: User found by username: " + user.getUsername());
+                    } else {
+                        System.out.println("❌ Backend: User not found by username either");
                     }
                 }
             }
             
             if (user == null) {
-                return ResponseEntity.badRequest().body("User not found");
+                System.out.println("❌ Backend: No user found with identifier: " + locationDTO.getUserIdentifier());
+                return ResponseEntity.badRequest().body("User not found with identifier: " + locationDTO.getUserIdentifier());
             }
 
             user.setLocationLat(locationDTO.getLat());
@@ -54,6 +78,12 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error updating location: " + e.getMessage());
         }
+    }
+
+    // Debug endpoint to test connectivity
+    @GetMapping("/debug")
+    public ResponseEntity<String> debugEndpoint() {
+        return ResponseEntity.ok("UserController is working! Time: " + System.currentTimeMillis());
     }
 
     @PostMapping("/update-form-data")

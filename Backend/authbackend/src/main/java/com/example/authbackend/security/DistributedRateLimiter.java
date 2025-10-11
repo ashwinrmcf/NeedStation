@@ -2,6 +2,7 @@ package com.example.authbackend.security;
 
 import com.example.authbackend.exception.RateLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,10 @@ public class DistributedRateLimiter {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    
+    // TRIAL MODE for testing without Redis
+    @Value("${app.trial-mode:true}")
+    private boolean TRIAL_MODE;
 
     // Rate limit configurations
     private static final int MAX_REQUESTS_PER_IP = 10;
@@ -25,6 +30,10 @@ public class DistributedRateLimiter {
      * Check if an IP has exceeded rate limits for OTP requests
      */
     public boolean isIpLimited(String ip) {
+        if (TRIAL_MODE) {
+            System.out.println("TRIAL MODE: Rate limiting bypassed for IP: " + ip);
+            return false;
+        }
         String key = "rate_limit:ip:" + ip;
         return checkRateLimit(key, MAX_REQUESTS_PER_IP, TIME_WINDOW);
     }
@@ -33,6 +42,10 @@ public class DistributedRateLimiter {
      * Check if a phone number has exceeded rate limits for OTP requests
      */
     public boolean isPhoneLimited(String phone) {
+        if (TRIAL_MODE) {
+            System.out.println("TRIAL MODE: Rate limiting bypassed for phone: " + phone);
+            return false;
+        }
         String key = "rate_limit:phone:" + phone;
         return checkRateLimit(key, MAX_REQUESTS_PER_PHONE, TIME_WINDOW);
     }
@@ -41,6 +54,10 @@ public class DistributedRateLimiter {
      * Check if a user has exceeded login attempt limits
      */
     public boolean isLoginLimited(String identifier) {
+        if (TRIAL_MODE) {
+            System.out.println("TRIAL MODE: Login rate limiting bypassed for: " + identifier);
+            return false;
+        }
         String key = "rate_limit:login:" + identifier;
         return checkRateLimit(key, MAX_LOGIN_ATTEMPTS, LOGIN_LOCKOUT_DURATION);
     }
@@ -49,6 +66,10 @@ public class DistributedRateLimiter {
      * Increment rate limit counter for IP
      */
     public void incrementIpAttempts(String ip) {
+        if (TRIAL_MODE) {
+            System.out.println("TRIAL MODE: IP attempt increment bypassed for: " + ip);
+            return;
+        }
         String key = "rate_limit:ip:" + ip;
         incrementCounter(key, TIME_WINDOW);
     }
@@ -57,6 +78,10 @@ public class DistributedRateLimiter {
      * Increment rate limit counter for phone
      */
     public void incrementPhoneAttempts(String phone) {
+        if (TRIAL_MODE) {
+            System.out.println("TRIAL MODE: Phone attempt increment bypassed for: " + phone);
+            return;
+        }
         String key = "rate_limit:phone:" + phone;
         incrementCounter(key, TIME_WINDOW);
     }
@@ -65,6 +90,10 @@ public class DistributedRateLimiter {
      * Increment login attempt counter
      */
     public void incrementLoginAttempts(String identifier) {
+        if (TRIAL_MODE) {
+            System.out.println("TRIAL MODE: Login attempt increment bypassed for: " + identifier);
+            return;
+        }
         String key = "rate_limit:login:" + identifier;
         incrementCounter(key, LOGIN_LOCKOUT_DURATION);
     }
@@ -73,6 +102,10 @@ public class DistributedRateLimiter {
      * Reset rate limit for successful login
      */
     public void resetLoginAttempts(String identifier) {
+        if (TRIAL_MODE) {
+            System.out.println("TRIAL MODE: Login reset bypassed for: " + identifier);
+            return;
+        }
         String key = "rate_limit:login:" + identifier;
         redisTemplate.delete(key);
     }

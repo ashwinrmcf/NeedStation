@@ -446,8 +446,17 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
       });
       
       // Update workerId if it's a new registration
-      if (response.data && response.data.workerId && updateWorkerId) {
-        updateWorkerId(response.data.workerId);
+      // Update parent component with workerId
+      if (response.data.workerId) {
+        const newWorkerId = response.data.workerId;
+        console.log("Step 1 completed with workerId:", newWorkerId);
+        
+        // Update parent component
+        updateWorkerId(newWorkerId);
+        
+        // Also store in sessionStorage for Step 2 fallback
+        sessionStorage.setItem('sessionWorkerId', newWorkerId);
+        localStorage.setItem('workerId', newWorkerId);
       }
       
       // Mark step 1 as completed

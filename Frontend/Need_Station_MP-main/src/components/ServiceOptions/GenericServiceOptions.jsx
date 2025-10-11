@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useCart } from '../../store/CartContext';
 import { useBookingModal } from '../BookingModal/BookingModalProvider';
+import { useAuth } from '../../store/AuthContext';
 import styles from './GenericServiceOptions.module.css';
 
 const GenericServiceOptions = ({ 
@@ -11,13 +14,15 @@ const GenericServiceOptions = ({
   trustIndicators, 
   detailedInfo 
 }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [hoveredCard, setHoveredCard] = useState(null);
   const [animatedStats, setAnimatedStats] = useState({});
-  const [cartItems, setCartItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedService, setSelectedService] = useState(null);
   const { openBookingModal } = useBookingModal();
+  const { addToCart: addToGlobalCart, isInCart, cartItems: globalCartItems, removeFromCart: removeFromGlobalCart, cartTotal } = useCart();
 
   // All 13 services for left navigation
   const allServices = [
@@ -68,26 +73,33 @@ const GenericServiceOptions = ({
 
   const handleBookNow = (e) => {
     e.preventDefault();
+    
+    // Check if user is logged in
+    if (!user) {
+      // Redirect to login page if not logged in
+      navigate('/login');
+      return;
+    }
+    
+    // Open booking modal if user is logged in
     openBookingModal(serviceName);
   };
 
-  const addToCart = (service) => {
-    const existingItem = cartItems.find(item => item.id === service.id);
-    if (!existingItem) {
-      setCartItems([...cartItems, { ...service }]);
-    }
-    // Don't add duplicate services since these are human services, not products
-  };
-
-  const removeFromCart = (serviceId) => {
-    setCartItems(cartItems.filter(item => item.id !== serviceId));
-  };
-
-  const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => {
-      const price = parseInt(item.price.replace(/[₹,]/g, ''));
-      return total + price;
-    }, 0);
+  const handleAddToCart = (service) => {
+    // Create a standardized service object for the cart
+    const cartService = {
+      id: service.id || `${serviceName}-${service.title}`.toLowerCase().replace(/\s+/g, '-'),
+      name: service.title,
+      category: serviceName,
+      price: parseInt(service.price.replace(/[₹,]/g, '')),
+      originalPrice: service.originalPrice ? parseInt(service.originalPrice.replace(/[₹,]/g, '')) : null,
+      duration: service.duration || '1 hour',
+      rating: service.rating,
+      image: service.imgUrl,
+      description: service.subtitle
+    };
+    
+    addToGlobalCart(cartService);
   };
 
   const filteredServices = selectedCategory === 'all' 
@@ -210,7 +222,7 @@ const GenericServiceOptions = ({
           {/* Flat Rectangular Action Buttons */}
           <div className="flex gap-3">
             <button 
-              onClick={() => addToCart(service)}
+              onClick={() => handleAddToCart(service)}
               className="px-6 py-3 font-medium border-2 transition-all duration-200 bg-white hover:bg-teal-500 hover:text-white"
               style={{
                 borderColor: 'var(--accent-secondary)',
@@ -347,11 +359,11 @@ const GenericServiceOptions = ({
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Service Cart</h3>
                   <span className="bg-teal-500 text-white text-sm px-2 py-1 rounded-full">
-                    {cartItems.length}
+                    {globalCartItems.length}
                   </span>
                 </div>
 
-                {cartItems.length === 0 ? (
+                {globalCartItems.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="text-6xl mb-4">🛒</div>
                     <p className="text-lg font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Your cart is empty</p>
@@ -360,15 +372,15 @@ const GenericServiceOptions = ({
                 ) : (
                   <>
                     <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
-                      {cartItems.map((item) => (
+                      {globalCartItems.map((item) => (
                         <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: 'var(--bg-primary)' }}>
-                          <img src={item.imgUrl} alt={item.title} className="w-12 h-12 rounded-lg object-cover" />
+                          <img src={item.image || item.imgUrl} alt={item.name || item.title} className="w-12 h-12 rounded-lg object-cover" />
                           <div className="flex-1">
-                            <h4 className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{item.title}</h4>
-                            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{item.price}</p>
+                            <h4 className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{item.name || item.title}</h4>
+                            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>₹{typeof item.price === 'number' ? item.price.toLocaleString() : item.price}</p>
                           </div>
                           <button 
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => removeFromGlobalCart(item.id)}
                             className="text-red-500 hover:text-red-700 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors"
                           >
                             ✕
@@ -381,7 +393,7 @@ const GenericServiceOptions = ({
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Total:</span>
                         <span className="text-xl font-bold" style={{ color: 'var(--accent-secondary)' }}>
-                          ₹{getTotalPrice().toLocaleString()}
+                          ₹{cartTotal.toLocaleString()}
                         </span>
                       </div>
                       
@@ -399,13 +411,27 @@ const GenericServiceOptions = ({
                   </>
                 )}
 
-                {/* Quick Contact */}
+                {/* Quick Booking Guide */}
                 <div className="mt-6 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-primary)' }}>
-                  <h4 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Need Help?</h4>
-                  <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Our experts are here to assist you</p>
-                  <button className="w-full bg-green-500 text-white font-medium py-2 px-4 rounded-lg text-sm">
-                    📞 Call Now
-                  </button>
+                  <h4 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Quick Booking Guide:</h4>
+                  <div className="space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🚀</span>
+                      <span><strong>Single Service:</strong> Click "Book Now"</span>
+                    </div>
+                    <div className="text-xs ml-6 opacity-75">→ Direct to booking form</div>
+                    
+                    <div className="flex items-center gap-2 mt-3">
+                      <span className="text-lg">🛒</span>
+                      <span><strong>Multiple Services:</strong> Click "Add to Cart"</span>
+                    </div>
+                    <div className="text-xs ml-6 opacity-75">→ Continue shopping, checkout together</div>
+                    
+                    <div className="flex items-center gap-2 mt-3 p-2 rounded-lg" style={{ backgroundColor: 'var(--accent-tertiary)', color: 'white' }}>
+                      <span className="text-lg">💡</span>
+                      <span className="text-xs"><strong>Tip:</strong> Add multiple services to save time and get better coordination!</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* CTA Section */}

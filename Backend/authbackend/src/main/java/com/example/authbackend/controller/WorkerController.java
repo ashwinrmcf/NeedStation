@@ -111,9 +111,29 @@ public class WorkerController {
     // Step 2: Contact Information
     @PostMapping("/register/step2")
     public ResponseEntity<?> registerStep2(
-            @RequestParam("workerId") Long workerId,
+            @RequestParam(value = "workerId", required = false) String workerIdParam,
             @RequestBody WorkerRegistrationDTO dto) {
         try {
+            // Handle null or "null" string workerId
+            Long workerId = null;
+            if (workerIdParam != null && !workerIdParam.equals("null") && !workerIdParam.trim().isEmpty()) {
+                try {
+                    workerId = Long.parseLong(workerIdParam);
+                } catch (NumberFormatException e) {
+                    Map<String, String> errorResponse = new HashMap<>();
+                    errorResponse.put("error", "Invalid worker ID format: " + workerIdParam);
+                    errorResponse.put("errorType", "InvalidWorkerIdException");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+            
+            if (workerId == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Worker ID is required for this step. Please restart registration from Step 1.");
+                errorResponse.put("errorType", "MissingWorkerIdException");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
             System.out.println("Received Step 2 registration request - Worker ID: " + workerId);
             System.out.println("Contact info: city=" + dto.getCity() + ", serviceAreas=" + dto.getServiceAreas());
             
@@ -138,9 +158,29 @@ public class WorkerController {
     // Step 3: Professional Details
     @PostMapping("/register/step3")
     public ResponseEntity<?> registerStep3(
-            @RequestParam("workerId") Long workerId,
+            @RequestParam(value = "workerId", required = false) String workerIdParam,
             @RequestBody WorkerRegistrationDTO dto) {
         try {
+            // Handle null or "null" string workerId
+            Long workerId = null;
+            if (workerIdParam != null && !workerIdParam.equals("null") && !workerIdParam.trim().isEmpty()) {
+                try {
+                    workerId = Long.parseLong(workerIdParam);
+                } catch (NumberFormatException e) {
+                    Map<String, String> errorResponse = new HashMap<>();
+                    errorResponse.put("error", "Invalid worker ID format: " + workerIdParam);
+                    errorResponse.put("errorType", "InvalidWorkerIdException");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+            
+            if (workerId == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Worker ID is required for this step. Please restart registration from Step 1.");
+                errorResponse.put("errorType", "MissingWorkerIdException");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
             System.out.println("Received Step 3 registration request - Worker ID: " + workerId);
             System.out.println("Professional details: services=" + dto.getServices() + ", experience=" + dto.getExperience());
             
@@ -165,12 +205,32 @@ public class WorkerController {
     // Step 4: Verification
     @PostMapping(value = "/register/step4", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> registerStep4(
-            @RequestParam("workerId") Long workerId,
+            @RequestParam(value = "workerId", required = false) String workerIdParam,
             @RequestPart("data") String dataJson,
             @RequestPart(value = "idProof", required = false) MultipartFile idProof,
             @RequestPart(value = "selfieWithId", required = false) MultipartFile selfieWithId,
             @RequestPart(value = "certificates", required = false) MultipartFile[] certificates) {
         try {
+            // Handle null or "null" string workerId
+            Long workerId = null;
+            if (workerIdParam != null && !workerIdParam.equals("null") && !workerIdParam.trim().isEmpty()) {
+                try {
+                    workerId = Long.parseLong(workerIdParam);
+                } catch (NumberFormatException e) {
+                    Map<String, String> errorResponse = new HashMap<>();
+                    errorResponse.put("error", "Invalid worker ID format: " + workerIdParam);
+                    errorResponse.put("errorType", "InvalidWorkerIdException");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+            
+            if (workerId == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Worker ID is required for this step. Please restart registration from Step 1.");
+                errorResponse.put("errorType", "MissingWorkerIdException");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
             System.out.println("Received Step 4 registration request - Worker ID: " + workerId);
             System.out.println("Raw JSON data: " + dataJson);
             
@@ -195,7 +255,7 @@ public class WorkerController {
             System.err.println("Error type: " + e.getClass().getSimpleName());
             System.err.println("Stack trace:");
             e.printStackTrace();
-            System.err.println("Worker ID: " + workerId);
+            System.err.println("Worker ID param: " + workerIdParam);
             System.err.println("Raw JSON data: " + dataJson);
             System.err.println("ID Proof provided: " + (idProof != null && !idProof.isEmpty()));
             System.err.println("Selfie provided: " + (selfieWithId != null && !selfieWithId.isEmpty()));
@@ -214,9 +274,29 @@ public class WorkerController {
     // Step 5: Payment Information
     @PostMapping("/register/step5")
     public ResponseEntity<?> registerStep5(
-            @RequestParam("workerId") Long workerId,
+            @RequestParam(value = "workerId", required = false) String workerIdParam,
             @RequestBody WorkerRegistrationDTO dto) {
         try {
+            // Handle null or "null" string workerId
+            Long workerId = null;
+            if (workerIdParam != null && !workerIdParam.equals("null") && !workerIdParam.trim().isEmpty()) {
+                try {
+                    workerId = Long.parseLong(workerIdParam);
+                } catch (NumberFormatException e) {
+                    Map<String, String> errorResponse = new HashMap<>();
+                    errorResponse.put("error", "Invalid worker ID format: " + workerIdParam);
+                    errorResponse.put("errorType", "InvalidWorkerIdException");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+            
+            if (workerId == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Worker ID is required for this step. Please restart registration from Step 1.");
+                errorResponse.put("errorType", "MissingWorkerIdException");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
             System.out.println("Received Step 5 registration request - Worker ID: " + workerId);
             System.out.println("Payment info: paymentMode=" + dto.getPaymentMode() + ", upiId=" + dto.getUpiId());
             

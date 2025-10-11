@@ -93,11 +93,10 @@ const WorkerRegistration = () => {
     sessionStorage.removeItem('otpVerified');
     sessionStorage.removeItem('currentStep');
     sessionStorage.removeItem('mobileVerified');
-    
-    // Clear Step 4 image localStorage items
-    localStorage.removeItem('tempIdProofUrl');
-    localStorage.removeItem('tempSelfieUrl');
-    localStorage.removeItem('tempCertificateUrls');
+    sessionStorage.removeItem('aadharVerified');
+    sessionStorage.removeItem('aadharOtpSent');
+    sessionStorage.removeItem('panVerified');
+    sessionStorage.removeItem('panOtpSent');
     
     setWorkerId(null);
     setFormData({
@@ -233,11 +232,11 @@ const WorkerRegistration = () => {
           openToTravel: worker.openToTravel || false,
 
           // Work info from JSON strings
-          services: worker.services ? JSON.parse(worker.services) : {},
+          services: worker.services ? (typeof worker.services === 'string' && worker.services !== 'AVAILABLE' && worker.services !== 'NOT_AVAILABLE' ? JSON.parse(worker.services) : {}) : {},
           experience: worker.experience || "",
           workType: worker.workType || "",
-          availability: worker.availability ? JSON.parse(worker.availability) : {},
-          languages: worker.languages ? JSON.parse(worker.languages) : {},
+          availability: worker.availability ? (typeof worker.availability === 'string' && worker.availability !== 'AVAILABLE' && worker.availability !== 'NOT_AVAILABLE' ? JSON.parse(worker.availability) : {}) : {},
+          languages: worker.languages ? (typeof worker.languages === 'string' && worker.languages !== 'AVAILABLE' && worker.languages !== 'NOT_AVAILABLE' ? JSON.parse(worker.languages) : {}) : {},
 
           // Verification
           aadharNumber: worker.aadharNumber || "",

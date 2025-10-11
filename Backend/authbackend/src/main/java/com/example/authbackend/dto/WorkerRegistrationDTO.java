@@ -32,7 +32,10 @@ public class WorkerRegistrationDTO {
     
     // Step 4: Verification
     private String aadharNumber;
-    private String policeVerificationStatus;
+    private String panNumber;
+    private Boolean aadharVerified;
+    private Boolean panVerified;
+    // Removed policeVerificationStatus field
     
     // Step 5: Payment Information
     private String paymentMode;
@@ -203,12 +206,30 @@ public class WorkerRegistrationDTO {
         this.aadharNumber = aadharNumber;
     }
 
-    public String getPoliceVerificationStatus() {
-        return policeVerificationStatus;
+    // Removed policeVerificationStatus getter and setter methods
+    
+    public String getPanNumber() {
+        return panNumber;
     }
 
-    public void setPoliceVerificationStatus(String policeVerificationStatus) {
-        this.policeVerificationStatus = policeVerificationStatus;
+    public void setPanNumber(String panNumber) {
+        this.panNumber = panNumber;
+    }
+
+    public Boolean getAadharVerified() {
+        return aadharVerified;
+    }
+
+    public void setAadharVerified(Boolean aadharVerified) {
+        this.aadharVerified = aadharVerified;
+    }
+
+    public Boolean getPanVerified() {
+        return panVerified;
+    }
+
+    public void setPanVerified(Boolean panVerified) {
+        this.panVerified = panVerified;
     }
 
     public String getPaymentMode() {

@@ -36,8 +36,13 @@ public class Worker {
     private Gender gender;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
+    @Column(name = "date_of_birth", nullable = false)
+    private LocalDate dateOfBirth = LocalDate.of(2000, 1, 1);
+    
+    // Legacy dob field for database compatibility
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "dob", nullable = false)
+    private LocalDate dob = LocalDate.of(2000, 1, 1);
 
     // Address Information
     @Column(name = "current_address", columnDefinition = "TEXT", nullable = false)
@@ -76,8 +81,14 @@ public class Worker {
     @Column(name = "aadhar_number", length = 20, unique = true)
     private String aadharNumber = "";
     
+    @Column(name = "aadhar_verified", nullable = false)
+    private Boolean aadharVerified = false;
+    
     @Column(name = "pan_number", length = 20)
     private String panNumber = "";
+    
+    @Column(name = "pan_verified", nullable = false)
+    private Boolean panVerified = false;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "police_verification_status", nullable = false)
@@ -118,6 +129,10 @@ public class Worker {
     @Enumerated(EnumType.STRING)
     @Column(name = "registration_status", nullable = false)
     private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
+    
+    // Registration date field for database compatibility
+    @Column(name = "registration_date", nullable = false)
+    private LocalDate registrationDate = LocalDate.now();
     
     @CreationTimestamp
     @Column(name = "created_at")
@@ -216,6 +231,7 @@ public class Worker {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+        this.dob = dateOfBirth; // Keep legacy field in sync
     }
     
     // Legacy getter/setter for compatibility
@@ -225,6 +241,7 @@ public class Worker {
 
     public void setDob(LocalDate dob) {
         this.dateOfBirth = dob;
+        this.dob = dob; // Keep both fields in sync
     }
 
     public String getProfileImageUrl() {
@@ -348,14 +365,6 @@ public class Worker {
         this.openToTravel = openToTravel;
     }
 
-    public String getPanNumber() {
-        return panNumber;
-    }
-
-    public void setPanNumber(String panNumber) {
-        this.panNumber = panNumber;
-    }
-    
     public VerificationStatus getPoliceVerificationStatus() {
         return policeVerificationStatus;
     }
@@ -418,6 +427,30 @@ public class Worker {
 
     public void setAadharNumber(String aadharNumber) {
         this.aadharNumber = aadharNumber;
+    }
+
+    public Boolean getAadharVerified() {
+        return aadharVerified;
+    }
+
+    public void setAadharVerified(Boolean aadharVerified) {
+        this.aadharVerified = aadharVerified;
+    }
+
+    public String getPanNumber() {
+        return panNumber;
+    }
+
+    public void setPanNumber(String panNumber) {
+        this.panNumber = panNumber;
+    }
+
+    public Boolean getPanVerified() {
+        return panVerified;
+    }
+
+    public void setPanVerified(Boolean panVerified) {
+        this.panVerified = panVerified;
     }
 
     public String getEmergencyContactRelation() {
@@ -578,11 +611,11 @@ public class Worker {
     }
     
     public LocalDate getRegistrationDate() {
-        return createdAt != null ? createdAt.toLocalDate() : LocalDate.now();
+        return registrationDate != null ? registrationDate : (createdAt != null ? createdAt.toLocalDate() : LocalDate.now());
     }
 
     public void setRegistrationDate(LocalDate registrationDate) {
-        // This is now handled by createdAt timestamp
+        this.registrationDate = registrationDate;
     }
     
     public String getServiceAreas() {
@@ -705,6 +738,8 @@ public class Worker {
             this.gender = Gender.OTHER;
         }
         this.dateOfBirth = dob;
+        this.dob = dob; // Keep legacy field in sync
+        this.registrationDate = LocalDate.now(); // Set registration date
         this.profileImageUrl = profileImageUrl;
         this.phone = phone;
         this.email = email;

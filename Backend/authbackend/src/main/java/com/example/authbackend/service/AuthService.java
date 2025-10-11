@@ -250,8 +250,8 @@ public class AuthService {
             
             User user = userOpt.get();
             
-            // Generate 6-digit OTP
-            String otp = String.format("%06d", new Random().nextInt(1000000));
+            // Generate static OTP for testing
+            String otp = "123456";
             
             boolean otpSent = false;
             String deliveryTarget = "";
@@ -314,11 +314,10 @@ public class AuthService {
             
             User user = userOpt.get();
             
-            // TODO: Implement proper OTP verification from database
-            // For now, we'll accept any 6-digit OTP for testing
-            if (otp.length() != 6 || !otp.matches("\\d{6}")) {
+            // Static OTP verification for testing
+            if (!"123456".equals(otp)) {
                 response.put("success", false);
-                response.put("message", "Invalid OTP format");
+                response.put("message", "Invalid OTP. Please use 123456 for testing.");
                 return response;
             }
             

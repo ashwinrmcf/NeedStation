@@ -1,22 +1,37 @@
-
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function ProfessionalDetailsPage({ data, updateForm, next, prev, workerId }) {
-  if (!workerId) {
-    console.error("Worker ID is required for this step");
-  }
+  // Check for workerId in useEffect to avoid state updates during render
+  useEffect(() => {
+    // Try to get workerId from sessionStorage if not provided as prop
+    const sessionWorkerId = sessionStorage.getItem('sessionWorkerId');
+    const localWorkerId = workerId || sessionWorkerId;
+    
+    if (!localWorkerId) {
+      console.error("Worker ID is required for this step");
+      console.log("Available workerId:", workerId);
+      console.log("Session workerId:", sessionWorkerId);
+      console.log("Using workerId for Step 3:", localWorkerId);
+    }
+  }, [workerId]);
+
   // State for form data - initialize with data from parent
   const [formData, setFormData] = useState({
     services: data.services || {
-      cleaning: false,
-      electrician: false,
-      plumbing: false,
-      furnitureAssembly: false,
-      painting: false,
-      gardening: false,
-      cooking: false,
-      babysitting: false
+      elderlyCare: false,
+      nursingCare: false,
+      caretakerAtHome: false,
+      bedriddenPatientCare: false,
+      parkinsonsCare: false,
+      physiotherapy: false,
+      homeSecurityGuard: false,
+      motherBabyCare: false,
+      paralysisCare: false,
+      pathologyCare: false,
+      diabetesManagement: false,
+      healthCheckUpServices: false,
+      postSurgeryCare: false
     },
     experience: data.experience || '',
     workType: data.workType || '',
@@ -45,6 +60,28 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
       marathi: false
     }
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Function to get proper service labels
+  const getServiceLabel = (service) => {
+    const serviceLabels = {
+      elderlyCare: 'Elderly Care',
+      nursingCare: 'Nursing Care',
+      caretakerAtHome: 'Caretaker at Home',
+      bedriddenPatientCare: 'Bedridden Patient Care',
+      parkinsonsCare: 'Parkinsons Care',
+      physiotherapy: 'Physiotherapy',
+      homeSecurityGuard: 'Home Security Guard',
+      motherBabyCare: 'Mother and Baby Care',
+      paralysisCare: 'Paralysis Care',
+      pathologyCare: 'Pathology Care',
+      diabetesManagement: 'Diabetes Management',
+      healthCheckUpServices: 'Health Check Up Services',
+      postSurgeryCare: 'Post Surgery Care'
+    };
+    return serviceLabels[service] || service;
+  };
 
   // Update local state when parent data changes (for navigation)
   useEffect(() => {
@@ -115,6 +152,26 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
     }
     
     try {
+      // Get workerId from prop or sessionStorage
+      const sessionWorkerId = sessionStorage.getItem('sessionWorkerId');
+      const localStorageWorkerId = localStorage.getItem('workerId');
+      const currentWorkerId = workerId || sessionWorkerId || localStorageWorkerId;
+      
+      // Comprehensive debugging
+      console.log("=== STEP 3 WORKER ID DEBUG ===");
+      console.log("workerId prop:", workerId);
+      console.log("sessionWorkerId:", sessionWorkerId);
+      console.log("localStorageWorkerId:", localStorageWorkerId);
+      console.log("currentWorkerId:", currentWorkerId);
+      console.log("All sessionStorage keys:", Object.keys(sessionStorage));
+      console.log("All localStorage keys:", Object.keys(localStorage));
+      
+      if (!currentWorkerId || currentWorkerId === 'null' || currentWorkerId === 'undefined') {
+        console.error("No valid worker ID found!");
+        alert("Worker ID not found. Please restart the registration process from Step 1.");
+        return;
+      }
+      
       // Prepare data for backend
       const workerData = {
         // Convert objects to JSON strings for backend storage
@@ -131,9 +188,12 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
       // API URL
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
       
+      console.log("Sending Step 3 data with workerId:", currentWorkerId);
+      console.log("API URL:", `${API_URL}/workers/register/step3?workerId=${currentWorkerId}`);
+      
       // Send data to backend
       const response = await axios.post(
-        `${API_URL}/workers/register/step3?workerId=${workerId}`,
+        `${API_URL}/workers/register/step3?workerId=${currentWorkerId}`,
         workerData
       );
       
@@ -189,7 +249,7 @@ export default function ProfessionalDetailsPage({ data, updateForm, next, prev, 
                   </div>
                 </div>
                 <label htmlFor={service} className="capitalize select-none cursor-pointer font-normal">
-                  {service === 'furnitureAssembly' ? 'Furniture Assembly' : service}
+                  {getServiceLabel(service)}
                 </label>
               </div>
             ))}

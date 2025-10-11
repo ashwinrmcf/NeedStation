@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -119,7 +120,7 @@ public class WorkerService {
     }
     
     // Set this to false to use actual Twilio services
-    private static final boolean TRIAL_MODE = false;
+    private static final boolean TRIAL_MODE = true;
     // Fixed test OTP for trial mode - in production, this would come from Twilio
     private static final String TEST_OTP = "123456";
     
@@ -132,6 +133,23 @@ public class WorkerService {
         String phoneNumber = worker.getPhone();
         
         try {
+            // TRIAL MODE: Use static OTP only, skip all external APIs
+            if (TRIAL_MODE) {
+                System.out.println("=== TRIAL MODE: STATIC OTP GENERATION ===");
+                System.out.println("Phone: " + phoneNumber);
+                System.out.println("Using static OTP: " + TEST_OTP);
+                
+                // Set static OTP and save worker
+                worker.setPhoneVerificationOtp(TEST_OTP);
+                worker.setOtpCreatedAt(LocalDateTime.now());
+                worker.setOtpExpiresAt(LocalDateTime.now().plusMinutes(10));
+                worker.setOtpAttempts(0);
+                repo.save(worker);
+                
+                System.out.println("TRIAL MODE: Static OTP set successfully for " + phoneNumber);
+                return true;
+            }
+            
             // Format phone number if needed
             // E.164 format: +[country code][phone number without leading 0]
             if (!phoneNumber.startsWith("+")) {
@@ -285,6 +303,24 @@ public class WorkerService {
             System.out.println("OTP attempts: " + worker.getOtpAttempts());
             System.out.println("Stored OTP: " + worker.getPhoneVerificationOtp());
             System.out.println("OTP expires at: " + worker.getOtpExpiresAt());
+            System.out.println("TRIAL_MODE enabled: " + TRIAL_MODE);
+            
+            // TRIAL MODE: Use static OTP for testing
+            if (TRIAL_MODE) {
+                System.out.println("TRIAL MODE: Checking static OTP");
+                if (TEST_OTP.equals(otp)) {
+                    worker.setPhoneVerified(true);
+                    worker.setOtpAttempts(0);
+                    repo.save(worker);
+                    System.out.println("TRIAL MODE: Static OTP verified successfully");
+                    return true;
+                } else {
+                    worker.setOtpAttempts(worker.getOtpAttempts() != null ? worker.getOtpAttempts() + 1 : 1);
+                    repo.save(worker);
+                    System.out.println("TRIAL MODE: Invalid static OTP provided");
+                    return false;
+                }
+            }
             
             // Check if worker already verified
             Boolean verified = worker.getPhoneVerified();
@@ -489,8 +525,19 @@ public class WorkerService {
             }
         }
         
-        if (dto.getDob() != null) {
-            worker.setDob(LocalDate.parse(dto.getDob()));
+        if (dto.getDob() != null && !dto.getDob().trim().isEmpty()) {
+            try {
+                worker.setDob(LocalDate.parse(dto.getDob()));
+            } catch (Exception e) {
+                // If parsing fails, set a default date
+                worker.setDob(LocalDate.of(2000, 1, 1));
+                System.out.println("Invalid DOB format, using default: " + dto.getDob());
+            }
+        } else {
+            // Ensure DOB is never null - set default if not provided
+            if (worker.getDateOfBirth() == null) {
+                worker.setDob(LocalDate.of(2000, 1, 1));
+            }
         }
         
         if (dto.getPhone() != null) {
@@ -507,6 +554,18 @@ public class WorkerService {
         
         // Update status
         worker.setRegistrationStatus(Worker.RegistrationStatus.ACTIVE);
+        
+        // Debug: Check DOB before saving
+        System.out.println("=== DOB DEBUG BEFORE SAVE ===");
+        System.out.println("Worker DOB (getDateOfBirth): " + worker.getDateOfBirth());
+        System.out.println("Worker DOB (getDob): " + worker.getDob());
+        System.out.println("DTO DOB: " + dto.getDob());
+        
+        // Ensure DOB is absolutely not null before saving
+        if (worker.getDateOfBirth() == null) {
+            System.out.println("WARNING: DOB is null, setting default");
+            worker.setDob(LocalDate.of(2000, 1, 1));
+        }
         
         // Save worker FIRST to get a valid ID for image upload
         worker = repo.save(worker);
@@ -598,13 +657,18 @@ public class WorkerService {
         
         worker.setAadharNumber(dto.getAadharNumber());
         
-        // Convert string verification status to enum
-        if (dto.getPoliceVerificationStatus() != null) {
-            try {
-                worker.setPoliceVerificationStatus(Worker.VerificationStatus.valueOf(dto.getPoliceVerificationStatus().toUpperCase()));
-            } catch (IllegalArgumentException e) {
-                worker.setPoliceVerificationStatus(Worker.VerificationStatus.PENDING);
-            }
+        // Set PAN number (if provided in Step 4, though now it's in Step 5)
+        if (dto.getPanNumber() != null) {
+            worker.setPanNumber(dto.getPanNumber());
+        }
+        
+        // Set verification flags
+        if (dto.getAadharVerified() != null) {
+            worker.setAadharVerified(dto.getAadharVerified());
+        }
+        
+        if (dto.getPanVerified() != null) {
+            worker.setPanVerified(dto.getPanVerified());
         }
         
         // Upload ID proof if provided
@@ -712,7 +776,7 @@ public class WorkerService {
         worker.setFullName("");
         worker.setGender(Worker.Gender.OTHER);
         worker.setPhone("");
-        worker.setDob(LocalDate.now());
+        worker.setDob(LocalDate.of(2000, 1, 1)); // Set a reasonable default DOB
         
         // Set required enum fields with defaults
         worker.setWorkerType(Worker.WorkerType.CARETAKER);
@@ -727,6 +791,7 @@ public class WorkerService {
         worker.setExperienceYears(0);
         worker.setServiceRadiusKm(10);
         worker.setTotalBookings(0);
+        worker.setRating(BigDecimal.valueOf(0.00)); // Set default rating
         
         // Set agency_id to a default value (you may need to adjust this based on your business logic)
         worker.setAgencyId(1L); // Default agency ID - adjust as needed
@@ -737,6 +802,7 @@ public class WorkerService {
         
         // Log that we're creating a new worker
         System.out.println("Creating new worker record");
+        System.out.println("Default DOB set to: " + worker.getDateOfBirth());
         
         return worker;
     }

@@ -1,16 +1,46 @@
 import { useState, useEffect } from 'react';
-import { Upload, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Upload, AlertCircle, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
 export default function SkillVerificationPage({ data, updateForm, prev, next, workerId }) {
-  if (!workerId) {
-    console.error("Worker ID is required for this step");
-  }
+  // Check for workerId in useEffect to avoid state updates during render
+  useEffect(() => {
+    // Try to get workerId from sessionStorage if not provided as prop
+    const sessionWorkerId = sessionStorage.getItem('sessionWorkerId');
+    const localWorkerId = workerId || sessionWorkerId;
+    
+    if (!localWorkerId) {
+      console.error("Worker ID is required for this step");
+      console.log("Available workerId:", workerId);
+      console.log("Session workerId:", sessionWorkerId);
+    } else {
+      console.log("Using workerId for Step 4:", localWorkerId);
+    }
+  }, [workerId]);
+
   // Initialize state with data from parent or defaults
   const [formData, setFormData] = useState({
-    aadharNumber: data.aadharNumber || '',
-    policeVerificationStatus: data.policeVerificationStatus || ''
+    aadharNumber: data.aadharNumber || ''
   });
+  
+  // OTP verification states for Aadhaar only
+  const [aadharOtpSent, setAadharOtpSent] = useState(false);
+  const [aadharOtp, setAadharOtp] = useState('');
+  const [aadharVerified, setAadharVerified] = useState(false);
+  const [aadharOtpLoading, setAadharOtpLoading] = useState(false);
+
+  // Restore Aadhaar verification status on component mount
+  useEffect(() => {
+    const savedAadharVerified = sessionStorage.getItem('aadharVerified');
+    const savedAadharOtpSent = sessionStorage.getItem('aadharOtpSent');
+    
+    if (savedAadharVerified === 'true') {
+      setAadharVerified(true);
+    }
+    if (savedAadharOtpSent === 'true') {
+      setAadharOtpSent(true);
+    }
+  }, []);
   const [certificates, setCertificates] = useState([]);
   const [idProof, setIdProof] = useState(null);
   const [selfieWithId, setSelfieWithId] = useState(null);
@@ -80,6 +110,51 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
     });
   };
 
+  // Aadhaar OTP functions
+  const sendAadharOtp = async () => {
+    if (!formData.aadharNumber || formData.aadharNumber.length !== 12) {
+      alert("Please enter a valid 12-digit Aadhaar number");
+      return;
+    }
+    
+    setAadharOtpLoading(true);
+    try {
+      // Simulate API call - replace with actual Aadhaar verification API
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setAadharOtpSent(true);
+      sessionStorage.setItem('aadharOtpSent', 'true');
+      alert("OTP sent to your registered mobile number with Aadhaar");
+    } catch (error) {
+      alert("Failed to send OTP. Please try again.");
+    } finally {
+      setAadharOtpLoading(false);
+    }
+  };
+
+  const verifyAadharOtp = async () => {
+    if (!aadharOtp || aadharOtp.length !== 6) {
+      alert("Please enter a valid 6-digit OTP");
+      return;
+    }
+    
+    setAadharOtpLoading(true);
+    try {
+      // Simulate API call - replace with actual verification
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (aadharOtp === "123456") { // Static OTP
+        setAadharVerified(true);
+        sessionStorage.setItem('aadharVerified', 'true');
+        alert("Aadhaar verified successfully!");
+      } else {
+        alert("Invalid OTP. Please try again.");
+      }
+    } catch (error) {
+      alert("Verification failed. Please try again.");
+    } finally {
+      setAadharOtpLoading(false);
+    }
+  };
+
   const handleIdProofUpload = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -117,8 +192,15 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
     setIsSubmitting(true);
     
     // Validate required fields
-    if (!formData.aadharNumber || !formData.policeVerificationStatus) {
+    if (!formData.aadharNumber) {
       alert("Please fill in all required fields");
+      setIsSubmitting(false);
+      return;
+    }
+    
+    // Validate OTP verification
+    if (!aadharVerified) {
+      alert("Please verify your Aadhaar number with OTP");
       setIsSubmitting(false);
       return;
     }
@@ -131,7 +213,7 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
       formPayload.append("data", new Blob([
         JSON.stringify({
           aadharNumber: formData.aadharNumber,
-          policeVerificationStatus: formData.policeVerificationStatus
+          aadharVerified: aadharVerified
         })
       ], { type: 'application/json' }));
       
@@ -152,12 +234,24 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
         });
       }
       
+      // Get workerId from prop or sessionStorage
+      const sessionWorkerId = sessionStorage.getItem('sessionWorkerId');
+      const currentWorkerId = workerId || sessionWorkerId;
+      
+      if (!currentWorkerId) {
+        alert("Worker ID not found. Please restart the registration process.");
+        setIsSubmitting(false);
+        return;
+      }
+      
       // API URL
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
       
+      console.log("Sending Step 4 data with workerId:", currentWorkerId);
+      
       // Send data to backend
       const response = await axios.post(
-        `${API_URL}/workers/register/step4?workerId=${workerId}`,
+        `${API_URL}/workers/register/step4?workerId=${currentWorkerId}`,
         formPayload,
         {
           headers: {
@@ -208,36 +302,60 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
           </h2>
 
           <div className="space-y-6">
-            {/* Aadhaar Number */}
-            <div className="space-y-2">
+            {/* Aadhaar Number with OTP Verification */}
+            <div className="space-y-3 p-4 border border-gray-700 rounded-lg bg-gray-800/50">
               <label className="block text-lg font-medium">Aadhaar Number <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                name="aadharNumber"
-                value={formData.aadharNumber}
-                onChange={handleInputChange}
-                placeholder="Enter your 12-digit Aadhaar number"
-                className="w-full p-3 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
-                required
-              />
-            </div>
-
-            {/* Police Verification Status */}
-            <div className="space-y-2">
-              <label className="block text-lg font-medium">Police Verification Status <span className="text-red-500">*</span></label>
-              <select
-                name="policeVerificationStatus"
-                value={formData.policeVerificationStatus}
-                onChange={handleInputChange}
-                className="w-full p-3 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
-                required
-              >
-                <option value="">Select status</option>
-                <option value="Not Applied">Not Applied</option>
-                <option value="Applied">Applied</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Verified">Verified</option>
-              </select>
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  name="aadharNumber"
+                  value={formData.aadharNumber}
+                  onChange={handleInputChange}
+                  placeholder="Enter your 12-digit Aadhaar number"
+                  className="flex-1 p-3 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+                  maxLength="12"
+                  disabled={aadharVerified}
+                  required
+                />
+                {!aadharVerified && (
+                  <button
+                    type="button"
+                    onClick={sendAadharOtp}
+                    disabled={aadharOtpLoading || formData.aadharNumber.length !== 12}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                  >
+                    {aadharOtpLoading ? 'Sending...' : 'Send OTP'}
+                  </button>
+                )}
+                {aadharVerified && (
+                  <div className="flex items-center px-3 py-2 bg-green-600 text-white rounded-md">
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Verified
+                  </div>
+                )}
+              </div>
+              
+              {aadharOtpSent && !aadharVerified && (
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={aadharOtp}
+                    onChange={(e) => setAadharOtp(e.target.value)}
+                    placeholder="Enter 6-digit OTP"
+                    className="flex-1 p-3 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    maxLength="6"
+                  />
+                  <button
+                    type="button"
+                    onClick={verifyAadharOtp}
+                    disabled={aadharOtpLoading || aadharOtp.length !== 6}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                  >
+                    {aadharOtpLoading ? 'Verifying...' : 'Verify OTP'}
+                  </button>
+                </div>
+              )}
+              <p className="text-sm text-gray-400">Demo OTP: 123456</p>
             </div>
 
             {/* Certificates Upload */}
@@ -246,7 +364,7 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
               <div className="border-2 border-dashed border-teal-600 rounded-md p-4 bg-gray-800">
                 <div className="flex flex-col items-center justify-center">
                   <Upload className="mb-2 text-cyan-400" size={24} />
-                  <p className="text-center text-gray-300 mb-2">Drag and drop files or click to browse</p>
+                  <p className="text-center text-gray-300 mb-2">Upload images (JPG, PNG) or PDF files</p>
                   <input
                     type="file"
                     className="hidden"
@@ -328,7 +446,7 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
               <div className="border-2 border-dashed border-teal-600 rounded-md p-4 bg-gray-800">
                 <div className="flex flex-col items-center justify-center">
                   <Upload className="mb-2 text-cyan-400" size={24} />
-                  <p className="text-center text-gray-300 mb-2">Upload a clear scan or photo of your ID</p>
+                  <p className="text-center text-gray-300 mb-2">Upload image (JPG, PNG) or PDF of your ID</p>
                   <input
                     type="file"
                     className="hidden"
@@ -379,13 +497,13 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
               <div className="border-2 border-dashed border-teal-600 rounded-md p-4 bg-gray-800">
                 <div className="flex flex-col items-center justify-center">
                   <Upload className="mb-2 text-cyan-400" size={24} />
-                  <p className="text-center text-gray-300 mb-2">Upload a clear selfie holding your ID</p>
+                  <p className="text-center text-gray-300 mb-2">Upload selfie with ID (JPG, PNG, or PDF)</p>
                   <input
                     type="file"
                     className="hidden"
                     id="selfieUpload"
                     onChange={handleSelfieUpload}
-                    accept=".jpg,.jpeg,.png"
+                    accept=".jpg,.jpeg,.png,.pdf"
                   />
                   <button
                     onClick={() => document.getElementById('selfieUpload').click()}

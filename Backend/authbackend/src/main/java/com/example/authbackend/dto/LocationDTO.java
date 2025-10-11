@@ -1,7 +1,8 @@
 package com.example.authbackend.dto;
 
 public class LocationDTO {
-    private String userIdentifier; // email or username
+    private String userIdentifier; // email or username (deprecated)
+    private Long userId; // direct user ID (preferred)
     private Double lat;
     private Double lng;
     private String address;
@@ -12,6 +13,14 @@ public class LocationDTO {
 
     public void setUserIdentifier(String userIdentifier) {
         this.userIdentifier = userIdentifier;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Double getLat() {
@@ -36,5 +45,16 @@ public class LocationDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+    
+    @Override
+    public String toString() {
+        return "LocationDTO{" +
+                "userIdentifier='" + userIdentifier + '\'' +
+                ", userId=" + userId +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                ", address='" + address + '\'' +
+                '}';
     }
 }

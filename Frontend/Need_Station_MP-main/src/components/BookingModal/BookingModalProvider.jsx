@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import BookingModal from './BookingModal';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../store/AuthContext';
 
 const BookingModalContext = createContext();
 
@@ -16,6 +17,14 @@ export const BookingModalProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentService, setCurrentService] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Create user profile with phone verification status
+  const userProfile = user ? {
+    ...user,
+    mobile: user.phone,
+    phoneVerified: localStorage.getItem('mobileVerified') === 'true' || localStorage.getItem('phoneVerified') === 'true'
+  } : null;
 
   const openBookingModal = (serviceName) => {
     setCurrentService(serviceName);
@@ -62,6 +71,7 @@ export const BookingModalProvider = ({ children }) => {
         onClose={closeBookingModal}
         serviceName={currentService}
         onBookingComplete={handleBookingComplete}
+        userProfile={userProfile}
       />
     </BookingModalContext.Provider>
   );

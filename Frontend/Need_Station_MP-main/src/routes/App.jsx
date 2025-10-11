@@ -13,6 +13,7 @@ import { ToastContainer } from "react-toastify";
 import translationService from "../services/TranslationService";
 import NeedBot from "../components/NeedBot.jsx";
 import { BookingModalProvider } from "../components/BookingModal/BookingModalProvider.jsx";
+import { CartProvider } from "../store/CartContext.jsx";
 
 import { Cloudinary } from "@cloudinary/url-gen";
 import { AdvancedImage } from '@cloudinary/react';
@@ -320,17 +321,19 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <BookingModalProvider>
-      <ScrollToTop />
-      <Header />
-      <div className="container my-4">
-        <AdvancedImage cldImg={img} />
-      </div>
-      <Outlet />
-      <Footer />
-      <NeedBot />
-      <ToastContainer />
-    </BookingModalProvider>
+    <CartProvider>
+      <BookingModalProvider>
+        <ScrollToTop />
+        <Header />
+        <div className="container my-4">
+          <AdvancedImage cldImg={img} />
+        </div>
+        <Outlet />
+        <Footer />
+        <NeedBot />
+        <ToastContainer />
+      </BookingModalProvider>
+    </CartProvider>
   );
 }
 

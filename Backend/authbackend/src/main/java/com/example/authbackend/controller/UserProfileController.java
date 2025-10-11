@@ -56,6 +56,16 @@ public class UserProfileController {
         }
     }
 
+    // Test endpoint to verify controller is working
+    @GetMapping("/test")
+    public ResponseEntity<?> testEndpoint() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "OK");
+        response.put("message", "UserProfileController is working");
+        response.put("timestamp", System.currentTimeMillis());
+        return ResponseEntity.ok(response);
+    }
+
     // Upload profile image to Cloudinary
     @PostMapping("/{userId}/upload-image")
     public ResponseEntity<?> uploadProfileImage(@PathVariable Long userId, 
@@ -261,6 +271,7 @@ public class UserProfileController {
     @GetMapping("/{userId}/basic")
     public ResponseEntity<?> getUserBasicInfo(@PathVariable Long userId) {
         try {
+            logger.info("🔍 Fetching basic info for user ID: {}", userId);
             Optional<User> userOptional = userRepository.findById(userId);
             if (userOptional.isEmpty()) {
                 return ResponseEntity.notFound().build();
@@ -273,8 +284,10 @@ public class UserProfileController {
             basicInfo.put("username", user.getUsername());
             basicInfo.put("fullName", user.getFullName());
             basicInfo.put("firstName", user.getFirstName());
+            basicInfo.put("lastName", user.getLastName());
             basicInfo.put("profileImageUrl", user.getProfileImageUrl());
             basicInfo.put("email", user.getEmail());
+            basicInfo.put("phone", user.getContactNumber());
             
             return ResponseEntity.ok(basicInfo);
             

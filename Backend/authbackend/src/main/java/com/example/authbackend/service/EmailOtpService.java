@@ -115,12 +115,11 @@ public class EmailOtpService {
     }
 
     /**
-     * Generate 6-digit OTP
+     * Generate static OTP for testing
      */
     private String generateOtp() {
-        Random random = new Random();
-        int otp = 100000 + random.nextInt(900000);
-        return String.valueOf(otp);
+        // Return static OTP for testing purposes
+        return "123456";
     }
 
     /**

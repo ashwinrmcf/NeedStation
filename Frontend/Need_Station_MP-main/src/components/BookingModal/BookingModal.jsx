@@ -32,6 +32,8 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
   const [otp, setOtp] = useState('');
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [isSavingLocation, setIsSavingLocation] = useState(false);
+  const [locationSaved, setLocationSaved] = useState(false);
 
   // Get service configuration for dynamic fields
   const serviceConfig = getServiceConfiguration(serviceName?.toUpperCase().replace(/\s+/g, '_') || '');
@@ -71,18 +73,25 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
     } else {
       document.body.style.overflow = 'unset';
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
   }, [isOpen]);
 
   const handleInputChange = (field, value) => {
+    // If phone number is being changed and it was previously verified
+    if (field === 'phone' && phoneVerified && value !== formData.phone) {
+      setPhoneVerified(false);
+      setOtpSent(false);
+      setOtp('');
+      // Clear verification status from localStorage
+      localStorage.removeItem('phoneVerified');
+      localStorage.removeItem('mobileVerified');
+    }
+    
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
     
-    // Clear error when user starts typing
+    // Clear errors for this field
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -108,17 +117,76 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
   };
 
   // Save selected location
-  const saveLocation = () => {
+  const saveLocation = async () => {
     if (selectedLocation) {
+      // Update form data locally
       setFormData(prev => ({
         ...prev,
         latitude: selectedLocation.lat,
         longitude: selectedLocation.lng
       }));
+      
       // Clear location error if it exists
       if (errors.location) {
         setErrors(prev => ({ ...prev, location: '' }));
       }
+      
+      // Save to database if user is logged in
+      if (userProfile?.username || userProfile?.email) {
+        setIsSavingLocation(true);
+        try {
+          const locationData = {
+            userId: 11, // Use direct user ID instead of email/username lookup
+            lat: selectedLocation.lat,
+            lng: selectedLocation.lng,
+            address: formData.address || selectedLocation.address || `${selectedLocation.lat}, ${selectedLocation.lng}`
+          };
+          
+          console.log('🔍 Frontend: Sending location data:', locationData);
+          console.log('🔍 Frontend: userProfile:', userProfile);
+          console.log('🔍 Frontend: selectedLocation:', selectedLocation);
+          console.log('🔍 Frontend: formData.address:', formData.address);
+          
+          const response = await fetch('http://localhost:8080/api/user/update-location', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(locationData)
+          });
+          
+          if (response.ok) {
+            console.log('Location saved to database successfully');
+            setLocationSaved(true);
+            // Hide success message after 3 seconds
+            setTimeout(() => setLocationSaved(false), 3000);
+          } else {
+            console.error('Failed to save location to database');
+          }
+        } catch (error) {
+          console.error('Error saving location to database:', error);
+        } finally {
+          setIsSavingLocation(false);
+        }
+      }
+    }
+  };
+
+  // Handle change number - reset verification status
+  const handleChangeNumber = () => {
+    setPhoneVerified(false);
+    setOtpSent(false);
+    setOtp('');
+    setErrors(prev => ({ ...prev, phone: '', otp: '' }));
+    
+    // Clear verification status from localStorage
+    localStorage.removeItem('phoneVerified');
+    localStorage.removeItem('mobileVerified');
+    
+    // Focus on phone input
+    const phoneInput = document.querySelector('input[type="tel"]');
+    if (phoneInput) {
+      phoneInput.focus();
     }
   };
 
@@ -152,6 +220,19 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
       await new Promise(resolve => setTimeout(resolve, 1000));
       setPhoneVerified(true);
       setErrors(prev => ({ ...prev, otp: '' }));
+      
+      // Save phone verification status to localStorage for future bookings
+      localStorage.setItem('phoneVerified', 'true');
+      localStorage.setItem('mobileVerified', 'true');
+      
+      // Update user phone in localStorage if it's different
+      if (formData.phone && formData.phone !== userProfile?.phone) {
+        localStorage.setItem('userPhone', formData.phone);
+        // Update user object in localStorage
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = { ...currentUser, phone: formData.phone };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
     } catch (error) {
       setErrors(prev => ({ ...prev, otp: 'Verification failed. Please try again.' }));
     } finally {
@@ -296,7 +377,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="Enter 10-digit mobile number"
                     className={`${styles.formInput} ${errors.phone ? styles.error : ''}`}
-                    disabled={phoneVerified}
+                    disabled={false}
                     style={{ flex: 1 }}
                   />
                   {!phoneVerified && !otpSent && (
@@ -310,13 +391,27 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                     </button>
                   )}
                   {phoneVerified && (
-                    <div className={styles.verifiedBadge}>
-                      <Shield size={16} /> Verified
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <div className={styles.verifiedBadge}>
+                        <Shield size={16} /> Verified
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleChangeNumber}
+                        className={styles.changeNumberButton}
+                      >
+                        Change
+                      </button>
                     </div>
                   )}
                 </div>
                 {errors.phone && (
                   <p className={styles.errorMessage}>{errors.phone}</p>
+                )}
+                {phoneVerified && userProfile?.phone && (
+                  <p className={styles.successMessage}>
+                    ✓ Phone number auto-filled from your account and verified
+                  </p>
                 )}
               </div>
 
@@ -383,7 +478,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                   <div className={styles.locationActions}>
                     <div className={styles.locationPreview}>
                       <p className={styles.locationInfo}>
-                        📍 Selected: {selectedLocation.address}
+                        📍 Selected: {selectedLocation?.address || ''}
                       </p>
                     </div>
                     <button
@@ -392,9 +487,13 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                       className={`${styles.saveLocationButton} ${
                         formData.latitude && formData.longitude ? styles.saved : ''
                       }`}
-                      disabled={formData.latitude && formData.longitude}
+                      disabled={isSavingLocation || (formData.latitude && formData.longitude)}
                     >
-                      {formData.latitude && formData.longitude ? (
+                      {isSavingLocation ? (
+                        <>
+                          <div className={styles.spinner}></div> Saving...
+                        </>
+                      ) : formData.latitude && formData.longitude ? (
                         <>
                           <Shield size={16} /> Location Saved
                         </>
@@ -404,6 +503,11 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                         </>
                       )}
                     </button>
+                    {locationSaved && (
+                      <p className={styles.successMessage}>
+                        ✓ Location saved to your account successfully!
+                      </p>
+                    )}
                   </div>
                 )}
                 

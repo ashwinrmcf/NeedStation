@@ -47,11 +47,27 @@ const SettingsPage = () => {
 				console.log('Raw API data:', data); // Debug log
 				
 				// Parse JSON fields if they come as strings from database
+				const parseJsonField = (field, fallback = {}) => {
+					if (typeof field !== 'string') return field || fallback;
+					
+					// Handle special cases where backend returns non-JSON strings
+					if (field === 'AVAILABLE' || field === 'NOT_AVAILABLE') {
+						return fallback;
+					}
+					
+					try {
+						return JSON.parse(field);
+					} catch (e) {
+						console.warn(`Failed to parse JSON field: ${field}`, e);
+						return fallback;
+					}
+				};
+
 				const parsedData = {
 					...data,
-					services: typeof data.services === 'string' ? JSON.parse(data.services || '{}') : (data.services || {}),
-					languages: typeof data.languages === 'string' ? JSON.parse(data.languages || '{}') : (data.languages || {}),
-					availability: typeof data.availability === 'string' ? JSON.parse(data.availability || '{}') : (data.availability || {})
+					services: parseJsonField(data.services, {}),
+					languages: parseJsonField(data.languages, {}),
+					availability: parseJsonField(data.availability, {})
 				};
 
 				console.log('Parsed data:', parsedData); // Debug log

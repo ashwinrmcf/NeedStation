@@ -27,7 +27,6 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
       
       // Only update if data has actually changed to prevent infinite loops
       if (JSON.stringify(prev) !== JSON.stringify(newData)) {
-        return newData;
       }
       return prev;
     });
@@ -35,14 +34,21 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
   
   // Check for workerId in useEffect to avoid state updates during render
   useEffect(() => {
-    if (!workerId) {
+    // Try to get workerId from sessionStorage if not provided as prop
+    const sessionWorkerId = sessionStorage.getItem('sessionWorkerId');
+    const localWorkerId = workerId || sessionWorkerId;
+    
+    if (!localWorkerId) {
       console.error("Worker ID is required for this step");
+      console.log("Available workerId:", workerId);
+      console.log("Session workerId:", sessionWorkerId);
+    } else {
+      console.log("Using workerId for Step 2:", localWorkerId);
     }
   }, [workerId]);
 
   const [availableAreas] = useState([
-    'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 
-    'Kolkata', 'Pune', 'Ahmedabad', 'Jaipur', 'Surat'
+    'Indore'
   ]);
 
   const handleChange = (e) => {
@@ -92,6 +98,15 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
     }
     
     try {
+      // Get workerId from prop or sessionStorage
+      const sessionWorkerId = sessionStorage.getItem('sessionWorkerId');
+      const currentWorkerId = workerId || sessionWorkerId;
+      
+      if (!currentWorkerId) {
+        alert("Worker ID not found. Please restart the registration process.");
+        return;
+      }
+      
       // Prepare data for backend
       const workerData = {
         permanentAddress: formData.permanentAddress,
@@ -105,9 +120,11 @@ export default function LocationDetailsForm({ data, updateForm, next, prev, work
       // API URL
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
       
+      console.log("Sending Step 2 data with workerId:", currentWorkerId);
+      
       // Send data to backend
       const response = await axios.post(
-        `${API_URL}/workers/register/step2?workerId=${workerId}`,
+        `${API_URL}/workers/register/step2?workerId=${currentWorkerId}`,
         workerData
       );
       

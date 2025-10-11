@@ -44,6 +44,10 @@ public class SmsService {
     @Value("${sms.default-provider:termii}")
     private String defaultProvider;
     
+    // TRIAL MODE for testing with static OTP
+    @Value("${app.trial-mode:true}")
+    private boolean TRIAL_MODE;
+    
     @Autowired
     public SmsService(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
@@ -58,6 +62,15 @@ public class SmsService {
      * @return true if the SMS was sent successfully, false otherwise
      */
     public boolean sendOtpSms(String phoneNumber, String otp) {
+        // TRIAL MODE: Skip external SMS services, return success
+        if (TRIAL_MODE) {
+            System.out.println("=== TRIAL MODE: SMS SERVICE ===");
+            System.out.println("Phone: " + phoneNumber);
+            System.out.println("OTP: " + otp);
+            System.out.println("TRIAL MODE: SMS sending simulated successfully");
+            return true;
+        }
+        
         if (!smsEnabled) {
             System.out.println("SMS sending is disabled. Enable it in application.properties");
             return false;
