@@ -18,8 +18,13 @@ const cartReducer = (state, action) => {
     case CART_ACTIONS.ADD_ITEM: {
       const existingItem = state.items.find(item => item.id === action.payload.id);
       
+      console.log('🔍 CartReducer - ADD_ITEM:', action.payload);
+      console.log('🔍 CartReducer - Existing item found:', existingItem);
+      console.log('🔍 CartReducer - Current items:', state.items);
+      
       if (existingItem) {
         // Update quantity if item already exists
+        console.log('📈 CartReducer - Updating quantity for existing item');
         return {
           ...state,
           items: state.items.map(item =>
@@ -30,10 +35,13 @@ const cartReducer = (state, action) => {
         };
       } else {
         // Add new item
-        return {
+        console.log('➕ CartReducer - Adding new item to cart');
+        const newState = {
           ...state,
           items: [...state.items, { ...action.payload, quantity: 1 }]
         };
+        console.log('✅ CartReducer - New state:', newState);
+        return newState;
       }
     }
     
@@ -99,7 +107,8 @@ export const CartProvider = ({ children }) => {
 
   // Cart Actions
   const addToCart = (service) => {
-    console.log('🛒 Adding to cart:', service);
+    console.log('🛒 CartContext - Adding to cart:', service);
+    console.log('🛒 CartContext - Current cart items:', state.items);
     dispatch({ type: CART_ACTIONS.ADD_ITEM, payload: service });
   };
 

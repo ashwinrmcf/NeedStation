@@ -1,6 +1,7 @@
 import styles from './Services.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from '../../store/AuthContext';
 
 // Real service images
 import securityImage from '../../assets/images/services/realservices/se.png';
@@ -18,6 +19,8 @@ import postSurgeryImage from '../../assets/images/services/realservices/postsurg
 import caregiverImage from '../../assets/images/services/realservices/caregiver.jpg';
 
 const Services = () => {
+    const navigate = useNavigate();
+    const { user } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [expandedService, setExpandedService] = useState(null);
     const [modalService, setModalService] = useState(null);
@@ -32,6 +35,18 @@ const Services = () => {
     const closeModal = () => {
         setModalService(null);
         setIsModalOpen(false);
+    };
+
+    const handleBookService = (service) => {
+        // Check if user is logged in
+        if (!user) {
+            // Redirect to login page if not logged in
+            navigate('/login');
+            return;
+        }
+        
+        // Navigate to service page if user is logged in
+        navigate(service.link);
     };
 
     const services = [
@@ -260,7 +275,7 @@ const Services = () => {
                 <div className={styles["detailedGrid"]}>
                     {filteredServices.map((service) => (
                         <div key={service.id} className={styles["detailedCard"]}>
-                            <div className={styles["cardImage"]}>
+                            <div className={styles["cardImage"]} onClick={() => handleBookService(service)} style={{ cursor: 'pointer' }}>
                                 <img src={service.image} alt={service.title} />
                                 <div className={styles["imageOverlay"]}>
                                     <span className={styles["categoryBadge"]}>{service.category}</span>
@@ -297,9 +312,12 @@ const Services = () => {
                                 </div>
                                 
                                 <div className={styles["cardActions"]}>
-                                    <Link to={service.link} className={styles["bookBtn"]}>
+                                    <button 
+                                        onClick={() => handleBookService(service)}
+                                        className={styles["bookBtn"]}
+                                    >
                                         Book Now
-                                    </Link>
+                                    </button>
                                     <button 
                                         className={styles["infoBtn"]}
                                         onClick={() => openModal(service)}
@@ -358,9 +376,12 @@ const Services = () => {
                                     </div>
                                     
                                     <div className={styles["modalActions"]}>
-                                        <Link to={modalService.link} className={styles["modalBookBtn"]}>
+                                        <button 
+                                            onClick={() => handleBookService(modalService)}
+                                            className={styles["modalBookBtn"]}
+                                        >
                                             Book Now
-                                        </Link>
+                                        </button>
                                         <button className={styles["modalCloseBtn"]} onClick={closeModal}>
                                             Close
                                         </button>

@@ -21,8 +21,10 @@ const GenericServiceOptions = ({
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedService, setSelectedService] = useState(null);
+  const [showAllCartItems, setShowAllCartItems] = useState(false);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const { openBookingModal } = useBookingModal();
-  const { addToCart: addToGlobalCart, isInCart, cartItems: globalCartItems, removeFromCart: removeFromGlobalCart, cartTotal } = useCart();
+  const { addToCart: addToGlobalCart, isInCart, cartItems: globalCartItems, removeFromCart: removeFromGlobalCart, updateQuantity: updateGlobalQuantity, cartTotal } = useCart();
 
   // All 13 services for left navigation
   const allServices = [
@@ -86,9 +88,12 @@ const GenericServiceOptions = ({
   };
 
   const handleAddToCart = (service) => {
-    // Create a standardized service object for the cart
+    // Use the service's existing unique ID but prefix it with category to avoid conflicts across pages
+    // This preserves the service's individual identity while ensuring global uniqueness
+    const serviceId = `${serviceName.toLowerCase().replace(/\s+/g, '-')}-${service.id}`;
+    
     const cartService = {
-      id: service.id || `${serviceName}-${service.title}`.toLowerCase().replace(/\s+/g, '-'),
+      id: serviceId,
       name: service.title,
       category: serviceName,
       price: parseInt(service.price.replace(/[₹,]/g, '')),
@@ -96,10 +101,31 @@ const GenericServiceOptions = ({
       duration: service.duration || '1 hour',
       rating: service.rating,
       image: service.imgUrl,
-      description: service.subtitle
+      description: service.subtitle,
+      originalServiceId: service.id // Keep original ID for reference
     };
     
+    console.log('🛒 Adding to cart - Service:', service.title, 'Original ID:', service.id, 'Cart ID:', serviceId, 'Category:', serviceName);
     addToGlobalCart(cartService);
+  };
+
+  const handleIncreaseQuantity = (itemId) => {
+    const item = globalCartItems.find(item => item.id === itemId);
+    if (item) {
+      updateGlobalQuantity(itemId, item.quantity + 1);
+    }
+  };
+
+  const handleDecreaseQuantity = (itemId) => {
+    const item = globalCartItems.find(item => item.id === itemId);
+    if (item) {
+      if (item.quantity > 1) {
+        updateGlobalQuantity(itemId, item.quantity - 1);
+      } else {
+        // If quantity is 1, remove the item entirely
+        removeFromGlobalCart(itemId);
+      }
+    }
   };
 
   const filteredServices = selectedCategory === 'all' 
@@ -372,12 +398,39 @@ const GenericServiceOptions = ({
                 ) : (
                   <>
                     <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
-                      {globalCartItems.map((item) => (
+                      {globalCartItems.slice(0, 2).map((item) => (
                         <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: 'var(--bg-primary)' }}>
                           <img src={item.image || item.imgUrl} alt={item.name || item.title} className="w-12 h-12 rounded-lg object-cover" />
                           <div className="flex-1">
                             <h4 className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{item.name || item.title}</h4>
                             <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>₹{typeof item.price === 'number' ? item.price.toLocaleString() : item.price}</p>
+                            
+                            {/* Quantity Controls */}
+                            <div className="flex items-center gap-2 mt-1">
+                              <button 
+                                onClick={() => handleDecreaseQuantity(item.id)}
+                                className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold transition-colors"
+                                style={{ 
+                                  backgroundColor: 'var(--accent-secondary)', 
+                                  color: 'white' 
+                                }}
+                              >
+                                -
+                              </button>
+                              <span className="text-xs font-medium px-2" style={{ color: 'var(--text-primary)' }}>
+                                {item.quantity}
+                              </span>
+                              <button 
+                                onClick={() => handleIncreaseQuantity(item.id)}
+                                className="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold transition-colors"
+                                style={{ 
+                                  backgroundColor: 'var(--accent-secondary)', 
+                                  color: 'white' 
+                                }}
+                              >
+                                +
+                              </button>
+                            </div>
                           </div>
                           <button 
                             onClick={() => removeFromGlobalCart(item.id)}
@@ -387,6 +440,22 @@ const GenericServiceOptions = ({
                           </button>
                         </div>
                       ))}
+                      
+                      {globalCartItems.length > 2 && (
+                        <div className="text-center py-2">
+                          <button 
+                            onClick={() => setIsCartModalOpen(true)}
+                            className="text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                            style={{ 
+                              color: 'var(--accent-secondary)', 
+                              backgroundColor: 'var(--bg-primary)',
+                              border: '1px solid var(--accent-secondary)'
+                            }}
+                          >
+                            ... show more ({globalCartItems.length - 2} more items)
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     <div className="border-t pt-4" style={{ borderColor: 'var(--border-color)' }}>
@@ -399,13 +468,9 @@ const GenericServiceOptions = ({
                       
                       <button 
                         onClick={handleBookNow}
-                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg mb-3"
+                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
                       >
                         Book All Services
-                      </button>
-                      
-                      <button className="w-full border-2 border-teal-500 text-teal-600 font-medium py-3 px-6 rounded-xl transition-all duration-300 hover:bg-teal-50">
-                        Get Quote
                       </button>
                     </div>
                   </>
@@ -429,7 +494,7 @@ const GenericServiceOptions = ({
                     
                     <div className="flex items-center gap-2 mt-3 p-2 rounded-lg" style={{ backgroundColor: 'var(--accent-tertiary)', color: 'white' }}>
                       <span className="text-lg">💡</span>
-                      <span className="text-xs"><strong>Tip:</strong> Add multiple services to save time and get better coordination!</span>
+                      <span className="text-xs"><strong>Tip:</strong> Services for better care!</span>
                     </div>
                   </div>
                 </div>
@@ -450,9 +515,6 @@ const GenericServiceOptions = ({
                         💬 Chat with Expert
                       </button>
                     </div>
-                    <p className="text-xs mt-3 opacity-75">
-                      ⚡ Response within 5 minutes • 🛡️ 100% Free
-                    </p>
                   </div>
                 </div>
 
@@ -462,7 +524,7 @@ const GenericServiceOptions = ({
                   
                   <div className="rounded-xl p-4 shadow-sm border text-center" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-color)' }}>
                     <div className="text-2xl mb-2">💬</div>
-                    <p className="italic text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>"The service was amazing. Highly professional and caring!"</p>
+                    <p className="italic text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>"The service was amazing."</p>
                     <div className="flex justify-center text-yellow-400 mb-1 text-sm">⭐⭐⭐⭐⭐</div>
                     <p className="font-semibold text-xs" style={{ color: 'var(--text-primary)' }}>- Priya S., Mumbai</p>
                   </div>
@@ -559,6 +621,171 @@ const GenericServiceOptions = ({
           </div>
         </div>
       </div>
+
+      {/* Cart Modal for showing all items */}
+      {isCartModalOpen && (
+        <div className="fixed inset-0 bg-transparent flex items-center justify-center z-[9999] p-4" onClick={() => setIsCartModalOpen(false)}>
+          <div 
+            className="rounded-3xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl border-2" 
+            onClick={(e) => e.stopPropagation()} 
+            style={{ 
+              backgroundColor: 'var(--bg-surface)', 
+              borderColor: 'var(--accent-secondary)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+            }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--accent-secondary)' }}>
+                  <span className="text-white text-xl">🛒</span>
+                </div>
+                <h3 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Your Cart</h3>
+              </div>
+              <button 
+                onClick={() => setIsCartModalOpen(false)}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-200 hover:scale-110"
+                style={{ 
+                  color: 'var(--text-secondary)',
+                  backgroundColor: 'var(--bg-primary)',
+                  border: '2px solid var(--border-color)'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="space-y-4 mb-6">
+              {globalCartItems.map((item, index) => (
+                <div 
+                  key={item.id} 
+                  className="flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-200 hover:shadow-lg" 
+                  style={{ 
+                    backgroundColor: 'var(--bg-primary)', 
+                    borderColor: 'var(--border-color)',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  <div className="relative">
+                    <img src={item.image || item.imgUrl} alt={item.name || item.title} className="w-16 h-16 rounded-xl object-cover" />
+                    <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: 'var(--accent-secondary)' }}>
+                      {index + 1}
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-1" style={{ color: 'var(--text-primary)' }}>{item.name || item.title}</h4>
+                    <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>₹{typeof item.price === 'number' ? item.price.toLocaleString() : item.price} per service</p>
+                    
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Quantity:</span>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => handleDecreaseQuantity(item.id)}
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200 hover:scale-110"
+                          style={{ 
+                            backgroundColor: 'var(--accent-secondary)', 
+                            color: 'white',
+                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                          }}
+                        >
+                          -
+                        </button>
+                        <span className="text-lg font-bold px-3 py-1 rounded-lg" style={{ 
+                          color: 'var(--text-primary)',
+                          backgroundColor: 'var(--bg-surface)',
+                          border: '2px solid var(--border-color)',
+                          minWidth: '40px',
+                          textAlign: 'center'
+                        }}>
+                          {item.quantity}
+                        </span>
+                        <button 
+                          onClick={() => handleIncreaseQuantity(item.id)}
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200 hover:scale-110"
+                          style={{ 
+                            backgroundColor: 'var(--accent-secondary)', 
+                            color: 'white',
+                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right">
+                    <p className="text-xl font-bold mb-2" style={{ color: 'var(--accent-secondary)' }}>
+                      ₹{(item.price * item.quantity).toLocaleString()}
+                    </p>
+                    <button 
+                      onClick={() => removeFromGlobalCart(item.id)}
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-200 hover:scale-110"
+                      style={{
+                        color: '#ef4444',
+                        backgroundColor: 'var(--bg-surface)',
+                        border: '2px solid #ef4444'
+                      }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-8 pt-6 border-t-2" style={{ borderColor: 'var(--accent-secondary)' }}>
+              {/* Summary Section */}
+              <div className="bg-gradient-to-r p-6 rounded-2xl mb-6" style={{ 
+                background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-primary) 100%)',
+                border: '2px solid var(--border-color)'
+              }}>
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Services: {globalCartItems.length}</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Items: {globalCartItems.reduce((sum, item) => sum + item.quantity, 0)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Grand Total</p>
+                    <p className="text-3xl font-bold" style={{ color: 'var(--accent-secondary)' }}>
+                      ₹{cartTotal.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setIsCartModalOpen(false)}
+                  className="flex-1 py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105 border-2"
+                  style={{
+                    color: 'var(--text-primary)',
+                    backgroundColor: 'var(--bg-primary)',
+                    borderColor: 'var(--border-color)'
+                  }}
+                >
+                  Continue Shopping
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsCartModalOpen(false);
+                    handleBookNow();
+                  }}
+                  className="flex-1 py-4 px-6 rounded-2xl font-bold text-lg text-white transition-all duration-300 hover:scale-105 shadow-xl"
+                  style={{
+                    background: 'linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%)',
+                    boxShadow: '0 10px 25px rgba(0, 224, 184, 0.3)'
+                  }}
+                >
+                  Book All Services 🚀
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

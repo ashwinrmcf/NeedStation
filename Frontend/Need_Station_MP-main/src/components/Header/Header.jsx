@@ -173,6 +173,11 @@ const Header = () => {
 
   const location = useLocation();
 
+  // Close profile dropdown when navigating to a different page
+  useEffect(() => {
+    setProfileDropdownOpen(false);
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <>
