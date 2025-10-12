@@ -23,8 +23,32 @@ const GenericServiceOptions = ({
   const [selectedService, setSelectedService] = useState(null);
   const [showAllCartItems, setShowAllCartItems] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [expandedCards, setExpandedCards] = useState(new Set());
+  const [isMobile, setIsMobile] = useState(false);
   const { openBookingModal } = useBookingModal();
   const { addToCart: addToGlobalCart, isInCart, cartItems: globalCartItems, removeFromCart: removeFromGlobalCart, updateQuantity: updateGlobalQuantity, cartTotal } = useCart();
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Toggle card expansion for mobile
+  const toggleCardExpansion = (serviceId) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(serviceId)) {
+      newExpanded.delete(serviceId);
+    } else {
+      newExpanded.add(serviceId);
+    }
+    setExpandedCards(newExpanded);
+  };
 
   // All 13 services for left navigation
   const allServices = [
@@ -136,7 +160,195 @@ const GenericServiceOptions = ({
     service.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const ServiceCard = ({ service, index }) => (
+  // Mobile Service Card Component
+  const MobileServiceCard = ({ service }) => {
+    const isExpanded = expandedCards.has(service.id);
+    
+    return (
+      <div className={`${styles.serviceCard} ${styles.mobileCard} relative overflow-hidden`}>
+        {/* Compact Mobile Layout */}
+        <div className="flex items-start gap-3 p-4">
+          {/* Service Image */}
+          <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+            <img
+              src={service.imgUrl}
+              alt={service.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            {/* Title and Rating */}
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex-1">
+                <h3 className="font-semibold text-base leading-tight mb-1" style={{ color: 'var(--text-primary)' }}>
+                  {service.title}
+                </h3>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <span className="flex items-center gap-1">
+                    ⭐ {service.rating}
+                  </span>
+                  <span>•</span>
+                  <span>45 mins</span>
+                </div>
+              </div>
+              <button
+                className="ml-2 p-1 rounded-full"
+                style={{ 
+                  backgroundColor: 'var(--accent-secondary)',
+                  color: 'white'
+                }}
+              >
+                Add
+              </button>
+            </div>
+            
+            {/* Price */}
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="font-bold text-lg" style={{ color: 'var(--text-primary)' }}>
+                {service.price}
+              </span>
+              {service.originalPrice && (
+                <span className="text-sm line-through" style={{ color: 'var(--text-muted)' }}>
+                  {service.originalPrice}
+                </span>
+              )}
+            </div>
+            
+            {/* Key Features (Always visible) */}
+            <div className="space-y-1 mb-3">
+              <div className="text-sm flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <span>•</span>
+                <span>{service.subtitle}</span>
+              </div>
+              <div className="text-sm flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <span>•</span>
+                <span>Professional service delivery</span>
+              </div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <button 
+                onClick={() => handleAddToCart(service)}
+                className="flex-1 py-2 px-3 text-sm font-medium border rounded-lg transition-all duration-200"
+                style={{
+                  borderColor: 'var(--accent-secondary)',
+                  color: 'var(--accent-secondary)',
+                  backgroundColor: 'transparent'
+                }}
+              >
+                Add to Cart
+              </button>
+              <button 
+                onClick={handleBookNow}
+                className="flex-1 py-2 px-3 text-sm font-semibold text-white rounded-lg transition-all duration-200"
+                style={{
+                  backgroundColor: 'var(--accent-secondary)',
+                  border: 'none'
+                }}
+              >
+                Book Now
+              </button>
+            </div>
+            
+            {/* View Details Toggle */}
+            <button
+              onClick={() => toggleCardExpansion(service.id)}
+              className="w-full mt-3 text-sm font-medium py-1"
+              style={{ color: 'var(--accent-secondary)' }}
+            >
+              {isExpanded ? 'Hide details' : 'View details'}
+            </button>
+          </div>
+        </div>
+        
+        {/* Expanded Details */}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 pb-4 border-t" style={{ borderColor: 'var(--border-color)' }}>
+                <div className="pt-4">
+                  {/* Enterprise Package Details */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>ENTERPRISE PACKAGE</h4>
+                      <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ 
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)', 
+                        color: '#22c55e' 
+                      }}>
+                        PREMIUM
+                      </span>
+                    </div>
+                    
+                    {/* Key Business Features */}
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                        <div className="flex items-center gap-1 font-medium mb-1">
+                          <span className="text-blue-600">📊</span>
+                          <span>ROI Tracking</span>
+                        </div>
+                        <div>Performance metrics</div>
+                      </div>
+                      <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                        <div className="flex items-center gap-1 font-medium mb-1">
+                          <span className="text-green-600">🛡️</span>
+                          <span>Risk Management</span>
+                        </div>
+                        <div>Compliance assured</div>
+                      </div>
+                      <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                        <div className="flex items-center gap-1 font-medium mb-1">
+                          <span className="text-purple-600">⚡</span>
+                          <span>Rapid Deployment</span>
+                        </div>
+                        <div>24-48hr setup</div>
+                      </div>
+                      <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                        <div className="flex items-center gap-1 font-medium mb-1">
+                          <span className="text-orange-600">📞</span>
+                          <span>Executive Support</span>
+                        </div>
+                        <div>Dedicated manager</div>
+                      </div>
+                    </div>
+                    
+                    {/* Business Value Proposition */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-lg border" style={{ borderColor: 'var(--border-color)' }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Business Impact:</span>
+                        <span className="text-xs px-2 py-1 rounded" style={{ 
+                          backgroundColor: 'var(--accent-secondary)', 
+                          color: 'white' 
+                        }}>
+                          Cost Reduction: 35%
+                        </span>
+                      </div>
+                      <div className="text-xs space-y-1" style={{ color: 'var(--text-secondary)' }}>
+                        <div>• Streamlined operations & reduced overhead</div>
+                        <div>• Enhanced productivity & client satisfaction</div>
+                        <div>• Scalable solution with enterprise-grade security</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  // Desktop Service Card Component (unchanged)
+  const DesktopServiceCard = ({ service }) => (
     <div 
       className={`${styles.serviceCard} relative flex flex-row overflow-hidden`}
     >
@@ -275,6 +487,11 @@ const GenericServiceOptions = ({
       </div>
     </div>
   );
+
+  // Conditional Service Card Component
+  const ServiceCard = ({ service }) => {
+    return isMobile ? <MobileServiceCard service={service} /> : <DesktopServiceCard service={service} />;
+  };
 
   return (
     <section className="py-8 pt-20" style={{ background: 'var(--bg-primary)' }}>

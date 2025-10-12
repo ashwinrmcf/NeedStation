@@ -140,6 +140,7 @@ const router = createBrowserRouter([
       {path: "/bookings", element: <MyBookings/>},
       {path: "/settings", element: <Settings/>},
       {path: "/service-modal-demo", element: <ServiceModalDemo/>},
+      {path: "/cart", element: <Cart/>},
     ],
   },
 
@@ -205,7 +206,6 @@ const router = createBrowserRouter([
   },
   { path: "/payment-gateway", element: <PaymentGateway /> },
   { path: "/available-helpers", element: <AvailableHelpers /> },
-  { path: "/cart", element: <Cart /> },
   {
     path: "/helper",
     element: <HelperLayout />,
