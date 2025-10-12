@@ -276,65 +276,43 @@ const GenericServiceOptions = ({
             >
               <div className="px-4 pb-4 border-t" style={{ borderColor: 'var(--border-color)' }}>
                 <div className="pt-4">
-                  {/* Enterprise Package Details */}
+                  {/* Service Features */}
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>ENTERPRISE PACKAGE</h4>
+                      <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{service.urgency || 'PREMIUM SERVICE'}</h4>
                       <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ 
                         backgroundColor: 'rgba(34, 197, 94, 0.1)', 
                         color: '#22c55e' 
                       }}>
-                        PREMIUM
+                        {service.discount || 'PREMIUM'}
                       </span>
                     </div>
                     
-                    {/* Key Business Features */}
+                    {/* Service Features */}
                     <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                        <div className="flex items-center gap-1 font-medium mb-1">
-                          <span className="text-blue-600">📊</span>
-                          <span>ROI Tracking</span>
+                      {service.features && service.features.slice(0, 4).map((feature, idx) => (
+                        <div key={idx} className="text-xs flex items-start gap-1" style={{ color: 'var(--text-secondary)' }}>
+                          <span className="mt-0.5">•</span>
+                          <span>{feature}</span>
                         </div>
-                        <div>Performance metrics</div>
-                      </div>
-                      <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                        <div className="flex items-center gap-1 font-medium mb-1">
-                          <span className="text-green-600">🛡️</span>
-                          <span>Risk Management</span>
-                        </div>
-                        <div>Compliance assured</div>
-                      </div>
-                      <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                        <div className="flex items-center gap-1 font-medium mb-1">
-                          <span className="text-purple-600">⚡</span>
-                          <span>Rapid Deployment</span>
-                        </div>
-                        <div>24-48hr setup</div>
-                      </div>
-                      <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                        <div className="flex items-center gap-1 font-medium mb-1">
-                          <span className="text-orange-600">📞</span>
-                          <span>Executive Support</span>
-                        </div>
-                        <div>Dedicated manager</div>
-                      </div>
+                      ))}
                     </div>
                     
-                    {/* Business Value Proposition */}
+                    {/* Why Choose This Service */}
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-lg border" style={{ borderColor: 'var(--border-color)' }}>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Business Impact:</span>
+                        <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Why Choose This?</span>
                         <span className="text-xs px-2 py-1 rounded" style={{ 
                           backgroundColor: 'var(--accent-secondary)', 
                           color: 'white' 
                         }}>
-                          Cost Reduction: 35%
+                          ⭐ {service.rating || '4.8'}/5
                         </span>
                       </div>
                       <div className="text-xs space-y-1" style={{ color: 'var(--text-secondary)' }}>
-                        <div>• Streamlined operations & reduced overhead</div>
-                        <div>• Enhanced productivity & client satisfaction</div>
-                        <div>• Scalable solution with enterprise-grade security</div>
+                        <div>• {service.guarantee || 'Certified & Background Verified'}</div>
+                        <div>• {service.availability || 'Quick Response Time'}</div>
+                        <div>• "{service.testimonial || 'Excellent service quality!'}"</div>
                       </div>
                     </div>
                   </div>
@@ -381,65 +359,43 @@ const GenericServiceOptions = ({
             {service.subtitle}
           </p>
           
-          {/* Professional Service Package */}
+          {/* Service Features */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>ENTERPRISE PACKAGE</h4>
+              <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{service.urgency || 'PREMIUM SERVICE'}</h4>
               <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ 
                 backgroundColor: 'rgba(34, 197, 94, 0.1)', 
                 color: '#22c55e' 
               }}>
-                PREMIUM
+                {service.discount || 'PREMIUM'}
               </span>
             </div>
             
-            {/* Key Business Features */}
+            {/* Service Features */}
             <div className="grid grid-cols-2 gap-2 mb-3">
-              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                <div className="flex items-center gap-1 font-medium mb-1">
-                  <span className="text-blue-600">📊</span>
-                  <span>ROI Tracking</span>
+              {service.features && service.features.slice(0, 4).map((feature, idx) => (
+                <div key={idx} className="text-xs flex items-start gap-1" style={{ color: 'var(--text-secondary)' }}>
+                  <span className="mt-0.5">•</span>
+                  <span>{feature}</span>
                 </div>
-                <div>Performance metrics</div>
-              </div>
-              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                <div className="flex items-center gap-1 font-medium mb-1">
-                  <span className="text-green-600">🛡️</span>
-                  <span>Risk Management</span>
-                </div>
-                <div>Compliance assured</div>
-              </div>
-              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                <div className="flex items-center gap-1 font-medium mb-1">
-                  <span className="text-purple-600">⚡</span>
-                  <span>Rapid Deployment</span>
-                </div>
-                <div>24-48hr setup</div>
-              </div>
-              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                <div className="flex items-center gap-1 font-medium mb-1">
-                  <span className="text-orange-600">📞</span>
-                  <span>Executive Support</span>
-                </div>
-                <div>Dedicated manager</div>
-              </div>
+              ))}
             </div>
             
-            {/* Business Value Proposition */}
+            {/* Why Choose This Service */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-lg border" style={{ borderColor: 'var(--border-color)' }}>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Business Impact:</span>
+                <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Why Choose This?</span>
                 <span className="text-xs px-2 py-1 rounded" style={{ 
                   backgroundColor: 'var(--accent-secondary)', 
                   color: 'white' 
                 }}>
-                  Cost Reduction: 35%
+                  ⭐ {service.rating || '4.8'}/5
                 </span>
               </div>
               <div className="text-xs space-y-1" style={{ color: 'var(--text-secondary)' }}>
-                <div>• Streamlined operations & reduced overhead</div>
-                <div>• Enhanced productivity & client satisfaction</div>
-                <div>• Scalable solution with enterprise-grade security</div>
+                <div>• {service.guarantee || 'Certified & Background Verified'}</div>
+                <div>• {service.availability || 'Quick Response Time'}</div>
+                <div>• "{service.testimonial || 'Excellent service quality!'}"</div>
               </div>
             </div>
           </div>

@@ -308,7 +308,7 @@ const Cards = () => {
               to={allServices[selectedService].link} 
               className={styles["heroButton"]}
             >
-              Book This Service
+              Explore Services →
             </Link>
           </div>
         </div>
