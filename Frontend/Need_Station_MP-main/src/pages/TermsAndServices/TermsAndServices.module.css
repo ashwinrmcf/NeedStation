@@ -3,8 +3,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  color: white;
-  margin-top: 26vh; /* Slightly reduced top spacing */
+  color: var(--text-primary);
+  margin-top: 12vh; /* Reduced from 26vh to bring content closer to header */
 }
 
 .termsHeader {
@@ -102,4 +102,42 @@
   .termsSection h2 {
     font-size: 1.3rem;
   }
+}
+
+@media (max-width: 480px) {
+  .termsContainer {
+    margin-top: 10vh;
+  }
+}
+
+/* Light Theme Styles */
+[data-theme="light"] .termsContainer {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .termsHeader h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .termsContent {
+  background-color: var(--bg-surface);
+  box-shadow: 0 4px 20px rgba(210, 180, 140, 0.2);
+  border: 2px solid var(--border-color);
+}
+
+[data-theme="light"] .termsSection {
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .termsSection p,
+[data-theme="light"] .bulletList li {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .termsSection strong {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .lastUpdated {
+  color: var(--text-muted);
 }

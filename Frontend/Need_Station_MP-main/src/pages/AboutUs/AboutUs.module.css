@@ -1,12 +1,12 @@
 .about-main {
   max-width: 1200px;
   margin: 0 auto;
-  margin-top: 26vh; /* Slightly reduced top spacing */
+  margin-top: 12vh; /* Reduced from 26vh to bring content closer to header */
   background: transparent;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 .container {
@@ -339,4 +339,82 @@ h3 {
   .placeholder-member-image {
     height: 200px;
   }
+  
+  .about-main {
+    margin-top: 10vh;
+  }
+}
+
+/* Light Theme Styles */
+[data-theme="light"] .about-main {
+  color: var(--text-primary);
+  box-shadow: 0 0 15px rgba(210, 180, 140, 0.2);
+}
+
+[data-theme="light"] .section-description {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .vision-text p {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .logo-container {
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 15px rgba(210, 180, 140, 0.3);
+}
+
+[data-theme="light"] .logo-image {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="light"] .services-section {
+  background: rgba(0, 0, 0, 0.02);
+  border: 2px solid var(--border-color);
+}
+
+[data-theme="light"] .service-category {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px rgba(210, 180, 140, 0.1);
+}
+
+[data-theme="light"] .service-category:hover {
+  box-shadow: 0 10px 15px rgba(210, 180, 140, 0.2);
+}
+
+[data-theme="light"] .service-list li {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .team-member {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .placeholder-member-image {
+  background-color: rgba(0, 212, 170, 0.15);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .member-info p {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .values-section {
+  background: rgba(0, 0, 0, 0.02);
+  border: 2px solid var(--border-color);
+}
+
+[data-theme="light"] .value-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .value-item:hover {
+  background: rgba(0, 212, 170, 0.08);
+}
+
+[data-theme="light"] .value-item p {
+  color: var(--text-secondary);
 }

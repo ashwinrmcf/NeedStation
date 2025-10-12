@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, ChevronDown, ChevronUp, Send } from 'lucide-react';
 import axios from 'axios';
+import './ContactUs.css';
 
 export default function ContactUs() {
   const [activeFaq, setActiveFaq] = useState(null);
@@ -78,9 +79,9 @@ export default function ContactUs() {
   ];
 
   return (
-    <div className=" text-white min-h-screen">
+    <div className="text-white min-h-screen" style={{ marginTop: '12vh' }}>
       {/* Main container */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         
         {/* Page title */}
         <div className="text-center mb-16">

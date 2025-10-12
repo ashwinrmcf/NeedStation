@@ -1,0 +1,48 @@
+/* Light Theme Styles for Contact Us Page */
+[data-theme="light"] .text-white {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .bg-gray-800 {
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .bg-gray-700 {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="light"] .border-gray-700 {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="light"] .border-gray-600 {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] textarea {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="light"] .hover\:bg-gray-800:hover {
+  background-color: rgba(0, 212, 170, 0.08) !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  [data-theme="light"] .text-white,
+  [data-theme="dark"] .text-white {
+    margin-top: 10vh !important;
+  }
+}

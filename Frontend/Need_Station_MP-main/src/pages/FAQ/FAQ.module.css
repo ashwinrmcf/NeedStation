@@ -1,9 +1,10 @@
 /* FAQ Page Styles */
 .faqContainer {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-  color: #ffffff;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  margin-top: 12vh;
 }
 
 /* Hero Section */
@@ -441,4 +442,262 @@
   .supportOptions {
     grid-template-columns: 1fr;
   }
+  
+  .faqContainer {
+    margin-top: 10vh;
+  }
+}
+
+/* Dark Theme - Match project colors */
+[data-theme="dark"] .heroTitle {
+  background: linear-gradient(135deg, #ffffff 0%, #5CE1E6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="dark"] .highlight {
+  color: #5CE1E6;
+  text-shadow: 0 0 30px rgba(92, 225, 230, 0.5);
+}
+
+[data-theme="dark"] .heroSubtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .sidebarTitle {
+  color: #5CE1E6;
+}
+
+[data-theme="dark"] .categoryBtn {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .categoryBtn:hover {
+  background: rgba(92, 225, 230, 0.1);
+  border-color: rgba(92, 225, 230, 0.3);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .categoryBtn.active {
+  background: linear-gradient(135deg, rgba(92, 225, 230, 0.2) 0%, rgba(92, 225, 230, 0.1) 100%);
+  border-color: #5CE1E6;
+  color: #5CE1E6;
+  box-shadow: 0 5px 15px rgba(92, 225, 230, 0.2);
+}
+
+[data-theme="dark"] .categoryTitle {
+  background: linear-gradient(135deg, #ffffff 0%, #5CE1E6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="dark"] .faqQuestion {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .faqQuestion.open {
+  background: rgba(92, 225, 230, 0.1);
+  color: #5CE1E6;
+}
+
+[data-theme="dark"] .toggleIcon {
+  color: #5CE1E6;
+}
+
+[data-theme="dark"] .faqAnswer {
+  background: rgba(92, 225, 230, 0.05);
+}
+
+[data-theme="dark"] .faqAnswer p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .supportTitle {
+  background: linear-gradient(135deg, #ffffff 0%, #5CE1E6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="dark"] .supportDescription {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .supportOption p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .supportOption:hover {
+  border-color: #5CE1E6;
+  box-shadow: 0 25px 50px rgba(92, 225, 230, 0.2);
+}
+
+[data-theme="dark"] .searchBtn {
+  background: linear-gradient(135deg, #5CE1E6 0%, #00D4AA 100%);
+}
+
+[data-theme="dark"] .searchBtn:hover {
+  background: linear-gradient(135deg, #00D4AA 0%, #00B4A8 100%);
+}
+
+[data-theme="dark"] .supportBtn {
+  background: linear-gradient(135deg, #5CE1E6 0%, #00D4AA 100%);
+}
+
+[data-theme="dark"] .supportBtn:hover {
+  box-shadow: 0 10px 25px rgba(92, 225, 230, 0.3);
+}
+
+/* Light Theme Styles */
+[data-theme="light"] .faqContainer {
+  background: var(--bg-primary);
+}
+
+[data-theme="light"] .heroSection {
+  background: radial-gradient(ellipse at center, rgba(0, 212, 170, 0.1) 0%, transparent 70%);
+}
+
+[data-theme="light"] .heroTitle {
+  background: linear-gradient(135deg, var(--text-primary) 0%, #00D4AA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .highlight {
+  color: #00D4AA;
+  text-shadow: 0 0 30px rgba(0, 212, 170, 0.3);
+}
+
+[data-theme="light"] .heroSubtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .searchBox {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .searchInput {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .categorySidebar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .sidebarTitle {
+  color: #00D4AA;
+}
+
+[data-theme="light"] .categoryBtn {
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .categoryBtn:hover {
+  background: rgba(0, 212, 170, 0.08);
+  border-color: rgba(0, 212, 170, 0.3);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .categoryBtn.active {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(0, 212, 170, 0.08) 100%);
+  border-color: #00D4AA;
+  color: #00D4AA;
+  box-shadow: 0 5px 15px rgba(0, 212, 170, 0.2);
+}
+
+[data-theme="light"] .categoryHeader {
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .categoryTitle {
+  background: linear-gradient(135deg, var(--text-primary) 0%, #00D4AA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .categoryDescription {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .faqItem {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .faqItem:hover {
+  border-color: rgba(0, 212, 170, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 212, 170, 0.1);
+}
+
+[data-theme="light"] .faqQuestion {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .faqQuestion:hover {
+  background: rgba(0, 212, 170, 0.05);
+}
+
+[data-theme="light"] .faqQuestion.open {
+  background: rgba(0, 212, 170, 0.1);
+  color: #00D4AA;
+}
+
+[data-theme="light"] .toggleIcon {
+  color: #00D4AA;
+}
+
+[data-theme="light"] .faqAnswer {
+  background: rgba(0, 212, 170, 0.05);
+}
+
+[data-theme="light"] .faqAnswer p {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .supportSection {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, transparent 100%);
+}
+
+[data-theme="light"] .supportTitle {
+  background: linear-gradient(135deg, var(--text-primary) 0%, #00D4AA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .supportDescription {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .supportOption {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .supportOption::before {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, transparent 100%);
+}
+
+[data-theme="light"] .supportOption:hover {
+  border-color: #00D4AA;
+  box-shadow: 0 25px 50px rgba(0, 212, 170, 0.15);
+}
+
+[data-theme="light"] .supportOption h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .supportOption p {
+  color: var(--text-secondary);
 }

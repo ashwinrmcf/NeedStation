@@ -4,8 +4,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  color: white;
-  margin-top: 26vh;
+  color: var(--text-primary);
+  margin-top: 12vh; /* Reduced from 26vh to bring content closer to header */
 }
 
 .hero {
@@ -385,4 +385,118 @@
   .contactSection {
     padding: 1.5rem;
   }
+  
+  .container {
+    margin-top: 10vh; /* Further reduced on mobile */
+  }
+}
+
+/* Light Theme Styles */
+[data-theme="light"] .container {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .title {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .subtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .content {
+  background-color: var(--bg-surface);
+  box-shadow: 0 4px 20px rgba(210, 180, 140, 0.2);
+  border: 2px solid var(--border-color);
+}
+
+[data-theme="light"] .section {
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .text,
+[data-theme="light"] .list li {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .card {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .card:hover {
+  background: rgba(0, 212, 170, 0.05);
+  border-color: var(--accent-secondary);
+}
+
+[data-theme="light"] .cardTitle,
+[data-theme="light"] .sharingTitle,
+[data-theme="light"] .securityTitle,
+[data-theme="light"] .cookieTitle {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .cardText,
+[data-theme="light"] .sharingText,
+[data-theme="light"] .securityText,
+[data-theme="light"] .rightText,
+[data-theme="light"] .cookieText {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .highlightBox {
+  background: rgba(0, 212, 170, 0.08);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+}
+
+[data-theme="light"] .highlightText {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .sharingItem {
+  background: rgba(0, 0, 0, 0.02);
+  border-left: 3px solid var(--accent-secondary);
+}
+
+[data-theme="light"] .rightItem {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .rightItem:hover {
+  border-color: var(--accent-secondary);
+  background: rgba(0, 212, 170, 0.05);
+}
+
+[data-theme="light"] .cookieType {
+  background: rgba(0, 0, 0, 0.02);
+  border-top: 3px solid var(--accent-secondary);
+}
+
+[data-theme="light"] .warningBox {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 193, 7, 0.08) 100%);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+[data-theme="light"] .warningText {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .contactSection {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .contactItem {
+  background: rgba(0, 212, 170, 0.08);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .contactItem strong {
+  color: var(--accent-secondary);
+}
+
+[data-theme="light"] .lastUpdated {
+  color: var(--text-muted);
 }
