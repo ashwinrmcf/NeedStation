@@ -26,6 +26,22 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [error, setError] = useState(null);
+  const [otpVerification, setOtpVerification] = useState({
+    isRequired: false,
+    type: '', // 'phone' or 'email'
+    phoneNumber: '',
+    email: '',
+    otp: '',
+    isVerifying: false,
+    isVerified: false
+  });
+  
+  // Track original values to detect changes
+  const [originalData, setOriginalData] = useState({
+    contactNumber: '',
+    email: ''
+  });
   const [profileData, setProfileData] = useState({
     // Personal Information
     fullName: user?.username || '',
@@ -62,7 +78,15 @@ const Profile = () => {
   const [profileImage, setProfileImage] = useState(null);
   
   // Get user ID from auth context or localStorage
-  const userId = user?.id || localStorage.getItem('userId') || null;
+  // For Google login, user ID might be stored differently
+  const userId = user?.id || user?.userId || localStorage.getItem('userId') || localStorage.getItem('userID') || null;
+  
+  // Debug: Log user data to understand structure
+  useEffect(() => {
+    console.log('🔍 Profile: User data from AuthContext:', user);
+    console.log('🔍 Profile: Available localStorage keys:', Object.keys(localStorage));
+    console.log('🔍 Profile: Detected userId:', userId);
+  }, [user, userId]);
   const [backgroundArtwork, setBackgroundArtwork] = useState(null);
   const [currentTheme, setCurrentTheme] = useState('dark');
 
@@ -262,6 +286,13 @@ const Profile = () => {
       // Check if userId is available
       if (!userId) {
         console.error('No user ID available. Please log in first.');
+        console.log('🔍 Available localStorage data:', {
+          userId: localStorage.getItem('userId'),
+          userID: localStorage.getItem('userID'),
+          user: localStorage.getItem('user'),
+          username: localStorage.getItem('username'),
+          userEmail: localStorage.getItem('userEmail')
+        });
         setError('Please log in to view your profile.');
         setLoading(false);
         return;
@@ -273,7 +304,7 @@ const Profile = () => {
         const data = await response.json();
         console.log('Loaded profile data:', data);
         
-        setProfileData({
+        const loadedData = {
           fullName: data.fullName || '',
           email: data.email || '',
           contactNumber: data.contactNumber || '',
@@ -294,6 +325,14 @@ const Profile = () => {
           totalBookings: data.totalBookings || 0,
           trustScore: data.trustScore || 4.8,
           profileImageUrl: data.profileImageUrl
+        };
+        
+        setProfileData(loadedData);
+        
+        // Store original values for change detection
+        setOriginalData({
+          contactNumber: data.contactNumber || '',
+          email: data.email || ''
         });
 
         // Set profile image if exists
@@ -316,6 +355,136 @@ const Profile = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user starts typing
+    if (error) {
+      setError(null);
+    }
+  };
+  
+  // Check if phone number exists in database
+  const checkPhoneNumberExists = async (phoneNumber) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/user/profile/check-phone/${encodeURIComponent(phoneNumber)}`);
+      const result = await response.json();
+      return result.exists;
+    } catch (error) {
+      console.error('Error checking phone number:', error);
+      return false;
+    }
+  };
+  
+  // Check if email exists in database
+  const checkEmailExists = async (email) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/user/profile/check-email/${encodeURIComponent(email)}`);
+      const result = await response.json();
+      return result.exists;
+    } catch (error) {
+      console.error('Error checking email:', error);
+      return false;
+    }
+  };
+  
+  // Initiate phone verification with OTP
+  const initiatePhoneVerification = async (phoneNumber) => {
+    try {
+      setOtpVerification(prev => ({ 
+        ...prev, 
+        isRequired: true, 
+        type: 'phone',
+        phoneNumber, 
+        isVerifying: true 
+      }));
+      
+      const response = await fetch('http://localhost:8080/api/user/profile/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setOtpVerification(prev => ({ ...prev, isVerifying: false }));
+        alert('OTP sent to your phone number. Please verify to continue.');
+      } else {
+        throw new Error(result.message || 'Failed to send OTP');
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      setError('Failed to send OTP. Please try again.');
+      setOtpVerification(prev => ({ ...prev, isRequired: false, isVerifying: false }));
+    }
+  };
+  
+  // Initiate email verification with OTP
+  const initiateEmailVerification = async (email) => {
+    try {
+      setOtpVerification(prev => ({ 
+        ...prev, 
+        isRequired: true, 
+        type: 'email',
+        email, 
+        isVerifying: true 
+      }));
+      
+      const response = await fetch('http://localhost:8080/api/user/profile/send-email-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setOtpVerification(prev => ({ ...prev, isVerifying: false }));
+        alert('OTP sent to your email address. Please verify to continue.');
+      } else {
+        throw new Error(result.message || 'Failed to send OTP');
+      }
+    } catch (error) {
+      console.error('Error sending email OTP:', error);
+      setError('Failed to send email OTP. Please try again.');
+      setOtpVerification(prev => ({ ...prev, isRequired: false, isVerifying: false }));
+    }
+  };
+  
+  // Verify OTP
+  const verifyOtp = async () => {
+    try {
+      setOtpVerification(prev => ({ ...prev, isVerifying: true }));
+      
+      const endpoint = otpVerification.type === 'email' ? 
+        'http://localhost:8080/api/user/profile/verify-email-otp' : 
+        'http://localhost:8080/api/user/profile/verify-otp';
+      
+      const requestBody = otpVerification.type === 'email' ? 
+        { email: otpVerification.email, otp: otpVerification.otp } :
+        { phoneNumber: otpVerification.phoneNumber, otp: otpVerification.otp };
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setOtpVerification(prev => ({ ...prev, isVerified: true, isVerifying: false, isRequired: false }));
+        const verifiedType = otpVerification.type === 'email' ? 'Email' : 'Phone number';
+        alert(`${verifiedType} verified successfully!`);
+        // Continue with profile save
+        handleSave();
+      } else {
+        throw new Error(result.message || 'Invalid OTP');
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setError('Invalid OTP. Please try again.');
+      setOtpVerification(prev => ({ ...prev, isVerifying: false }));
+    }
   };
 
   const handleSave = async () => {
@@ -328,6 +497,44 @@ const Profile = () => {
         setError('Please log in to save your profile.');
         setSaving(false);
         return;
+      }
+      
+      // Check if phone number or email changed and requires verification
+      const phoneChanged = originalData.contactNumber !== profileData.contactNumber && profileData.contactNumber;
+      const emailChanged = originalData.email !== profileData.email && profileData.email;
+      
+      if (phoneChanged) {
+        // Check if phone number exists in database
+        const phoneExists = await checkPhoneNumberExists(profileData.contactNumber);
+        if (phoneExists) {
+          setError('This phone number is already registered with another account.');
+          setSaving(false);
+          return;
+        }
+        
+        // Require OTP verification for phone number change
+        if (!otpVerification.isVerified || otpVerification.type !== 'phone') {
+          await initiatePhoneVerification(profileData.contactNumber);
+          setSaving(false);
+          return;
+        }
+      }
+      
+      if (emailChanged) {
+        // Check if email exists in database
+        const emailExists = await checkEmailExists(profileData.email);
+        if (emailExists) {
+          setError('This email address is already registered with another account.');
+          setSaving(false);
+          return;
+        }
+        
+        // Require OTP verification for email change
+        if (!otpVerification.isVerified || otpVerification.type !== 'email') {
+          await initiateEmailVerification(profileData.email);
+          setSaving(false);
+          return;
+        }
       }
       
       // Step 1: Upload image if selected
@@ -450,9 +657,55 @@ const Profile = () => {
       </div>
     );
   }
+  
+  // Show OTP verification modal
+  if (otpVerification.isRequired) {
+    return (
+      <div className={styles.profileContainer}>
+        <div className={styles.otpModal}>
+          <div className={styles.otpContent}>
+            <h2>Verify {otpVerification.type === 'email' ? 'Email Address' : 'Phone Number'}</h2>
+            <p>We've sent an OTP to {otpVerification.type === 'email' ? otpVerification.email : otpVerification.phoneNumber}</p>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otpVerification.otp}
+              onChange={(e) => setOtpVerification(prev => ({ ...prev, otp: e.target.value }))}
+              className={styles.otpInput}
+              maxLength={6}
+            />
+            {error && <div className={styles.errorMessage}>{error}</div>}
+            <div className={styles.otpActions}>
+              <button 
+                onClick={verifyOtp} 
+                disabled={otpVerification.isVerifying || !otpVerification.otp}
+                className={styles.verifyButton}
+              >
+                {otpVerification.isVerifying ? 'Verifying...' : 'Verify OTP'}
+              </button>
+              <button 
+                onClick={() => setOtpVerification({ isRequired: false, type: '', phoneNumber: '', email: '', otp: '', isVerifying: false, isVerified: false })}
+                className={styles.cancelButton}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.profileContainer}>
+      {/* Error Display */}
+      {error && (
+        <div className={styles.errorBanner}>
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className={styles.closeError}>×</button>
+        </div>
+      )}
+      
       {/* Header Section */}
       <div className={styles.profileHeader}>
         <div 

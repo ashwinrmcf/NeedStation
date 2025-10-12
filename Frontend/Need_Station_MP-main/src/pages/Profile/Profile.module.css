@@ -1,3 +1,139 @@
+/* Error Display Styles */
+.errorBanner {
+  position: fixed;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff4757;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+.closeError {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.closeError:hover {
+  opacity: 0.8;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* OTP Modal Styles */
+.otpModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.otpContent {
+  background: var(--bg-surface);
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.otpContent h2 {
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.otpContent p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.otpInput {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1.2rem;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-bottom: 15px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.otpInput:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 224, 184, 0.1);
+}
+
+.otpActions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.verifyButton {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.verifyButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.verifyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  background: rgba(255, 71, 87, 0.1);
+  color: #ff4757;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 71, 87, 0.2);
+}
+
 /* Loading Styles */
 .loadingContainer {
   display: flex;
@@ -20,6 +156,23 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Responsive OTP Modal */
+@media (max-width: 480px) {
+  .otpContent {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .otpActions {
+    flex-direction: column;
+  }
+  
+  .verifyButton,
+  .cancelButton {
+    width: 100%;
+  }
 }
 
 .loadingContainer p {
