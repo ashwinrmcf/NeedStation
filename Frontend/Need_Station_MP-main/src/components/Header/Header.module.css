@@ -31,23 +31,29 @@
   border: 1px solid rgba(0, 224, 184, 0.3);
 }
 
-/* Hide mobile menu button on desktop */
-.mobileMenuButton {
-  display: none;
+/* Hide mobile menu button on desktop (but show on Nest Hub) */
+@media (min-width: 1025px), (min-width: 796px) and (max-height: 599px), (min-width: 796px) and (min-height: 801px) {
+  .mobileMenuButton {
+    display: none;
+  }
 }
 
-/* Hide services icon on desktop */
-.servicesIconLink {
-  display: none;
+/* Hide services icon on desktop (but show on Nest Hub) */
+@media (min-width: 1025px), (min-width: 796px) and (max-height: 599px), (min-width: 796px) and (min-height: 801px) {
+  .servicesIconLink {
+    display: none;
+  }
 }
 
-/* Hide worker container on desktop */
-.workerContainer {
-  display: none;
+/* Hide worker container on desktop (but show on Nest Hub) */
+@media (min-width: 1025px), (min-width: 796px) and (max-height: 599px), (min-width: 796px) and (min-height: 801px) {
+  .workerContainer {
+    display: none;
+  }
 }
 
-/* Hide mobile dropdowns on desktop */
-@media (min-width: 796px) {
+/* Hide mobile dropdowns on desktop (excluding Nest Hub range) */
+@media (min-width: 1025px), (min-width: 796px) and (max-height: 599px), (min-width: 796px) and (min-height: 801px) {
   .workerDropdown {
     display: none !important;
   }
@@ -57,6 +63,330 @@
   }
 }
 
+
+/* Nest Hub specific styles - Show mobile-style icons */
+@media (min-width: 796px) and (max-width: 1024px) and (min-height: 600px) and (max-height: 800px) {
+  .headerContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .header {
+    width: 100%;
+    min-height: 70px;
+    max-height: 70px;
+    padding: 0 20px;
+    margin: 0;
+    border-radius: 0;
+    background: var(--bg-primary);
+    border: none;
+    backdrop-filter: none;
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    box-shadow: none;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header:hover {
+    box-shadow: none;
+    border: none;
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .navLinks {
+    display: none; /* Hide nav links on Nest Hub, use mobile-style icons */
+  }
+
+  .authButtons {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    margin: 0;
+    align-items: center;
+  }
+
+  .authButtons .login,
+  .authButtons .signup {
+    display: none; /* Hide auth buttons, use mobile menu */
+  }
+
+  .becomeTasker {
+    display: none; /* Hide on Nest Hub to save space */
+  }
+
+  .userProfileContainer {
+    gap: 8px;
+  }
+
+  .userName {
+    display: none; /* Hide username on Nest Hub */
+  }
+
+  .userAvatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .letterAvatar {
+    font-size: 16px;
+  }
+
+  .userDropdown {
+    width: 220px;
+    right: 0;
+    top: calc(100% + 8px);
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+  }
+
+  .notificationButton {
+    padding: 8px;
+  }
+
+  .cartButton {
+    padding: 8px;
+  }
+
+  /* Show mobile menu button on Nest Hub */
+  .mobileMenuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+
+  .mobileMenuButton:hover {
+    background-color: var(--bg-hover);
+  }
+
+  /* Show services icon on Nest Hub */
+  .servicesIconLink {
+    display: flex;
+  }
+
+  .servicesIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .servicesIcon:hover {
+    background-color: var(--bg-hover);
+    color: var(--accent-tertiary);
+  }
+
+  .servicesIcon:active {
+    transform: scale(0.95);
+  }
+
+  /* Show worker container on Nest Hub */
+  .workerContainer {
+    display: flex;
+    position: relative;
+  }
+
+  .workerIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .workerIcon:hover {
+    background-color: var(--bg-hover);
+    color: var(--accent-tertiary);
+  }
+
+  .workerIcon:active {
+    transform: scale(0.95);
+  }
+
+  /* Show worker dropdown on Nest Hub */
+  .workerDropdown {
+    display: block !important;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    min-width: 200px;
+    padding: 8px;
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+  }
+
+  .workerDropdownItem {
+    display: block;
+    padding: 14px 18px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .workerDropdownItem:last-child {
+    margin-bottom: 0;
+  }
+
+  .workerDropdownItem:hover {
+    background-color: var(--bg-hover);
+    color: var(--accent-tertiary);
+    transform: translateX(2px);
+  }
+
+  /* Mobile menu overlay for Nest Hub */
+  .mobileMenuOverlay {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+  }
+
+  .mobileMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    padding: 24px;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .mobileNavLinks {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .mobileNavLinks a,
+  .mobileNavLinks button {
+    padding: 14px 18px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 400;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .mobileNavLinks a:hover,
+  .mobileNavLinks button:hover {
+    background-color: var(--bg-hover);
+    color: var(--accent-tertiary);
+  }
+
+  .mobileAuthButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .mobileAuthButtons .login,
+  .mobileAuthButtons .signup,
+  .mobileTaskerContainer .becomeTasker {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .mobileAuthButtons .login {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+  }
+
+  .mobileAuthButtons .login:hover {
+    background: var(--bg-hover);
+  }
+
+  .mobileAuthButtons .signup {
+    background: var(--accent-tertiary);
+    color: white;
+  }
+
+  .mobileAuthButtons .signup:hover {
+    background: var(--accent-secondary);
+  }
+
+  .mobileTaskerContainer .becomeTasker {
+    background: linear-gradient(135deg, #00c8ff, #00CED1);
+    color: white;
+    font-weight: 600;
+  }
+
+  .mobileTaskerContainer .becomeTasker:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 200, 255, 0.3);
+  }
+}
 
 /* Mobile-First Business Header Design */
 @media (max-width: 795px) {
@@ -403,6 +733,13 @@
 @media (max-width: 795px) {
   body {
     padding-top: 60px;
+  }
+}
+
+/* Ensure body has top margin for fixed header on Nest Hub */
+@media (min-width: 796px) and (max-width: 1024px) and (min-height: 600px) and (max-height: 800px) {
+  body {
+    padding-top: 70px;
   }
 }
 
