@@ -322,7 +322,7 @@ export default function SkillVerificationPage({ data, updateForm, prev, next, wo
                     type="button"
                     onClick={sendAadharOtp}
                     disabled={aadharOtpLoading || formData.aadharNumber.length !== 12}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 disabled:bg-gray-600 disabled:cursor-not-allowed"
                   >
                     {aadharOtpLoading ? 'Sending...' : 'Send OTP'}
                   </button>

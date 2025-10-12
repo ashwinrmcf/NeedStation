@@ -91,3 +91,43 @@ main {
 .custom-carousel {
   margin-top: 40px !important;
 }
+
+/* Light mode form inputs - Override Tailwind dark classes */
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="email"],
+[data-theme="light"] input[type="tel"],
+[data-theme="light"] input[type="number"],
+[data-theme="light"] input[type="date"],
+[data-theme="light"] input[type="password"],
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background-color: #FFFFFF !important;
+  color: #1A1D29 !important;
+  border-color: #E0E0E0 !important;
+}
+
+[data-theme="light"] input[type="text"]:focus,
+[data-theme="light"] input[type="email"]:focus,
+[data-theme="light"] input[type="tel"]:focus,
+[data-theme="light"] input[type="number"]:focus,
+[data-theme="light"] input[type="date"]:focus,
+[data-theme="light"] input[type="password"]:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] textarea:focus {
+  border-color: #00E0B8 !important;
+  outline: none !important;
+}
+
+/* Override Tailwind bg-gray classes in light mode */
+[data-theme="light"] .bg-gray-900,
+[data-theme="light"] .bg-gray-800,
+[data-theme="light"] .bg-gray-700 {
+  background-color: #FFFFFF !important;
+  color: #1A1D29 !important;
+}
+
+/* Override Tailwind border-gray classes in light mode */
+[data-theme="light"] .border-gray-700,
+[data-theme="light"] .border-gray-600 {
+  border-color: #E0E0E0 !important;
+}

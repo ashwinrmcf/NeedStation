@@ -669,7 +669,7 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
                 type="button" 
                 onClick={generateOtp}
                 disabled={!data.phone || data.phone.length !== 10 || otpLoading}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${!data.phone || data.phone.length !== 10 || otpLoading ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${!data.phone || data.phone.length !== 10 || otpLoading ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600 text-white'}`}
               >
                 {otpLoading ? (
                   <span className="flex items-center">

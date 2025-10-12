@@ -58,19 +58,33 @@ input, select, textarea {
   transition: border-color 0.3s;
 }
 
-/* Light mode styles */
+/* Light mode styles - Override Tailwind dark classes */
 [data-theme="light"] input,
 [data-theme="light"] select,
 [data-theme="light"] textarea {
-  background-color: #FFFFFF;
-  color: #1A1D29;
-  border: 2px solid #E0E0E0;
+  background-color: #FFFFFF !important;
+  color: #1A1D29 !important;
+  border: 2px solid #E0E0E0 !important;
 }
 
 [data-theme="light"] input:focus,
 [data-theme="light"] select:focus,
 [data-theme="light"] textarea:focus {
-  border-color: #00E0B8;
+  border-color: #00E0B8 !important;
+}
+
+/* Override specific Tailwind bg-gray classes in light mode */
+[data-theme="light"] .bg-gray-900,
+[data-theme="light"] .bg-gray-800,
+[data-theme="light"] .bg-gray-700 {
+  background-color: #FFFFFF !important;
+  color: #1A1D29 !important;
+}
+
+/* Border colors in light mode */
+[data-theme="light"] .border-gray-700,
+[data-theme="light"] .border-gray-600 {
+  border-color: #E0E0E0 !important;
 }
 
 input:focus, select:focus, textarea:focus {
