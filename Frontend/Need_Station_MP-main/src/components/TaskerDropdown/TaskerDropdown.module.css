@@ -1,3 +1,4 @@
+/* Base styles for dropdown */
 .taskerDropdown {
   position: absolute;
   top: calc(100% + 10px);
@@ -7,6 +8,7 @@
   filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3));
 }
 
+/* Dark Theme Styles (Default) */
 .dropdownArrow {
   position: absolute;
   top: -8px;
@@ -81,4 +83,45 @@
 
 .dropdownItem:hover svg {
   transform: translateX(3px);
+}
+
+/* Light Theme Styles */
+[data-theme="light"] .dropdownArrow {
+  background: #F8E8C8;
+  border-top: 2px solid #00D4AA;
+  border-left: 2px solid #00D4AA;
+}
+
+[data-theme="light"] .dropdownContent {
+  background: #F8E8C8;
+  border: 2px solid #00D4AA;
+}
+
+[data-theme="light"] .dropdownHeader {
+  background: #F5DEB3;
+  color: #00D4AA;
+  border-bottom: 1px solid rgba(0, 212, 170, 0.3);
+}
+
+[data-theme="light"] .dropdownDivider {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .dropdownItem {
+  color: #0F172A;
+}
+
+[data-theme="light"] .dropdownItem:hover {
+  background: rgba(0, 212, 170, 0.15);
+  color: #00D4AA;
+}
+
+[data-theme="light"] .highlighted {
+  background: rgba(0, 212, 170, 0.08);
+  border-top: 1px solid rgba(0, 212, 170, 0.25);
+  border-bottom: 1px solid rgba(0, 212, 170, 0.25);
+}
+
+[data-theme="light"] .highlighted:hover {
+  background: rgba(0, 212, 170, 0.2);
 }

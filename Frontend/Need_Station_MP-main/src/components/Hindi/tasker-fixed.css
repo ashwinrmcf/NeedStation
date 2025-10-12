@@ -8,6 +8,7 @@
   font-family: 'Poppins', sans-serif !important;
 }
 
+/* Dark Theme Styles (Default) */
 .hindiTaskerFixed .dropdown-arrow {
   position: absolute !important;
   top: -8px !important;
@@ -78,4 +79,46 @@
 
 .hindiTaskerFixed .highlighted:hover {
   background: rgba(0, 206, 209, 0.15) !important;
+}
+
+/* Light Theme Styles */
+[data-theme="light"] .hindiTaskerFixed .dropdown-arrow {
+  background: #F8E8C8 !important;
+  border-top: 2px solid #00D4AA !important;
+  border-left: 2px solid #00D4AA !important;
+}
+
+[data-theme="light"] .hindiTaskerFixed .dropdown-content {
+  background: #F8E8C8 !important;
+  border: 2px solid #00D4AA !important;
+}
+
+[data-theme="light"] .hindiTaskerFixed .dropdown-header {
+  background: #F5DEB3 !important;
+  color: #00D4AA !important;
+  border-bottom: 1px solid rgba(0, 212, 170, 0.3) !important;
+}
+
+[data-theme="light"] .hindiTaskerFixed .dropdown-divider {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .hindiTaskerFixed .dropdown-item {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .hindiTaskerFixed .dropdown-item:hover {
+  background: rgba(0, 212, 170, 0.15) !important;
+  color: #00D4AA !important;
+}
+
+[data-theme="light"] .hindiTaskerFixed .highlighted {
+  background: rgba(0, 212, 170, 0.08) !important;
+  border-top: 1px solid rgba(0, 212, 170, 0.25) !important;
+  border-bottom: 1px solid rgba(0, 212, 170, 0.25) !important;
+  color: #00D4AA !important;
+}
+
+[data-theme="light"] .hindiTaskerFixed .highlighted:hover {
+  background: rgba(0, 212, 170, 0.2) !important;
 }

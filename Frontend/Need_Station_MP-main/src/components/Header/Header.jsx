@@ -246,12 +246,6 @@ const Header = () => {
                   )}
                 </Link>
                 
-                {/* Notification Bell */}
-                <button className={styles.notificationButton}>
-                  <FaBell size={16} />
-                  <div className={styles.notificationDot}></div>
-                </button>
-                
                 {/* User Profile Dropdown */}
                 <div className={styles.userProfile} ref={profileDropdownRef}>
                   <button 
@@ -298,6 +292,11 @@ const Header = () => {
                       <Link to="/bookings" className={styles.profileLink}>
                         <FaHistory size={14} style={{ marginRight: '8px' }} />
                         My Bookings
+                      </Link>
+                      <Link to="/notifications" className={styles.profileLink}>
+                        <FaBell size={14} style={{ marginRight: '8px' }} />
+                        Notifications
+                        <div className={styles.notificationDot}></div>
                       </Link>
                       <Link to="/settings" className={styles.profileLink}>
                         <FaCog size={14} style={{ marginRight: '8px' }} />

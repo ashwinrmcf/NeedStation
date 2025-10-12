@@ -1,3 +1,4 @@
+/* Dark Theme Styles (Default) */
 .overlay {
   position: fixed;
   top: 0;
@@ -86,4 +87,51 @@
 .highlighted:hover {
   background-color: rgba(0, 206, 209, 0.15);
   color: #00ced1;
+}
+
+/* Light Theme Styles */
+[data-theme="light"] .overlay {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .overlay-dropdown {
+  background-color: #F8E8C8;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(210, 180, 140, 0.3);
+}
+
+[data-theme="light"] .overlay-header {
+  background-color: #F5DEB3;
+  color: #0F172A;
+}
+
+[data-theme="light"] .close-button {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] .close-button:hover {
+  color: #0F172A;
+}
+
+[data-theme="light"] .divider {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .dropdown-link {
+  color: #0F172A;
+}
+
+[data-theme="light"] .dropdown-link:hover {
+  background-color: rgba(0, 212, 170, 0.15);
+  color: #00D4AA;
+}
+
+[data-theme="light"] .highlighted {
+  background-color: rgba(0, 212, 170, 0.08);
+  color: #00D4AA;
+}
+
+[data-theme="light"] .highlighted:hover {
+  background-color: rgba(0, 212, 170, 0.2);
+  color: #00D4AA;
 }

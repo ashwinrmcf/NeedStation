@@ -719,6 +719,7 @@
 
 /* Override container spacing for translation center */
 .translationContainer {
+  margin-top: 12vh !important; /* Reduced from 32vh to bring content closer to header */
   padding-top: 0.5rem !important;
 }
 
@@ -731,6 +732,7 @@
   }
   
   .translationContainer {
+    margin-top: 10vh !important; /* Reduced spacing on mobile */
     padding-top: 0.25rem !important;
   }
 }

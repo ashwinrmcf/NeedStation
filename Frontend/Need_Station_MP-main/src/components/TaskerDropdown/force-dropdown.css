@@ -31,12 +31,19 @@ html[lang="hi"] .taskerContainer .dropdownArrow {
   display: block !important;
 }
 
-/* Custom styling for the dropdown in Hindi */
+/* Custom styling for the dropdown in Hindi - Dark Theme */
 html[lang="hi"] .taskerContainer .dropdownContent {
   background: #121212 !important;
   border: 2px solid #00ced1 !important;
   border-radius: 8px !important;
   overflow: hidden !important;
+}
+
+/* Custom styling for the dropdown in Hindi - Light Theme */
+html[lang="hi"][data-theme="light"] .taskerContainer .dropdownContent,
+html[data-theme="light"][lang="hi"] .taskerContainer .dropdownContent {
+  background: #F8E8C8 !important;
+  border: 2px solid #00D4AA !important;
 }
 
 /* Ensure dropdown items are visible in Hindi mode */
