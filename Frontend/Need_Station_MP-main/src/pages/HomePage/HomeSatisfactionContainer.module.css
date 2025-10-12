@@ -61,8 +61,8 @@
   transition: color 0.3s ease;
 }
 
-/* Mobile Responsive */
-@media screen and (max-width: 768px) {
+/* Mobile and Tablet Responsive (iPad Mini, Air, Pro) */
+@media screen and (max-width: 1024px) {
   .satisfaction-container {
     padding: 40px 15px;
     margin-top: 20px;

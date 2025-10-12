@@ -21,7 +21,7 @@ import lightArtwork1 from '../../assets/images/Profile Artwork/Light Theme/1 (1)
 import lightArtwork2 from '../../assets/images/Profile Artwork/Light Theme/2 (1).png';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -77,16 +77,45 @@ const Profile = () => {
 
   const [profileImage, setProfileImage] = useState(null);
   
-  // Get user ID from auth context or localStorage
-  // For Google login, user ID might be stored differently
-  const userId = user?.id || user?.userId || localStorage.getItem('userId') || localStorage.getItem('userID') || null;
+  // Get user ID from auth context or localStorage with multiple fallbacks
+  const getUserId = () => {
+    // Try to get from user object first
+    if (user?.id) return user.id;
+    if (user?.userId) return user.userId;
+    
+    // Try localStorage
+    const localUserId = localStorage.getItem('userId');
+    if (localUserId) return localUserId;
+    
+    const localUserID = localStorage.getItem('userID');
+    if (localUserID) return localUserID;
+    
+    // Try to parse from stored user object
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.id) return parsedUser.id;
+        if (parsedUser.userId) return parsedUser.userId;
+      }
+    } catch (e) {
+      console.error('Error parsing stored user:', e);
+    }
+    
+    return null;
+  };
+  
+  const userId = getUserId();
   
   // Debug: Log user data to understand structure
   useEffect(() => {
     console.log('🔍 Profile: User data from AuthContext:', user);
     console.log('🔍 Profile: Available localStorage keys:', Object.keys(localStorage));
+    console.log('🔍 Profile: localStorage userId:', localStorage.getItem('userId'));
+    console.log('🔍 Profile: localStorage user:', localStorage.getItem('user'));
     console.log('🔍 Profile: Detected userId:', userId);
-  }, [user, userId]);
+    console.log('🔍 Profile: isAuthenticated:', isAuthenticated);
+  }, [user, userId, isAuthenticated]);
   const [backgroundArtwork, setBackgroundArtwork] = useState(null);
   const [currentTheme, setCurrentTheme] = useState('dark');
 
@@ -276,12 +305,21 @@ const Profile = () => {
 
   // Load profile data from backend on component mount
   useEffect(() => {
-    loadProfileData();
-  }, [userId]);
+    // Wait for auth to finish loading before checking userId
+    if (!authLoading) {
+      loadProfileData();
+    }
+  }, [userId, authLoading]);
 
   const loadProfileData = async () => {
     try {
       setLoading(true);
+      
+      // Wait for auth loading to complete
+      if (authLoading) {
+        console.log('⏳ Profile: Waiting for authentication to complete...');
+        return;
+      }
       
       // Check if userId is available
       if (!userId) {
@@ -291,7 +329,8 @@ const Profile = () => {
           userID: localStorage.getItem('userID'),
           user: localStorage.getItem('user'),
           username: localStorage.getItem('username'),
-          userEmail: localStorage.getItem('userEmail')
+          userEmail: localStorage.getItem('userEmail'),
+          isAuthenticated: isAuthenticated
         });
         setError('Please log in to view your profile.');
         setLoading(false);
@@ -491,13 +530,34 @@ const Profile = () => {
     try {
       setSaving(true);
       
+      // Debug: Log all available user data
+      console.log('🔍 handleSave - Checking userId:', {
+        userId,
+        user,
+        isAuthenticated,
+        authLoading,
+        localStorageUserId: localStorage.getItem('userId'),
+        localStorageUser: localStorage.getItem('user')
+      });
+      
       // Check if userId is available
       if (!userId) {
-        console.error('No user ID available. Please log in first.');
-        setError('Please log in to save your profile.');
+        console.error('❌ No user ID available. Please log in first.');
+        console.error('Available data:', {
+          user,
+          isAuthenticated,
+          localStorage: {
+            userId: localStorage.getItem('userId'),
+            user: localStorage.getItem('user'),
+            username: localStorage.getItem('username')
+          }
+        });
+        setError('Please log in to save your profile. User ID not found.');
         setSaving(false);
         return;
       }
+      
+      console.log('✅ UserId found:', userId);
       
       // Check if phone number or email changed and requires verification
       const phoneChanged = originalData.contactNumber !== profileData.contactNumber && profileData.contactNumber;
@@ -646,13 +706,13 @@ const Profile = () => {
     }
   };
 
-  // Show loading screen while data is being loaded
-  if (loading) {
+  // Show loading screen while auth or data is being loaded
+  if (authLoading || loading) {
     return (
       <div className={styles.profileContainer}>
         <div className={styles.loadingContainer}>
           <div className={styles.loadingSpinner}></div>
-          <p>Loading your profile...</p>
+          <p>{authLoading ? 'Restoring your session...' : 'Loading your profile...'}</p>
         </div>
       </div>
     );

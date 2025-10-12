@@ -14,6 +14,16 @@
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* Lighter footer in dark mode */
+:root .footer {
+  background: rgba(28, 31, 40, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .footer {
+  background: var(--bg-secondary);
+}
+
 /* Top Section: Logo, Links, Contact - aligned in a row */
 .footer-top {
   display: flex;

@@ -4,6 +4,44 @@
   padding-top: 120px;
 }
 
+/* Dark mode adjustments for better visibility */
+:root .bookingsContainer {
+  background: linear-gradient(to bottom, #0a1628 0%, #00071A 100%);
+}
+
+[data-theme="light"] .bookingsContainer {
+  background: var(--bg-primary);
+}
+
+/* Lighter cards in dark mode - matching Profile page */
+:root .statCard {
+  background: rgba(28, 31, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+:root .bookingCard {
+  background: rgba(28, 31, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+:root .tabsContainer {
+  background: rgba(28, 31, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+:root .searchInput {
+  background: rgba(28, 31, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+:root .modal {
+  background: rgba(28, 31, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}
+
 .bookingsHeader {
   background: linear-gradient(135deg, 
     rgba(0, 224, 184, 0.1) 0%, 

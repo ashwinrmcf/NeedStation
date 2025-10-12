@@ -31,29 +31,29 @@
   border: 1px solid rgba(0, 224, 184, 0.3);
 }
 
-/* Hide mobile menu button on desktop (but show on Nest Hub) */
-@media (min-width: 1025px), (min-width: 796px) and (max-height: 599px), (min-width: 796px) and (min-height: 801px) {
+/* Hide mobile menu button on desktop only (show on tablets and mobile) */
+@media (min-width: 1025px) {
   .mobileMenuButton {
     display: none;
   }
 }
 
-/* Hide services icon on desktop (but show on Nest Hub) */
-@media (min-width: 1025px), (min-width: 796px) and (max-height: 599px), (min-width: 796px) and (min-height: 801px) {
+/* Hide services icon on desktop only (show on tablets and mobile) */
+@media (min-width: 1025px) {
   .servicesIconLink {
     display: none;
   }
 }
 
-/* Hide worker container on desktop (but show on Nest Hub) */
-@media (min-width: 1025px), (min-width: 796px) and (max-height: 599px), (min-width: 796px) and (min-height: 801px) {
+/* Hide worker container on desktop only (show on tablets and mobile) */
+@media (min-width: 1025px) {
   .workerContainer {
     display: none;
   }
 }
 
-/* Hide mobile dropdowns on desktop (excluding Nest Hub range) */
-@media (min-width: 1025px), (min-width: 796px) and (max-height: 599px), (min-width: 796px) and (min-height: 801px) {
+/* Hide mobile dropdowns on desktop only */
+@media (min-width: 1025px) {
   .workerDropdown {
     display: none !important;
   }
@@ -388,8 +388,8 @@
   }
 }
 
-/* Mobile-First Business Header Design */
-@media (max-width: 795px) {
+/* Mobile and Tablet Header Design */
+@media (max-width: 1024px) {
   .headerContainer {
     position: fixed;
     top: 0;
@@ -729,8 +729,8 @@
   }
 }
 
-/* Ensure body has top margin for fixed header */
-@media (max-width: 795px) {
+/* Ensure body has top margin for fixed header on mobile and tablets */
+@media (max-width: 1024px) {
   body {
     padding-top: 60px;
   }

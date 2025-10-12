@@ -112,8 +112,8 @@
   transition: color 0.3s ease;
 }
 
-/* Mobile Responsive */
-@media screen and (max-width: 768px) {
+/* Mobile and Tablet Responsive (iPad Mini, Air, Pro) */
+@media screen and (max-width: 1024px) {
   .review-section {
     width: 90%;
     padding-top: 40px;

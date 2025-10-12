@@ -4,6 +4,43 @@
   padding-top: 120px;
 }
 
+/* Dark mode adjustments for better visibility */
+:root .settingsContainer {
+  background: linear-gradient(to bottom, #0a1628 0%, #00071A 100%);
+}
+
+[data-theme="light"] .settingsContainer {
+  background: var(--bg-primary);
+}
+
+/* Lighter cards and panels in dark mode - matching Profile page */
+:root .settingsSidebar {
+  background: rgba(28, 31, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+:root .settingsGroup {
+  background: rgba(28, 31, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+:root .selectInput {
+  background: rgba(28, 31, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+:root .appInfo {
+  background: rgba(28, 31, 40, 0.8);
+}
+
+:root .confirmModal {
+  background: rgba(28, 31, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}
+
 .settingsLayout {
   display: flex;
   max-width: 1400px;

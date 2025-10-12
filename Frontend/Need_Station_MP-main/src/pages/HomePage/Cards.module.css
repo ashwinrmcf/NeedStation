@@ -529,7 +529,8 @@
   }
 }
 
-@media screen and (max-width: 768px) {
+/* iPad Mini, iPad Air, iPad Pro - All use mobile layout */
+@media screen and (max-width: 1024px) {
   .card{
     margin-bottom: 20px;
   }
@@ -572,6 +573,11 @@
     max-height: 400px;
     padding: 20px;
     margin-bottom: 20px;
+  }
+  
+  .gridTitle {
+    text-align: center;
+    margin-bottom: 16px;
   }
   
   .spotlightImageSection {

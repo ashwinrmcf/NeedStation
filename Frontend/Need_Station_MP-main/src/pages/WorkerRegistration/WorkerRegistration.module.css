@@ -28,6 +28,11 @@ h2 {
   background: #00071A;
 }
 
+[data-theme="light"] .option {
+  background: #FFFFFF;
+  color: #1A1D29;
+}
+
 .form-section h3 {
   color: #FFFFFF;
   margin-bottom: 10px;
@@ -51,6 +56,21 @@ input, select, textarea {
   border: 2px solid #ddd;
   border-radius: 4px;
   transition: border-color 0.3s;
+}
+
+/* Light mode styles */
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background-color: #FFFFFF;
+  color: #1A1D29;
+  border: 2px solid #E0E0E0;
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] textarea:focus {
+  border-color: #00E0B8;
 }
 
 input:focus, select:focus, textarea:focus {

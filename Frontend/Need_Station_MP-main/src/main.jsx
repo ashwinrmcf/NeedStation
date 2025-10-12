@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./routes/App.jsx";
 import HindiApp from "./routes/HindiApp.jsx";
 import { AuthProvider } from "./store/AuthContext.jsx";
+import AuthLoader from "./components/AuthLoader.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import "./index.css";
 import "./i18n/i18n.js";
@@ -245,7 +246,9 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ErrorBoundary>
       <AuthProvider>
-        <RouterProvider router={router} />
+        <AuthLoader>
+          <RouterProvider router={router} />
+        </AuthLoader>
       </AuthProvider>
     </ErrorBoundary>
   </StrictMode>

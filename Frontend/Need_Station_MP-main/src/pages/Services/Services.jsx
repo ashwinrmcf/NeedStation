@@ -38,14 +38,7 @@ const Services = () => {
     };
 
     const handleBookService = (service) => {
-        // Check if user is logged in
-        if (!user) {
-            // Redirect to login page if not logged in
-            navigate('/login');
-            return;
-        }
-        
-        // Navigate to service page if user is logged in
+        // Allow navigation without login - auth check moved to final booking step
         navigate(service.link);
     };
 

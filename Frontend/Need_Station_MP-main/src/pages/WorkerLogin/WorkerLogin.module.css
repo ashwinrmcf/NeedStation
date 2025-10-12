@@ -96,6 +96,17 @@
   opacity: 0.9;
 }
 
+/* Light mode styles */
+[data-theme="light"] .inputBox {
+  background-color: #FFFFFF;
+  color: #1A1D29;
+  border: 2px solid #E0E0E0;
+}
+
+[data-theme="light"] .inputBox:focus {
+  border-color: #00E0B8;
+}
+
 .inputBox:focus {
   outline: none;
   border: 2px solid #00E0B8; /* Using the preferred teal color */

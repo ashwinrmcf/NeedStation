@@ -218,8 +218,8 @@
   align-items: center;
 }
 
-/* Mobile Responsive Styles */
-@media screen and (max-width: 795px) {
+/* Mobile and Tablet Responsive Styles (iPad Mini, Air, Pro) */
+@media screen and (max-width: 1024px) {
   .tagline {
     width: 95%;
     margin-left: 2.5%;

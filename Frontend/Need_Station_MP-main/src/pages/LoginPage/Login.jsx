@@ -77,19 +77,38 @@ const Login = () => {
       });
       const data = await response.json();
       
+      console.log("🔍 Login response:", data);
+      console.log("🔍 User data from backend:", data.user);
+      
       if (response.ok && data.success) {
         setMessage("Login successful!");
         // Use first name for greeting, fallback to username or email
         const displayName = data.user.firstName || data.user.username || data.user.email?.split("@")[0] || "User";
-        login(displayName);
         
-        // Store user data
+        console.log("🔍 Extracted data:", {
+          displayName,
+          userId: data.user.id,
+          token: data.token,
+          email: data.user.email,
+          phone: data.user.phone
+        });
+        
+        // Store user data BEFORE calling login
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.user.id);
         localStorage.setItem("workerId", data.user.id);
         localStorage.setItem("username", displayName);
         localStorage.setItem("userEmail", data.user.email || '');
         localStorage.setItem("userPhone", data.user.phone || '');
+        
+        // Call login with additional user data
+        login(displayName, {
+          id: data.user.id,
+          userId: data.user.id,
+          email: data.user.email,
+          phone: data.user.phone,
+          token: data.token
+        });
         
         // If we came from a service page, redirect to user-details with the service data
         if (redirectPath === '/user-details' && serviceData) {
@@ -118,13 +137,38 @@ const Login = () => {
       });
       
       const data = await response.json();
+      
+      console.log("🔍 Google login response:", data);
+      console.log("🔍 Google user data:", data.user);
+      
       if (response.ok && data.success) {
         setMessage("Google login successful!");
         const displayName = `${data.user.firstName} ${data.user.lastName}`.trim();
-        login(displayName);
+        
+        // Store user data BEFORE calling login (same as manual login)
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("workerId", data.user.id);
         localStorage.setItem("username", displayName);
-        localStorage.setItem("userEmail", data.user.email);
-        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userEmail", data.user.email || '');
+        localStorage.setItem("userPhone", data.user.phone || '');
+        
+        // Call login with additional user data (same as manual login)
+        login(displayName, {
+          id: data.user.id,
+          userId: data.user.id,
+          email: data.user.email,
+          phone: data.user.phone,
+          token: data.token,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName
+        });
+        
+        console.log("✅ Google login data stored:", {
+          userId: data.user.id,
+          token: data.token,
+          email: data.user.email
+        });
         
         // If we came from a service page, redirect to user-details with the service data
         if (redirectPath === '/user-details' && serviceData) {
