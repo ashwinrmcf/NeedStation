@@ -202,7 +202,7 @@
   width: 50vw;
   min-height: 7.382vh;
   border: 0.106rem rgba(255, 255, 255, 0.6);
-  margin-top: 15vh; /* Increased from 12vh for more spacing */
+  margin-top: 8vh; /* Reduced from 15vh to bring stats closer to search */
   margin-bottom: 8vh; /* Added bottom margin for spacing to services */
   display: flex;
   justify-content: space-between;
