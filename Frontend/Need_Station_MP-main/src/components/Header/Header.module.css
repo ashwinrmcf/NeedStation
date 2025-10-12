@@ -396,7 +396,7 @@
     left: 0;
     right: 0;
     z-index: 1000;
-    background: var(--bg-primary);
+    background: var(--bg-surface);
     border-bottom: 1px solid var(--border-color);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
@@ -408,7 +408,7 @@
     padding: 0 15px;
     margin: 0;
     border-radius: 0;
-    background: var(--bg-primary);
+    background: var(--bg-surface);
     border: none;
     backdrop-filter: none;
     position: static;
@@ -628,7 +628,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--bg-primary);
+    background: var(--bg-surface);
     border-bottom: 1px solid var(--border-color);
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
@@ -939,6 +939,20 @@
   height: 8px;
   background-color: #00E0B8;
   border-radius: 50%;
+}
+
+/* Notification dot in dropdown menu */
+.profileLink {
+  position: relative;
+}
+
+.profileLink .notificationDot {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
 }
 
 .userProfile {

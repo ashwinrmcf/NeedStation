@@ -89,6 +89,7 @@
   border-radius: 1.813rem;
   background: var(--gradient-primary);
   transition: min-height 0.3s ease;
+  opacity: 1 !important; /* Ensure search bar is always visible */
 }
 
 /* Add expanded state for the container */

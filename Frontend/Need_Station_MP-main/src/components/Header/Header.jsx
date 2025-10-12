@@ -302,6 +302,11 @@ const Header = () => {
                         <FaCog size={14} style={{ marginRight: '8px' }} />
                         Settings
                       </Link>
+                      <Link to="/notifications" className={styles.profileLink}>
+                        <FaBell size={14} style={{ marginRight: '8px' }} />
+                        Notifications
+                        <div className={styles.notificationDot}></div>
+                      </Link>
                       <button className={styles.logoutButton} onClick={initiateLogout}>
                         <FaSignOutAlt size={14} />
                         Logout

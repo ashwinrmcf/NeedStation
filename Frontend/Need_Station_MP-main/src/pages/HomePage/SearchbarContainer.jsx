@@ -21,18 +21,19 @@ const SearchbarContainer = () => {
   // Initialize with comprehensive list of services with appropriate articles
   useEffect(() => {
     const services = [
-      "an electrician ⚡",
-      "a plumber 🔧",
-      "water supply 💧",
-      "elder care 👴",
-      "a paralysis caregiver 🤲",
-      "postnatal care 👶",
-      "a nurse 👩‍⚕️",
-      "a baby sitter 🧸",
-      "a health checkup 🩺",
-      "cooking services 🍳",
-      "laundry services 🧺",
-      "cleaning services 🧹"
+      "home security guard 🔒",
+      "parkinsons care 🤲",
+      "bedridden patient care 🛏️",
+      "mother and baby care 👶",
+      "paralysis care 🤝",
+      "elderly care 👴",
+      "nursing care 👩‍⚕️",
+      "pathology care 🩺",
+      "diabetes management 💉",
+      "health check up services 🏥",
+      "physiotherapy 💪",
+      "post surgery care 🏥",
+      "caretaker at home 🏠"
     ];
     
     // Fisher-Yates shuffle algorithm
@@ -90,15 +91,20 @@ const SearchbarContainer = () => {
 
   // Service map with services and their corresponding URLs
   const serviceMap = new Map([
-    ["electrician", "/electrician"],
-    ["plumber", "/plumber"],
-    ["water-supply", "/water-supply"],
-    ["babysitter", "/babysitter"],
-    ["caretaker", "/caretaker"],
-    ["nurse", "/nurse"],
-    ["paralysis-care", "/paralysis-care"],
-    ["postnatal-care", "/postnatal-care"],
-    ["health-checkup", "/health-checkup"],
+    ["home security guard", "/services/security-guard"],
+    ["security guard", "/services/security-guard"],
+    ["parkinsons care", "/services/parkinsons-care"],
+    ["bedridden patient care", "/services/bedridden-patient-care"],
+    ["mother and baby care", "/services/mother-baby-care"],
+    ["paralysis care", "/services/paralysis-care"],
+    ["elderly care", "/services/elderly-care"],
+    ["nursing care", "/services/nursing-care"],
+    ["pathology care", "/services/pathology-care"],
+    ["diabetes management", "/services/diabetes-management"],
+    ["health check up services", "/services/health-check-up-services"],
+    ["physiotherapy", "/services/physiotherapy"],
+    ["post surgery care", "/services/post-surgery-care"],
+    ["caretaker at home", "/services/caretaker-at-home"],
   ]);
 
   // Get all services as an array

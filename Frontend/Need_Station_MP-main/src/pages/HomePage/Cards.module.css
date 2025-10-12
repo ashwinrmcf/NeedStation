@@ -88,7 +88,7 @@
 
 /* Hero Service Spotlight */
 .heroSpotlight {
-  background: var(--gradient-secondary);
+  background: var(--bg-surface);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -111,7 +111,7 @@
 /* Left Half - Modern Quick Information Panel */
 .quickInfoPanel {
   flex: 1;
-  background: linear-gradient(135deg, var(--gradient-secondary), rgba(0, 212, 170, 0.05));
+  background: var(--bg-surface);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -364,7 +364,7 @@
 
 /* Interactive Services Grid */
 .servicesGrid {
-  background: var(--gradient-secondary);
+  background: var(--bg-surface);
   border-radius: 20px;
   padding: 25px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
