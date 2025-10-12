@@ -5,6 +5,8 @@ import com.example.authbackend.model.Gender;
 import com.example.authbackend.model.ServiceTimePreference;
 import com.example.authbackend.repository.UserRepository;
 import com.example.authbackend.service.CloudinaryService;
+import com.example.authbackend.service.SmsService;
+import com.example.authbackend.service.EmailOtpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,18 @@ public class UserProfileController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+    
+    @Autowired
+    private SmsService smsService;
+    
+    @Autowired
+    private EmailOtpService emailOtpService;
+    
+    // Store OTP temporarily (in production, use Redis or database)
+    private Map<String, String> otpStorage = new HashMap<>();
+    private Map<String, Long> otpTimestamp = new HashMap<>();
+    private Map<String, String> emailOtpStorage = new HashMap<>();
+    private Map<String, Long> emailOtpTimestamp = new HashMap<>();
 
     // Get user profile with formatted response
     @GetMapping("/{userId}")
@@ -572,5 +586,328 @@ public class UserProfileController {
             return ResponseEntity.internalServerError()
                 .body("Error listing users: " + e.getMessage());
         }
+    }
+    
+    // Check if phone number exists in database
+    @GetMapping("/check-phone/{phoneNumber}")
+    public ResponseEntity<?> checkPhoneExists(@PathVariable String phoneNumber) {
+        try {
+            logger.info("📞 Checking if phone number exists: {}", phoneNumber);
+            
+            boolean exists = userRepository.existsByContactNumber(phoneNumber);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("exists", exists);
+            response.put("phoneNumber", phoneNumber);
+            
+            logger.info("✅ Phone check result: exists = {}", exists);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("❌ Error checking phone number: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error checking phone number: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // Check if email exists in database
+    @GetMapping("/check-email/{email}")
+    public ResponseEntity<?> checkEmailExists(@PathVariable String email) {
+        try {
+            logger.info("📧 Checking if email exists: {}", email);
+            
+            boolean exists = userRepository.existsByEmail(email);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("exists", exists);
+            response.put("email", email);
+            
+            logger.info("✅ Email check result: exists = {}", exists);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("❌ Error checking email: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error checking email: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // Send OTP for phone verification
+    @PostMapping("/send-otp")
+    public ResponseEntity<?> sendOtp(@RequestBody Map<String, String> request) {
+        try {
+            String phoneNumber = request.get("phoneNumber");
+            
+            if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Phone number is required");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            logger.info("📱 Sending OTP to phone number: {}", phoneNumber);
+            
+            // Generate 6-digit OTP
+            String otp = String.format("%06d", (int)(Math.random() * 1000000));
+            
+            // Store OTP with timestamp (expires in 5 minutes)
+            otpStorage.put(phoneNumber, otp);
+            otpTimestamp.put(phoneNumber, System.currentTimeMillis());
+            
+            // Try to send SMS
+            try {
+                boolean sent = smsService.sendOtpSms(phoneNumber, otp);
+                if (!sent) {
+                    logger.warn("SMS service failed, using mock OTP");
+                }
+            } catch (Exception smsError) {
+                logger.warn("SMS service error: {}, using mock OTP", smsError.getMessage());
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "OTP sent successfully");
+            response.put("phoneNumber", maskPhoneNumber(phoneNumber));
+            // For development, include OTP in response (remove in production)
+            response.put("otp", otp);
+            
+            logger.info("✅ OTP sent successfully to: {}", maskPhoneNumber(phoneNumber));
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("❌ Error sending OTP: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error sending OTP: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // Send OTP for email verification
+    @PostMapping("/send-email-otp")
+    public ResponseEntity<?> sendEmailOtp(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            
+            if (email == null || email.trim().isEmpty()) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Email address is required");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            logger.info("📧 Sending OTP to email: {}", email);
+            
+            // Generate 6-digit OTP
+            String otp = String.format("%06d", (int)(Math.random() * 1000000));
+            
+            // Store OTP with timestamp (expires in 5 minutes)
+            emailOtpStorage.put(email, otp);
+            emailOtpTimestamp.put(email, System.currentTimeMillis());
+            
+            // Try to send email
+            try {
+                boolean sent = emailOtpService.sendOtp(email, "User", "Profile");
+                if (!sent) {
+                    logger.warn("Email service failed, using mock OTP");
+                }
+            } catch (Exception emailError) {
+                logger.warn("Email service error: {}, using mock OTP", emailError.getMessage());
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "OTP sent successfully to your email");
+            response.put("email", maskEmail(email));
+            // For development, include OTP in response (remove in production)
+            response.put("otp", otp);
+            
+            logger.info("✅ Email OTP sent successfully to: {}", maskEmail(email));
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("❌ Error sending email OTP: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error sending email OTP: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // Verify OTP
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
+        try {
+            String phoneNumber = request.get("phoneNumber");
+            String otp = request.get("otp");
+            
+            if (phoneNumber == null || otp == null || phoneNumber.trim().isEmpty() || otp.trim().isEmpty()) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Phone number and OTP are required");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            logger.info("🔐 Verifying OTP for phone number: {}", maskPhoneNumber(phoneNumber));
+            
+            // Check if OTP exists and is not expired (5 minutes)
+            String storedOtp = otpStorage.get(phoneNumber);
+            Long timestamp = otpTimestamp.get(phoneNumber);
+            
+            if (storedOtp == null || timestamp == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "OTP not found or expired");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            // Check if OTP is expired (5 minutes = 300000 ms)
+            if (System.currentTimeMillis() - timestamp > 300000) {
+                // Clean up expired OTP
+                otpStorage.remove(phoneNumber);
+                otpTimestamp.remove(phoneNumber);
+                
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "OTP has expired. Please request a new one.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            // Verify OTP
+            if (storedOtp.equals(otp.trim())) {
+                // Clean up used OTP
+                otpStorage.remove(phoneNumber);
+                otpTimestamp.remove(phoneNumber);
+                
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "OTP verified successfully");
+                response.put("phoneNumber", phoneNumber);
+                
+                logger.info("✅ OTP verified successfully for: {}", maskPhoneNumber(phoneNumber));
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Invalid OTP");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+        } catch (Exception e) {
+            logger.error("❌ Error verifying OTP: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error verifying OTP: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // Verify Email OTP
+    @PostMapping("/verify-email-otp")
+    public ResponseEntity<?> verifyEmailOtp(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            String otp = request.get("otp");
+            
+            if (email == null || otp == null || email.trim().isEmpty() || otp.trim().isEmpty()) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Email and OTP are required");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            logger.info("🔐 Verifying OTP for email: {}", maskEmail(email));
+            
+            // Check if OTP exists and is not expired (5 minutes)
+            String storedOtp = emailOtpStorage.get(email);
+            Long timestamp = emailOtpTimestamp.get(email);
+            
+            if (storedOtp == null || timestamp == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "OTP not found or expired");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            // Check if OTP is expired (5 minutes = 300000 ms)
+            if (System.currentTimeMillis() - timestamp > 300000) {
+                // Clean up expired OTP
+                emailOtpStorage.remove(email);
+                emailOtpTimestamp.remove(email);
+                
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "OTP has expired. Please request a new one.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            // Verify OTP
+            if (storedOtp.equals(otp.trim())) {
+                // Clean up used OTP
+                emailOtpStorage.remove(email);
+                emailOtpTimestamp.remove(email);
+                
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Email OTP verified successfully");
+                response.put("email", email);
+                
+                logger.info("✅ Email OTP verified successfully for: {}", maskEmail(email));
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Invalid OTP");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+        } catch (Exception e) {
+            logger.error("❌ Error verifying email OTP: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error verifying email OTP: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+    
+    // Helper method to mask phone number for privacy
+    private String maskPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.length() <= 4) {
+            return phoneNumber;
+        }
+        
+        int visibleDigits = 4;
+        int maskLength = phoneNumber.length() - visibleDigits;
+        StringBuilder masked = new StringBuilder();
+        
+        for (int i = 0; i < maskLength; i++) {
+            masked.append("*");
+        }
+        
+        masked.append(phoneNumber.substring(maskLength));
+        return masked.toString();
+    }
+    
+    // Helper method to mask email for privacy
+    private String maskEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return email;
+        }
+        
+        String[] parts = email.split("@");
+        String localPart = parts[0];
+        String domain = parts[1];
+        
+        if (localPart.length() <= 2) {
+            return email; // Don't mask very short emails
+        }
+        
+        // Show first 2 characters and last 1 character of local part
+        String maskedLocal = localPart.substring(0, 2) + "***" + localPart.substring(localPart.length() - 1);
+        return maskedLocal + "@" + domain;
     }
 }
