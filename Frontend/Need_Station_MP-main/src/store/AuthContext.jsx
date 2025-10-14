@@ -37,86 +37,96 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true);
       
       try {
-        // Check if we have a token
+        // Check if we have essential auth data
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
+        const storedUser = localStorage.getItem("user");
+        const username = localStorage.getItem("username");
         
+        console.log("🔄 Restoring session with:", { token: !!token, userId, hasStoredUser: !!storedUser, username });
+        
+        // If we have token and userId, try to verify with backend
         if (token && userId) {
-          // Verify token is still valid by fetching user data
-          const userData = await fetchUserData(token, userId);
-          
-          if (userData) {
-            // Token is valid, restore user session
-            const storedUser = localStorage.getItem("user");
-            const username = localStorage.getItem("username");
-            const userEmail = localStorage.getItem("userEmail");
-            const userPhone = localStorage.getItem("userPhone");
+          try {
+            const userData = await fetchUserData(token, userId);
             
-            const restoredUser = storedUser 
-              ? JSON.parse(storedUser)
-              : {
-                  username: username || userData.username || userData.firstName,
-                  email: userEmail || userData.email,
-                  phone: userPhone || userData.phone,
-                  id: userId,
-                  ...userData
-                };
-            
-            setUser(restoredUser);
-            setIsAuthenticated(true);
-            
-            // Update localStorage with fresh data
-            localStorage.setItem("user", JSON.stringify(restoredUser));
-            localStorage.setItem("username", restoredUser.username);
-            localStorage.setItem("userEmail", restoredUser.email || '');
-            localStorage.setItem("userPhone", restoredUser.phone || '');
-            
-            console.log("✅ Session restored successfully");
-          } else {
-            // Token is invalid, clear everything
-            clearSession();
-            console.log("❌ Invalid token, session cleared");
-          }
-        } else {
-          // No token found, try to restore from localStorage (fallback)
-          const storedUser = localStorage.getItem("user");
-          const username = localStorage.getItem("username");
-          const userId = localStorage.getItem("userId");
-          
-          if (storedUser || username) {
-            const userEmail = localStorage.getItem("userEmail");
-            const userPhone = localStorage.getItem("userPhone");
-            const token = localStorage.getItem("token");
-            
-            let restoredUser;
-            if (storedUser) {
-              restoredUser = JSON.parse(storedUser);
-              // Ensure id and userId are set from localStorage if missing
-              if (!restoredUser.id && userId) restoredUser.id = userId;
-              if (!restoredUser.userId && userId) restoredUser.userId = userId;
-            } else {
-              restoredUser = { 
-                username, 
-                email: userEmail, 
-                phone: userPhone,
+            if (userData) {
+              // Token is valid, restore user session with fresh backend data
+              const userEmail = localStorage.getItem("userEmail");
+              const userPhone = localStorage.getItem("userPhone");
+              
+              const restoredUser = {
+                username: username || userData.username || userData.firstName || 'User',
+                email: userEmail || userData.email,
+                phone: userPhone || userData.phone || userData.contactNumber,
                 id: userId,
                 userId: userId,
-                token: token
+                token: token,
+                ...userData
               };
+              
+              setUser(restoredUser);
+              setIsAuthenticated(true);
+              
+              // Update localStorage with fresh data
+              localStorage.setItem("user", JSON.stringify(restoredUser));
+              localStorage.setItem("username", restoredUser.username);
+              localStorage.setItem("userEmail", restoredUser.email || '');
+              localStorage.setItem("userPhone", restoredUser.phone || '');
+              
+              console.log("✅ Session restored with backend verification:", restoredUser);
+              setIsLoading(false);
+              return;
             }
-            
-            setUser(restoredUser);
-            setIsAuthenticated(true);
-            
-            // Update localStorage with complete user object
-            localStorage.setItem("user", JSON.stringify(restoredUser));
-            
-            console.log("✅ Session restored from localStorage", restoredUser);
+          } catch (error) {
+            console.warn("⚠️ Backend verification failed, falling back to localStorage:", error);
+            // Don't clear session yet, try localStorage fallback
           }
         }
+        
+        // Fallback: Restore from localStorage without backend verification
+        if ((storedUser || username) && userId) {
+          const userEmail = localStorage.getItem("userEmail");
+          const userPhone = localStorage.getItem("userPhone");
+          
+          let restoredUser;
+          if (storedUser) {
+            try {
+              restoredUser = JSON.parse(storedUser);
+              // Ensure id and userId are set
+              if (!restoredUser.id) restoredUser.id = userId;
+              if (!restoredUser.userId) restoredUser.userId = userId;
+              if (!restoredUser.token) restoredUser.token = token;
+            } catch (e) {
+              console.error("Error parsing stored user:", e);
+              restoredUser = null;
+            }
+          }
+          
+          if (!restoredUser) {
+            restoredUser = { 
+              username: username || 'User', 
+              email: userEmail, 
+              phone: userPhone,
+              id: userId,
+              userId: userId,
+              token: token
+            };
+          }
+          
+          setUser(restoredUser);
+          setIsAuthenticated(true);
+          
+          // Update localStorage with complete user object
+          localStorage.setItem("user", JSON.stringify(restoredUser));
+          
+          console.log("✅ Session restored from localStorage (offline mode):", restoredUser);
+        } else {
+          console.log("ℹ️ No session data found, user needs to log in");
+        }
       } catch (error) {
-        console.error("Error restoring session:", error);
-        clearSession();
+        console.error("❌ Error restoring session:", error);
+        // Don't clear session on error, just log it
       } finally {
         setIsLoading(false);
       }
@@ -198,7 +208,18 @@ export const AuthProvider = ({ children }) => {
     if (updatedData.email) localStorage.setItem("userEmail", updatedData.email);
     if (updatedData.phone) localStorage.setItem("userPhone", updatedData.phone);
     
-    console.log("✅ User data updated");
+    // Update cached basic info for header
+    if (updatedData.fullName || updatedData.profileImageUrl) {
+      const cachedInfo = JSON.parse(localStorage.getItem('userBasicInfo') || '{}');
+      const updatedBasicInfo = {
+        ...cachedInfo,
+        ...(updatedData.fullName && { fullName: updatedData.fullName }),
+        ...(updatedData.profileImageUrl && { profileImageUrl: updatedData.profileImageUrl })
+      };
+      localStorage.setItem('userBasicInfo', JSON.stringify(updatedBasicInfo));
+    }
+    
+    console.log("✅ User data updated:", updatedData);
   };
 
   return (

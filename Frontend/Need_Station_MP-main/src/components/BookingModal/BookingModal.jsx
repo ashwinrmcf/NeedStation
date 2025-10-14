@@ -22,7 +22,8 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
     // Step 3: Scheduling
     preferredDate: '',
     preferredTime: '',
-    urgency: 'normal'
+    urgency: 'normal',
+    preferredTimeSlot: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -38,31 +39,181 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
   // Get service configuration for dynamic fields
   const serviceConfig = getServiceConfiguration(serviceName?.toUpperCase().replace(/\s+/g, '_') || '');
 
-  // Auto-fill phone number from user profile and reset form when modal opens
+  // Auto-fill phone number and location data from database first, then fall back to profile
   useEffect(() => {
     if (isOpen) {
       setCurrentStep(1);
-      const phoneFromProfile = userProfile?.phone || userProfile?.mobile || '';
-      const isPhoneVerified = phoneFromProfile && userProfile?.phoneVerified;
       
-      setFormData({
-        phone: phoneFromProfile,
-        alternatePhone: '',
-        latitude: null,
-        longitude: null,
-        address: '',
-        pincode: '',
-        landmark: '',
-        serviceDetails: {},
-        preferredDate: '',
-        preferredTime: '',
-        urgency: 'normal'
-      });
+      // Reset form first
       setErrors({});
-      setPhoneVerified(isPhoneVerified);
       setOtpSent(false);
       setOtp('');
-      setSelectedLocation(null);
+      
+      // Load user data from database (priority: DB -> Profile)
+      const loadUserData = async () => {
+        console.log('🔍 userProfile object:', userProfile);
+        console.log('🔍 userProfile.id:', userProfile?.id);
+        console.log('🔍 userProfile.userId:', userProfile?.userId);
+        console.log('🔍 localStorage userId:', localStorage.getItem('userId'));
+        
+        const userId = userProfile?.id || userProfile?.userId || localStorage.getItem('userId');
+        console.log('🔍 Final userId to use:', userId);
+        
+        if (!userId) {
+          console.warn('⚠️ No userId found - skipping data load');
+          // Set default form with just phone from profile
+          setFormData({
+            phone: userProfile?.phone || userProfile?.mobile || '',
+            alternatePhone: '',
+            latitude: null,
+            longitude: null,
+            address: '',
+            pincode: '',
+            landmark: '',
+            serviceDetails: {},
+            preferredDate: '',
+            preferredTime: '',
+            urgency: 'normal',
+            preferredTimeSlot: ''
+          });
+          setPhoneVerified(userProfile?.phoneVerified || false);
+          return;
+        }
+        
+        if (userId) {
+          try {
+            // Fetch from database (single source of truth)
+            const response = await fetch(`http://localhost:8080/api/user/profile/${userId}`);
+            if (response.ok) {
+              const dbData = await response.json();
+              console.log('📦 Database data received:', JSON.stringify(dbData, null, 2));
+              
+              // Get all data from database only
+              const phone = dbData.contactNumber || '';
+              const isPhoneVerified = phone && dbData.phoneVerified;
+              
+              console.log('📞 Phone from DB:', phone);
+              console.log('✅ Phone verified:', isPhoneVerified);
+              
+              setPhoneVerified(isPhoneVerified);
+              
+              // Check if we have saved location data in DB
+              const hasLocationData = dbData.locationLat && dbData.locationLng;
+              
+              if (hasLocationData) {
+                const savedLocation = {
+                  lat: dbData.locationLat,
+                  lng: dbData.locationLng
+                };
+                
+                console.log('✅ Setting saved location from DB:', savedLocation);
+                setSelectedLocation(savedLocation);
+                
+                // Autofill all fields from database
+                setFormData({
+                  phone: phone,
+                  alternatePhone: dbData.alternateContact || '',
+                  latitude: dbData.locationLat,
+                  longitude: dbData.locationLng,
+                  address: dbData.address || '',
+                  pincode: dbData.pincode || '',
+                  landmark: dbData.landmark || '',
+                  serviceDetails: {},
+                  preferredDate: '',
+                  preferredTime: '',
+                  urgency: 'normal',
+                  preferredTimeSlot: ''
+                });
+                
+                console.log('✅ Form autofilled with DB data');
+              } else {
+                console.log('ℹ️ No saved location found in DB');
+                // No saved location, set form with phone and basic data from DB
+                setFormData({
+                  phone: phone,
+                  alternatePhone: dbData.alternateContact || '',
+                  latitude: null,
+                  longitude: null,
+                  address: dbData.address || '',
+                  pincode: dbData.pincode || '',
+                  landmark: dbData.landmark || '',
+                  serviceDetails: {},
+                  preferredDate: '',
+                  preferredTime: '',
+                  urgency: 'normal',
+                  preferredTimeSlot: ''
+                });
+                setSelectedLocation(null);
+              }
+            } else {
+              console.log('⚠️ Failed to fetch from DB');
+              // If DB fetch fails, show empty form
+              setFormData({
+                phone: '',
+                alternatePhone: '',
+                latitude: null,
+                longitude: null,
+                address: '',
+                pincode: '',
+                landmark: '',
+                serviceDetails: {},
+                preferredDate: '',
+                preferredTime: '',
+                urgency: 'normal',
+                preferredTimeSlot: ''
+              });
+              setSelectedLocation(null);
+            }
+          } catch (error) {
+            console.error('❌ Error loading user data:', error);
+            // Set default form on error with profile fallback
+            const phoneFromProfile = userProfile?.phone || userProfile?.mobile || '';
+            const isPhoneVerified = phoneFromProfile && userProfile?.phoneVerified;
+            setPhoneVerified(isPhoneVerified);
+            
+            setFormData({
+              phone: phoneFromProfile,
+              alternatePhone: '',
+              latitude: null,
+              longitude: null,
+              address: '',
+              pincode: '',
+              landmark: '',
+              serviceDetails: {},
+              preferredDate: '',
+              preferredTime: '',
+              urgency: 'normal',
+              preferredTimeSlot: ''
+            });
+            setSelectedLocation(null);
+          }
+        } else {
+          console.log('⚠️ No userId found, using profile data only');
+          // No userId, use profile data
+          const phoneFromProfile = userProfile?.phone || userProfile?.mobile || '';
+          const isPhoneVerified = phoneFromProfile && userProfile?.phoneVerified;
+          setPhoneVerified(isPhoneVerified);
+          
+          setFormData({
+            phone: phoneFromProfile,
+            alternatePhone: '',
+            latitude: null,
+            longitude: null,
+            address: '',
+            pincode: '',
+            landmark: '',
+            serviceDetails: {},
+            preferredDate: '',
+            preferredTime: '',
+            urgency: 'normal',
+            preferredTimeSlot: ''
+          });
+          setSelectedLocation(null);
+        }
+      };
+      
+      // Load user data
+      loadUserData();
     }
   }, [isOpen, userProfile]);
 
@@ -136,7 +287,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
         setIsSavingLocation(true);
         try {
           const locationData = {
-            userId: 11, // Use direct user ID instead of email/username lookup
+            userId: userProfile?.id || userProfile?.userId || localStorage.getItem('userId'),
             lat: selectedLocation.lat,
             lng: selectedLocation.lng,
             address: formData.address || selectedLocation.address || `${selectedLocation.lat}, ${selectedLocation.lng}`
@@ -250,7 +401,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
       }
       if (!phoneVerified) newErrors.phone = 'Please verify your phone number';
       if (!formData.latitude || !formData.longitude) newErrors.location = 'Please select location on map';
-      if (!formData.address.trim()) newErrors.address = 'Address is required';
+      if (!formData.address.trim()) newErrors.address = 'Full address is required';
       if (!formData.pincode.trim()) newErrors.pincode = 'Pincode is required';
       if (formData.pincode && !/^\d{6}$/.test(formData.pincode)) {
         newErrors.pincode = 'Enter valid 6-digit pincode';
@@ -269,9 +420,68 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
     return Object.keys(newErrors).length === 0;
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (validateStep(currentStep)) {
+      // Save contact and location info to profile when moving from step 1
+      if (currentStep === 1) {
+        await saveContactAndLocationToProfile();
+      }
       setCurrentStep(prev => Math.min(prev + 1, 3));
+    }
+  };
+  
+  // Save contact and location information to user profile and database
+  const saveContactAndLocationToProfile = async () => {
+    const userId = userProfile?.id || userProfile?.userId || localStorage.getItem('userId');
+    if (!userId) {
+      console.log('⚠️ No userId found, skipping save to database');
+      return;
+    }
+    
+    try {
+      // Prepare data to save - store full address in 'address' field (which is address_line1 in DB)
+      const profileUpdateData = {
+        contactNumber: formData.phone,
+        alternateContact: formData.alternatePhone,
+        address: formData.address, // Full address stored in address field (address_line1 in DB)
+        pincode: formData.pincode,
+        landmark: formData.landmark,
+        locationLat: formData.latitude,
+        locationLng: formData.longitude,
+        locationAddress: formData.address // Also store in locationAddress for reference
+      };
+      
+      console.log('💾 Saving contact & location to database:', profileUpdateData);
+      console.log('📍 Full address being saved:', formData.address);
+      console.log('📍 Pincode being saved:', formData.pincode);
+      console.log('📍 Landmark being saved:', formData.landmark);
+      console.log('📍 Coordinates being saved:', { lat: formData.latitude, lng: formData.longitude });
+      
+      const response = await fetch(`http://localhost:8080/api/user/profile/${userId}/save`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profileUpdateData)
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Contact & location saved to database successfully');
+        console.log('✅ Saved data:', result);
+        
+        // Update local storage to reflect saved data
+        localStorage.setItem('lastSavedAddress', formData.address);
+        localStorage.setItem('lastSavedPincode', formData.pincode);
+        localStorage.setItem('lastSavedLandmark', formData.landmark);
+        localStorage.setItem('lastSavedLat', formData.latitude);
+        localStorage.setItem('lastSavedLng', formData.longitude);
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Failed to save contact & location to database:', errorText);
+      }
+    } catch (error) {
+      console.error('❌ Error saving contact & location to database:', error);
     }
   };
 
@@ -408,9 +618,9 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                 {errors.phone && (
                   <p className={styles.errorMessage}>{errors.phone}</p>
                 )}
-                {phoneVerified && userProfile?.phone && (
+                {phoneVerified && formData.phone && (
                   <p className={styles.successMessage}>
-                    ✓ Phone number auto-filled from your account and verified
+                    ✓ Phone number auto-filled from database and verified
                   </p>
                 )}
               </div>
@@ -525,24 +735,29 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
               {/* Address Fields */}
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>
-                  Full Address *
+                  Full Address * (Saved to your profile)
                 </label>
                 <textarea
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Enter your complete address"
+                  placeholder="House/Flat No., Building Name, Street, Area, Locality"
                   className={`${styles.formTextarea} ${errors.address ? styles.error : ''}`}
                   rows="3"
                 />
                 {errors.address && (
                   <p className={styles.errorMessage}>{errors.address}</p>
                 )}
+                {formData.address && (
+                  <p className={styles.successMessage}>
+                    ✓ This address will be saved to your profile for future bookings
+                  </p>
+                )}
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <div className={styles.formGroup} style={{ flex: 1 }}>
                   <label className={styles.formLabel}>
-                    Pincode *
+                    Pincode * (Saved to your profile)
                   </label>
                   <input
                     type="text"
@@ -559,7 +774,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
 
                 <div className={styles.formGroup} style={{ flex: 1 }}>
                   <label className={styles.formLabel}>
-                    Landmark (Optional)
+                    Landmark (Optional, saved to your profile)
                   </label>
                   <input
                     type="text"

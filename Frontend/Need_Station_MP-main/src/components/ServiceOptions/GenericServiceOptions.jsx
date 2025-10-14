@@ -236,7 +236,8 @@ const GenericServiceOptions = ({
                 style={{
                   borderColor: 'var(--accent-secondary)',
                   color: 'var(--accent-secondary)',
-                  backgroundColor: 'transparent'
+                  backgroundColor: 'transparent',
+                  fontWeight: '600'
                 }}
               >
                 Add to Cart
@@ -417,10 +418,11 @@ const GenericServiceOptions = ({
           <div className="flex gap-3">
             <button 
               onClick={() => handleAddToCart(service)}
-              className="px-6 py-3 font-medium border-2 transition-all duration-200 bg-white hover:bg-teal-500 hover:text-white"
+              className="px-6 py-3 font-semibold border-2 transition-all duration-200 hover:bg-teal-500 hover:text-white"
               style={{
                 borderColor: 'var(--accent-secondary)',
                 color: 'var(--accent-secondary)',
+                backgroundColor: 'var(--bg-surface)',
                 borderRadius: '6px'
               }}
             >

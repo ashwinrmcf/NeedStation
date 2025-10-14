@@ -195,16 +195,14 @@ const SearchbarContainer = () => {
       </div>
 
       <div className={`${styles.info} scroll-animate`}>
-        <div className={styles.infoData}>
+        <div className={`${styles.infoData} scroll-animate`}>
           <div className={`${styles.number} scroll-animate`}>2500+</div>
-          <div className={styles.text}>Regular Users</div>
+          <div className={`${styles.text} scroll-animate`}>Regular Users</div>
         </div>
         <div className={styles.divider}></div>
-        <div className={styles.infoData}>
+        <div className={`${styles.infoData} scroll-animate`}>
           <div className={`${styles.number} scroll-animate`}>700+</div>
-          
-            <div className={styles.text}>Verified Helpers</div>
-          
+          <div className={`${styles.text} scroll-animate`}>Verified Helpers</div>
         </div>
       </div>
     </>

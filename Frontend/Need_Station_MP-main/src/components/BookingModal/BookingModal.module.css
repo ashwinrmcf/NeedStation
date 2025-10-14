@@ -853,3 +853,22 @@
     order: 1;
   }
 }
+
+/* Location Search Input Styling */
+:global(.location-search-input)::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+  opacity: 1 !important;
+}
+
+/* Light mode placeholder */
+:global([data-theme="light"]) :global(.location-search-input)::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
+  opacity: 1 !important;
+}
+
+/* Light mode input background */
+:global([data-theme="light"]) :global(.location-search-input) {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #000 !important;
+  border-color: rgba(0, 224, 184, 0.3) !important;
+}

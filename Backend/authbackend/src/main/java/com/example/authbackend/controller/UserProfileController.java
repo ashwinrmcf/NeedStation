@@ -528,6 +528,11 @@ public class UserProfileController {
         profileResponse.put("state", user.getState());
         profileResponse.put("pincode", user.getPincode());
         
+        // Location Information (for booking modal)
+        profileResponse.put("locationLat", user.getLocationLat());
+        profileResponse.put("locationLng", user.getLocationLng());
+        profileResponse.put("locationAddress", user.getLocationAddress());
+        
         // Healthcare Information
         profileResponse.put("emergencyContact", user.getEmergencyContact());
         profileResponse.put("emergencyPhone", user.getEmergencyPhone());

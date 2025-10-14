@@ -307,6 +307,7 @@ const Cart = () => {
       </div>
 
       <div className={styles.content}>
+        <div style={{ height: '150px' }}></div> {/* Spacer div */}
         <div className={styles.maxWidth}>
           {/* Hero Section */}
           <motion.div

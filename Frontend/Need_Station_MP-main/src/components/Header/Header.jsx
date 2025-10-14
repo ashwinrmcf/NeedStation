@@ -52,8 +52,13 @@ const Header = () => {
     const loadUserProfileData = async () => {
       console.log('🔍 Header: Loading profile data for user:', user);
       
-      // Use the actual user ID from your database
-      const userId = 11;
+      // Get actual user ID from auth context or localStorage
+      const userId = user?.id || user?.userId || localStorage.getItem('userId');
+      
+      if (!userId) {
+        console.log('⚠️ Header: No userId available, skipping profile data fetch');
+        return;
+      }
       
       try {
         // Try to get from localStorage first (for quick display)

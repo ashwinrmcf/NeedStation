@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import BookingModal from './BookingModal';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../store/AuthContext';
@@ -16,15 +16,43 @@ export const useBookingModal = () => {
 export const BookingModalProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentService, setCurrentService] = useState(null);
+  const [userProfileData, setUserProfileData] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Fetch user profile data when user is available
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user && user.id) {
+        try {
+          const response = await fetch(`http://localhost:8080/api/user/profile/${user.id}`);
+          if (response.ok) {
+            const profileData = await response.json();
+            setUserProfileData(profileData);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   // Create user profile with phone verification status
   const userProfile = user ? {
     ...user,
-    mobile: user.phone,
+    id: user.id || user.userId || userProfileData?.id || (localStorage.getItem('userId') ? parseInt(localStorage.getItem('userId')) : null),
+    userId: user.id || user.userId || userProfileData?.id || (localStorage.getItem('userId') ? parseInt(localStorage.getItem('userId')) : null),
+    phone: userProfileData?.contactNumber || user.phone,
+    mobile: userProfileData?.contactNumber || user.phone,
     phoneVerified: localStorage.getItem('mobileVerified') === 'true' || localStorage.getItem('phoneVerified') === 'true'
   } : null;
+  
+  // Debug log
+  console.log('🔍 BookingModalProvider - user:', user);
+  console.log('🔍 BookingModalProvider - userProfile:', userProfile);
+  console.log('🔍 BookingModalProvider - localStorage userId:', localStorage.getItem('userId'));
 
   const openBookingModal = (serviceName) => {
     setCurrentService(serviceName);

@@ -48,106 +48,195 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
   padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Light theme overlay */
+[data-theme="light"] .otpModal {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .otpContent {
-  background: var(--bg-surface);
-  padding: 30px;
-  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(26, 35, 50, 0.98), rgba(20, 28, 40, 0.98));
+  padding: 40px;
+  border-radius: 20px;
   text-align: center;
-  max-width: 400px;
+  max-width: 450px;
   width: 100%;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 
+              0 0 0 1px rgba(0, 224, 184, 0.1);
+  animation: slideUp 0.3s ease-out;
+  border: 1px solid rgba(0, 224, 184, 0.15);
 }
 
-/* Dark mode: lighter OTP modal */
-:root .otpContent {
-  background: rgba(28, 31, 40, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-}
-
+/* Light theme modal content */
 [data-theme="light"] .otpContent {
-  background: var(--bg-surface);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 
+              0 0 0 1px rgba(0, 224, 184, 0.2);
+  border: 1px solid rgba(0, 224, 184, 0.2);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .otpContent h2 {
   color: var(--text-primary);
-  margin-bottom: 10px;
-  font-size: 1.5rem;
+  margin-bottom: 12px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00E0B8, #00B8A3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Light theme heading */
+[data-theme="light"] .otpContent h2 {
+  background: linear-gradient(135deg, #00B8A3, #008B8B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .otpContent p {
   color: var(--text-secondary);
-  margin-bottom: 20px;
-  font-size: 0.95rem;
+  margin-bottom: 28px;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .otpInput {
   width: 100%;
-  padding: 12px;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 1.2rem;
+  padding: 16px 20px;
+  border: 2px solid rgba(0, 224, 184, 0.2);
+  border-radius: 12px;
+  font-size: 1.3rem;
   text-align: center;
-  letter-spacing: 3px;
-  margin-bottom: 15px;
-  background: var(--bg-primary);
+  letter-spacing: 0;
+  margin-bottom: 24px;
+  background: rgba(26, 35, 50, 0.5);
   color: var(--text-primary);
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-/* Dark mode: lighter OTP input */
-:root .otpInput {
-  background: rgba(28, 31, 40, 0.8);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+/* Apply letter spacing only when there's a value (not placeholder) */
+.otpInput:not(:placeholder-shown) {
+  letter-spacing: 8px;
 }
 
+/* Placeholder styling */
+.otpInput::placeholder {
+  letter-spacing: normal;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1rem;
+}
+
+/* Light theme input */
 [data-theme="light"] .otpInput {
-  background: var(--bg-primary);
-  border: 2px solid var(--border-color);
+  background: rgba(248, 250, 252, 0.8);
+  border: 2px solid rgba(0, 224, 184, 0.3);
+  color: #1a1d29;
+}
+
+/* Light theme placeholder */
+[data-theme="light"] .otpInput::placeholder {
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .otpInput:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(0, 224, 184, 0.1);
+  border-color: #00E0B8;
+  box-shadow: 0 0 0 4px rgba(0, 224, 184, 0.15),
+              0 8px 16px rgba(0, 224, 184, 0.2);
+  background: rgba(26, 35, 50, 0.8);
+}
+
+/* Light theme input focus */
+[data-theme="light"] .otpInput:focus {
+  background: white;
+  box-shadow: 0 0 0 4px rgba(0, 224, 184, 0.2),
+              0 8px 16px rgba(0, 224, 184, 0.15);
 }
 
 .otpActions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
+  margin-top: 8px;
 }
 
 .verifyButton {
-  background: var(--primary-color);
+  background: linear-gradient(135deg, #00E0B8, #00B8A3);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 14px 32px;
+  border-radius: 12px;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(0, 224, 184, 0.3);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 224, 184, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.verifyButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.verifyButton:hover:not(:disabled)::before {
+  left: 100%;
 }
 
 .verifyButton:hover:not(:disabled) {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 224, 184, 0.4);
+}
+
+.verifyButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .verifyButton:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .errorMessage {
@@ -517,20 +606,33 @@
 .cancelButton {
   background: transparent;
   color: var(--text-secondary);
-  border: 2px solid var(--border-color);
-  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  padding: 14px 32px;
   border-radius: 12px;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+}
+
+/* Light theme cancel button */
+[data-theme="light"] .cancelButton {
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  color: #64748b;
 }
 
 .cancelButton:hover {
-  border-color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.5);
   color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.05);
+  transform: translateY(-2px);
+}
+
+.cancelButton:active {
+  transform: translateY(0);
 }
 
 .profileContent {

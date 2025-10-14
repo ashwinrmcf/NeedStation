@@ -123,6 +123,7 @@ const LeafletMapPicker = ({ onLocationSelect }) => {
           placeholder="Search your location"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          className="location-search-input"
           style={{
             boxSizing: "border-box",
             border: "2px solid rgba(92, 225, 230, 0.2)",

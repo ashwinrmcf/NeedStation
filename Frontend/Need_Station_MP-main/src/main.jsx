@@ -72,7 +72,8 @@ import WhyBecomeHelper from "./pages/WhyBecomeHelper/WhyBecomeHelper.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
 import HowItWorks from "./pages/HowItWorks/HowItWorks.jsx";
 import FAQ from "./pages/FAQ/FAQ.jsx";
-import Cart from "./pages/Cart/Cart.jsx";
+import Cart from "./pages/Cart/CartNew.jsx"; // Updated to new cart design
+import BookingSuccess from "./pages/Cart/BookingSuccess.jsx";
 import ServiceModalDemo from "./pages/ServiceModalDemo/ServiceModalDemo.jsx";
 
 // User Profile Pages
@@ -139,9 +140,11 @@ const router = createBrowserRouter([
       // User Profile Routes
       {path: "/profile", element: <Profile/>},
       {path: "/bookings", element: <MyBookings/>},
+      {path: "/my-bookings", element: <MyBookings/>},
       {path: "/settings", element: <Settings/>},
       {path: "/service-modal-demo", element: <ServiceModalDemo/>},
       {path: "/cart", element: <Cart/>},
+      {path: "/booking-success", element: <BookingSuccess/>},
     ],
   },
 

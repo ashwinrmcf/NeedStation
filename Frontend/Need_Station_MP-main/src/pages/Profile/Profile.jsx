@@ -34,7 +34,9 @@ const Profile = () => {
     email: '',
     otp: '',
     isVerifying: false,
-    isVerified: false
+    isVerified: false,
+    verifiedPhone: '', // Track which phone was verified
+    verifiedEmail: ''  // Track which email was verified
   });
   
   // Track original values to detect changes
@@ -52,6 +54,7 @@ const Profile = () => {
     
     // Address Information
     address: '',
+    landmark: '',
     city: '',
     state: '',
     pincode: '',
@@ -107,15 +110,6 @@ const Profile = () => {
   
   const userId = getUserId();
   
-  // Debug: Log user data to understand structure
-  useEffect(() => {
-    console.log('🔍 Profile: User data from AuthContext:', user);
-    console.log('🔍 Profile: Available localStorage keys:', Object.keys(localStorage));
-    console.log('🔍 Profile: localStorage userId:', localStorage.getItem('userId'));
-    console.log('🔍 Profile: localStorage user:', localStorage.getItem('user'));
-    console.log('🔍 Profile: Detected userId:', userId);
-    console.log('🔍 Profile: isAuthenticated:', isAuthenticated);
-  }, [user, userId, isAuthenticated]);
   const [backgroundArtwork, setBackgroundArtwork] = useState(null);
   const [currentTheme, setCurrentTheme] = useState('dark');
 
@@ -136,14 +130,6 @@ const Profile = () => {
     lightArtwork2
   ];
 
-  // Debug: Log imported images
-  useEffect(() => {
-    console.log('🖼️ Profile: Imported artwork images:', {
-      lightArtwork1,
-      lightArtwork2,
-      darkArtworkCount: darkArtworkImages.length
-    });
-  }, []);
 
   // Detect current theme
   useEffect(() => {
@@ -153,12 +139,6 @@ const Profile = () => {
       const bodyClass = document.body.className;
       const htmlClass = document.documentElement.className;
       
-      console.log('🎨 Profile: Theme detection:', {
-        savedTheme,
-        bodyClass,
-        htmlClass,
-        systemPreference: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      });
       
       let detectedTheme = 'light'; // Default to light
       
@@ -172,7 +152,6 @@ const Profile = () => {
         detectedTheme = prefersDark ? 'dark' : 'light';
       }
       
-      console.log('🎨 Profile: Detected theme:', detectedTheme);
       setCurrentTheme(detectedTheme);
     };
 
@@ -250,12 +229,6 @@ const Profile = () => {
   useEffect(() => {
     const userState = profileData.state || 'Karnataka'; // Default to Karnataka
     
-    console.log('🖼️ Profile: Generating artwork for:', {
-      userState,
-      currentTheme,
-      lightArtworkImages: lightArtworkImages.length,
-      darkArtworkImages: darkArtworkImages.length
-    });
     
     let selectedImageUrl;
     let selectedColors;
@@ -269,12 +242,6 @@ const Profile = () => {
       selectedColors = ['#4A90E2', '#50C878', '#FFB347', '#FF6B9D'];
       selectedPattern = 'light-theme-pattern';
       
-      console.log('🌞 Profile: Light theme artwork selected:', {
-        randomLightIndex,
-        selectedImageUrl,
-        selectedColors,
-        selectedPattern
-      });
     } else {
       // For dark theme, use regional artwork system
       const artwork = regionalArtworks[userState] || regionalArtworks['Karnataka'];
@@ -283,12 +250,6 @@ const Profile = () => {
       selectedColors = artwork.colors.sort(() => 0.5 - Math.random()).slice(0, 3);
       selectedPattern = artwork.overlayPattern;
       
-      console.log('🌙 Profile: Dark theme artwork selected:', {
-        randomImageIndex,
-        selectedImageUrl,
-        selectedColors,
-        selectedPattern
-      });
     }
     
     const artworkData = {
@@ -299,7 +260,6 @@ const Profile = () => {
       theme: currentTheme
     };
     
-    console.log('🎨 Profile: Setting background artwork:', artworkData);
     setBackgroundArtwork(artworkData);
   }, [profileData.state, currentTheme]);
 
@@ -317,21 +277,12 @@ const Profile = () => {
       
       // Wait for auth loading to complete
       if (authLoading) {
-        console.log('⏳ Profile: Waiting for authentication to complete...');
         return;
       }
       
       // Check if userId is available
       if (!userId) {
         console.error('No user ID available. Please log in first.');
-        console.log('🔍 Available localStorage data:', {
-          userId: localStorage.getItem('userId'),
-          userID: localStorage.getItem('userID'),
-          user: localStorage.getItem('user'),
-          username: localStorage.getItem('username'),
-          userEmail: localStorage.getItem('userEmail'),
-          isAuthenticated: isAuthenticated
-        });
         setError('Please log in to view your profile.');
         setLoading(false);
         return;
@@ -341,7 +292,6 @@ const Profile = () => {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Loaded profile data:', data);
         
         const loadedData = {
           fullName: data.fullName || '',
@@ -350,6 +300,7 @@ const Profile = () => {
           dateOfBirth: data.dateOfBirth || '',
           gender: data.gender?.toLowerCase() || '',
           address: data.address || '',
+          landmark: data.landmark || '',
           city: data.city || '',
           state: data.state || '',
           pincode: data.pincode || '',
@@ -511,11 +462,32 @@ const Profile = () => {
       const result = await response.json();
       
       if (result.success) {
-        setOtpVerification(prev => ({ ...prev, isVerified: true, isVerifying: false, isRequired: false }));
-        const verifiedType = otpVerification.type === 'email' ? 'Email' : 'Phone number';
-        alert(`${verifiedType} verified successfully!`);
-        // Continue with profile save
-        handleSave();
+        // Mark this specific phone/email as verified
+        const updates = {
+          isVerified: true,
+          isVerifying: false,
+          isRequired: false
+        };
+        
+        if (otpVerification.type === 'phone') {
+          updates.verifiedPhone = otpVerification.phoneNumber;
+          console.log('✅ Phone verified, storing:', otpVerification.phoneNumber);
+        } else {
+          updates.verifiedEmail = otpVerification.email;
+          console.log('✅ Email verified, storing:', otpVerification.email);
+        }
+        
+        setOtpVerification(prev => {
+          const newState = { ...prev, ...updates };
+          console.log('📝 Updated OTP state - verifiedPhone:', newState.verifiedPhone);
+          console.log('📝 Updated OTP state - verifiedEmail:', newState.verifiedEmail);
+          console.log('📝 Updated OTP state - Full:', JSON.stringify(newState, null, 2));
+          return newState;
+        });
+        
+        // Continue with profile save, passing the verified value directly
+        // Don't rely on state update since it's async
+        await handleSave(updates.verifiedPhone, updates.verifiedEmail);
       } else {
         throw new Error(result.message || 'Invalid OTP');
       }
@@ -526,54 +498,54 @@ const Profile = () => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (justVerifiedPhone = null, justVerifiedEmail = null) => {
+    // Prevent double execution
+    if (saving) {
+      return;
+    }
+    
     try {
       setSaving(true);
       
-      // Debug: Log all available user data
-      console.log('🔍 handleSave - Checking userId:', {
-        userId,
-        user,
-        isAuthenticated,
-        authLoading,
-        localStorageUserId: localStorage.getItem('userId'),
-        localStorageUser: localStorage.getItem('user')
-      });
-      
       // Check if userId is available
       if (!userId) {
-        console.error('❌ No user ID available. Please log in first.');
-        console.error('Available data:', {
-          user,
-          isAuthenticated,
-          localStorage: {
-            userId: localStorage.getItem('userId'),
-            user: localStorage.getItem('user'),
-            username: localStorage.getItem('username')
-          }
-        });
         setError('Please log in to save your profile. User ID not found.');
         setSaving(false);
         return;
       }
       
-      console.log('✅ UserId found:', userId);
-      
       // Check if phone number or email changed and requires verification
       const phoneChanged = originalData.contactNumber !== profileData.contactNumber && profileData.contactNumber;
       const emailChanged = originalData.email !== profileData.email && profileData.email;
       
+      // Use the just-verified values if provided, otherwise use state
+      const verifiedPhone = justVerifiedPhone || otpVerification.verifiedPhone;
+      const verifiedEmail = justVerifiedEmail || otpVerification.verifiedEmail;
+      
+      console.log('🔍 OTP Check - phoneChanged:', phoneChanged);
+      console.log('🔍 OTP Check - originalPhone:', originalData.contactNumber);
+      console.log('🔍 OTP Check - newPhone:', profileData.contactNumber);
+      console.log('🔍 OTP Check - verifiedPhone:', verifiedPhone);
+      console.log('🔍 OTP Check - justVerifiedPhone param:', justVerifiedPhone);
+      
+      // Only check and verify if this specific phone/email hasn't been verified yet
       if (phoneChanged) {
-        // Check if phone number exists in database
-        const phoneExists = await checkPhoneNumberExists(profileData.contactNumber);
-        if (phoneExists) {
-          setError('This phone number is already registered with another account.');
-          setSaving(false);
-          return;
-        }
+        const isPhoneVerified = verifiedPhone === profileData.contactNumber;
+        console.log('📞 Phone verification check - isPhoneVerified:', isPhoneVerified);
+        console.log('📞 Phone verification check - verifiedPhone:', verifiedPhone);
+        console.log('📞 Phone verification check - currentPhone:', profileData.contactNumber);
+        console.log('📞 Phone verification check - Are they equal?', verifiedPhone === profileData.contactNumber);
         
-        // Require OTP verification for phone number change
-        if (!otpVerification.isVerified || otpVerification.type !== 'phone') {
+        if (!isPhoneVerified) {
+          // Check if phone number exists in database
+          const phoneExists = await checkPhoneNumberExists(profileData.contactNumber);
+          if (phoneExists) {
+            setError('This phone number is already registered with another account.');
+            setSaving(false);
+            return;
+          }
+          
+          // Require OTP verification for phone number change
           await initiatePhoneVerification(profileData.contactNumber);
           setSaving(false);
           return;
@@ -581,16 +553,18 @@ const Profile = () => {
       }
       
       if (emailChanged) {
-        // Check if email exists in database
-        const emailExists = await checkEmailExists(profileData.email);
-        if (emailExists) {
-          setError('This email address is already registered with another account.');
-          setSaving(false);
-          return;
-        }
+        const isEmailVerified = verifiedEmail === profileData.email;
         
-        // Require OTP verification for email change
-        if (!otpVerification.isVerified || otpVerification.type !== 'email') {
+        if (!isEmailVerified) {
+          // Check if email exists in database
+          const emailExists = await checkEmailExists(profileData.email);
+          if (emailExists) {
+            setError('This email address is already registered with another account.');
+            setSaving(false);
+            return;
+          }
+          
+          // Require OTP verification for email change
           await initiateEmailVerification(profileData.email);
           setSaving(false);
           return;
@@ -599,7 +573,6 @@ const Profile = () => {
       
       // Step 1: Upload image if selected
       if (selectedImage) {
-        console.log('Uploading new profile image...');
         const imageFormData = new FormData();
         imageFormData.append('image', selectedImage);
         
@@ -614,12 +587,10 @@ const Profile = () => {
           throw new Error('Image upload failed: ' + imageResult.message);
         }
         
-        console.log('Image uploaded successfully:', imageResult.imageUrl);
         setProfileImage(imageResult.imageUrl);
       }
       
       // Step 2: Save form data
-      console.log('Saving profile data...');
       const response = await fetch(`http://localhost:8080/api/user/profile/${userId}/save`, {
         method: 'POST',
         headers: {
@@ -631,9 +602,21 @@ const Profile = () => {
       const result = await response.json();
       
       if (result.success) {
-        console.log('Profile saved successfully');
         setIsEditing(false);
         setSelectedImage(null);
+        
+        // Reset OTP verification state after successful save
+        setOtpVerification({
+          isRequired: false,
+          type: '',
+          phoneNumber: '',
+          email: '',
+          otp: '',
+          isVerifying: false,
+          isVerified: false,
+          verifiedPhone: '',
+          verifiedEmail: ''
+        });
         
         // Update header display
         updateHeaderDisplay();
@@ -718,43 +701,6 @@ const Profile = () => {
     );
   }
   
-  // Show OTP verification modal
-  if (otpVerification.isRequired) {
-    return (
-      <div className={styles.profileContainer}>
-        <div className={styles.otpModal}>
-          <div className={styles.otpContent}>
-            <h2>Verify {otpVerification.type === 'email' ? 'Email Address' : 'Phone Number'}</h2>
-            <p>We've sent an OTP to {otpVerification.type === 'email' ? otpVerification.email : otpVerification.phoneNumber}</p>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otpVerification.otp}
-              onChange={(e) => setOtpVerification(prev => ({ ...prev, otp: e.target.value }))}
-              className={styles.otpInput}
-              maxLength={6}
-            />
-            {error && <div className={styles.errorMessage}>{error}</div>}
-            <div className={styles.otpActions}>
-              <button 
-                onClick={verifyOtp} 
-                disabled={otpVerification.isVerifying || !otpVerification.otp}
-                className={styles.verifyButton}
-              >
-                {otpVerification.isVerifying ? 'Verifying...' : 'Verify OTP'}
-              </button>
-              <button 
-                onClick={() => setOtpVerification({ isRequired: false, type: '', phoneNumber: '', email: '', otp: '', isVerifying: false, isVerified: false })}
-                className={styles.cancelButton}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.profileContainer}>
@@ -960,15 +906,27 @@ const Profile = () => {
             <div className={styles.sectionContent}>
               <div className={styles.inputGrid}>
                 <div className={styles.inputGroup} style={{gridColumn: '1 / -1'}}>
-                  <label>Complete Address *</label>
+                  <label>Full Address *</label>
                   <textarea
                     name="address"
                     value={profileData.address}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className={styles.textarea}
-                    placeholder="House/Flat No., Building Name, Street, Area"
+                    placeholder="House/Flat No., Building Name, Street, Area, Locality"
                     rows="3"
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Landmark</label>
+                  <input
+                    type="text"
+                    name="landmark"
+                    value={profileData.landmark}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={styles.input}
+                    placeholder="Nearby landmark"
                   />
                 </div>
                 <div className={styles.inputGroup}>
@@ -1110,6 +1068,41 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      
+      {/* OTP Verification Modal - Overlays on top of profile page */}
+      {otpVerification.isRequired && (
+        <div className={styles.otpModal}>
+          <div className={styles.otpContent}>
+            <h2>Verify {otpVerification.type === 'email' ? 'Email Address' : 'Phone Number'}</h2>
+            <p>We've sent an OTP to {otpVerification.type === 'email' ? otpVerification.email : otpVerification.phoneNumber}</p>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otpVerification.otp}
+              onChange={(e) => setOtpVerification(prev => ({ ...prev, otp: e.target.value }))}
+              className={styles.otpInput}
+              maxLength={6}
+              autoFocus
+            />
+            {error && <div className={styles.errorMessage}>{error}</div>}
+            <div className={styles.otpActions}>
+              <button 
+                onClick={verifyOtp} 
+                disabled={otpVerification.isVerifying || !otpVerification.otp}
+                className={styles.verifyButton}
+              >
+                {otpVerification.isVerifying ? 'Verifying...' : 'Verify OTP'}
+              </button>
+              <button 
+                onClick={() => setOtpVerification({ isRequired: false, type: '', phoneNumber: '', email: '', otp: '', isVerifying: false, isVerified: false })}
+                className={styles.cancelButton}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
