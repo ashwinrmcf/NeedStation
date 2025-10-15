@@ -42,10 +42,49 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
   // Get service configuration for dynamic fields (fallback to local config)
   const serviceConfig = getServiceConfiguration(serviceName?.toUpperCase().replace(/\s+/g, '_') || '');
 
+  // Fetch service configuration from API
+  useEffect(() => {
+    const fetchServiceConfig = async () => {
+      if (isOpen && serviceName) {
+        try {
+          const serviceCodeMap = {
+            'HOME SECURITY GUARD': 'HOME_SECURITY_GUARD',
+            'ELDERLY CARE': 'ELDERLY_CARE',
+            'NURSING CARE': 'NURSING_CARE',
+            'PATHOLOGY CARE': 'PATHOLOGY_CARE',
+            'DIABETES MANAGEMENT': 'DIABETES_MANAGEMENT',
+            'HEALTH CHECK-UP SERVICES': 'HEALTH_CHECKUP_SERVICES',
+            'PHYSIOTHERAPY': 'PHYSIOTHERAPY',
+            'POST-SURGERY CARE': 'POST_SURGERY_CARE',
+            'CARETAKER AT HOME': 'CARETAKER_AT_HOME',
+            'PARKINSONS CARE': 'PARKINSONS_CARE',
+            'BEDRIDDEN PATIENT CARE': 'BEDRIDDEN_PATIENT_CARE',
+            'MOTHER AND BABY CARE': 'MOTHER_AND_BABY_CARE',
+            'PARALYSIS CARE': 'PARALYSIS_CARE'
+          };
+          
+          const serviceCode = serviceCodeMap[serviceName.toUpperCase()] || serviceName.toUpperCase().replace(/\s+/g, '_');
+          console.log('🔍 Fetching service config for:', serviceCode);
+          
+          const config = await getServiceConfigFromAPI(serviceCode);
+          console.log('✅ Service config loaded:', config);
+          
+          setApiServiceConfig(config);
+        } catch (error) {
+          console.error('❌ Error loading service config:', error);
+          // Will fallback to local config
+        }
+      }
+    };
+    
+    fetchServiceConfig();
+  }, [isOpen, serviceName]);
+
   // Auto-fill phone number and location data from database first, then fall back to profile
   useEffect(() => {
     if (isOpen) {
       setCurrentStep(1);
+      setSelectedSubServices([]); // Reset subservices
       
       // Reset form first
       setErrors({});
@@ -848,6 +887,61 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
           {currentStep === 2 && (
             <div>
               <h3 className={styles.stepTitle}>Service Requirements</h3>
+              
+              {/* Subservice Selection */}
+              {apiServiceConfig?.subServices && apiServiceConfig.subServices.length > 0 && (
+                <div className={styles.subservicesSection}>
+                  <h4 className={styles.sectionTitle}>
+                    Select Additional Services (Optional)
+                  </h4>
+                  <p className={styles.sectionDescription}>
+                    Choose any additional services you need. Prices will be added to your total.
+                  </p>
+                  
+                  <div className={styles.subservicesList}>
+                    {apiServiceConfig.subServices.map((subService) => (
+                      <label 
+                        key={subService.id} 
+                        className={`${styles.subserviceCard} ${
+                          selectedSubServices.includes(subService.id) ? styles.selected : ''
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedSubServices.includes(subService.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedSubServices([...selectedSubServices, subService.id]);
+                            } else {
+                              setSelectedSubServices(selectedSubServices.filter(id => id !== subService.id));
+                            }
+                          }}
+                          className={styles.subserviceCheckbox}
+                        />
+                        <div className={styles.subserviceInfo}>
+                          <div className={styles.subserviceName}>{subService.subServiceName}</div>
+                          {subService.description && (
+                            <div className={styles.subserviceDescription}>{subService.description}</div>
+                          )}
+                        </div>
+                        <div className={styles.subservicePrice}>
+                          {subService.additionalPrice > 0 ? (
+                            <span className={styles.priceTag}>+₹{subService.additionalPrice}</span>
+                          ) : (
+                            <span className={styles.freeTag}>Included</span>
+                          )}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                  
+                  {selectedSubServices.length > 0 && (
+                    <div className={styles.selectedSummary}>
+                      ✓ {selectedSubServices.length} additional service{selectedSubServices.length > 1 ? 's' : ''} selected
+                    </div>
+                  )}
+                </div>
+              )}
               
               {/* Dynamic service fields based on service configuration */}
               {Object.entries(serviceConfig).map(([sectionKey, sectionConfig]) => (

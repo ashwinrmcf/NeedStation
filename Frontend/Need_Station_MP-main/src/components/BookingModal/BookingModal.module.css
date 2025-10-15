@@ -202,6 +202,129 @@
   margin-bottom: 1rem;
 }
 
+/* Subservice Selection Styles */
+.subservicesSection {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .subservicesSection {
+  background: #151821;
+  border-color: #2A2D3A;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.sectionDescription {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.subservicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.subserviceCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .subserviceCard {
+  background: #1A1D29;
+  border-color: #2A2D3A;
+}
+
+.subserviceCard:hover {
+  border-color: var(--accent-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.subserviceCard.selected {
+  border-color: var(--accent-secondary);
+  background: rgba(20, 184, 166, 0.05);
+}
+
+[data-theme="dark"] .subserviceCard.selected {
+  background: rgba(20, 184, 166, 0.1);
+}
+
+.subserviceCheckbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--accent-secondary);
+  flex-shrink: 0;
+}
+
+.subserviceInfo {
+  flex: 1;
+}
+
+.subserviceName {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.subserviceDescription {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.subservicePrice {
+  flex-shrink: 0;
+}
+
+.priceTag {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: var(--accent-secondary);
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.freeTag {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: #10b981;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.selectedSummary {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(20, 184, 166, 0.1);
+  border-left: 3px solid var(--accent-secondary);
+  border-radius: 4px;
+  color: var(--accent-secondary);
+  font-weight: 500;
+}
+
 .formLabel {
   display: block;
   font-size: 1rem; /* Increased from 0.875rem for better readability */
