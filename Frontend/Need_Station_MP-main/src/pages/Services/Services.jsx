@@ -1,7 +1,8 @@
 import styles from './Services.module.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../store/AuthContext';
+import { useCart } from '../../store/CartContext';
 
 // Real service images
 import securityImage from '../../assets/images/services/realservices/se.png';
@@ -21,11 +22,26 @@ import caregiverImage from '../../assets/images/services/realservices/caregiver.
 const Services = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { addToCart, cartItems } = useCart();
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [expandedService, setExpandedService] = useState(null);
     const [modalService, setModalService] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // Removed viewMode - only using detailed view now
+    const [bottomSheetService, setBottomSheetService] = useState(null);
+    const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    
+    // Detect mobile screen
+    useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth <= 768;
+            setIsMobile(mobile);
+            console.log('🔍 Mobile Detection:', mobile, 'Width:', window.innerWidth);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const openModal = (service) => {
         setModalService(service);
@@ -36,10 +52,43 @@ const Services = () => {
         setModalService(null);
         setIsModalOpen(false);
     };
+    
+    const openBottomSheet = (service) => {
+        setBottomSheetService(service);
+        setIsBottomSheetOpen(true);
+        document.body.style.overflow = 'hidden'; // Prevent background scroll
+    };
+    
+    const closeBottomSheet = () => {
+        setBottomSheetService(null);
+        setIsBottomSheetOpen(false);
+        document.body.style.overflow = 'auto';
+    };
+    
+    const handleCardClick = (service) => {
+        if (isMobile) {
+            openBottomSheet(service);
+        } else {
+            openModal(service);
+        }
+    };
 
     const handleBookService = (service) => {
         // Allow navigation without login - auth check moved to final booking step
         navigate(service.link);
+    };
+    
+    const handleAddToCart = (service) => {
+        addToCart({
+            id: service.id,
+            title: service.title,
+            price: service.price,
+            image: service.image,
+            duration: service.duration
+        });
+        if (isMobile) {
+            closeBottomSheet();
+        }
     };
 
     const services = [
@@ -264,61 +313,64 @@ const Services = () => {
                     </div>
                 </div>
 
-                {/* Services Display - Detailed View Only */}
+                {/* Services Display */}
                 <div className={styles["detailedGrid"]}>
                     {filteredServices.map((service) => (
-                        <div key={service.id} className={styles["detailedCard"]}>
-                            <div className={styles["cardImage"]} onClick={() => handleBookService(service)} style={{ cursor: 'pointer' }}>
-                                <img src={service.image} alt={service.title} />
-                                <div className={styles["imageOverlay"]}>
-                                    <span className={styles["categoryBadge"]}>{service.category}</span>
-                                    <span className={styles["priceBadge"]}>{service.price}</span>
-                                </div>
-                            </div>
-                            
-                            <div className={styles["cardContent"]}>
-                                <div className={styles["contentHeader"]}>
-                                    <h4 className={styles["serviceTitle"]}>{service.title}</h4>
-                                    <div className={styles["serviceIcon"]}>{service.icon}</div>
-                                </div>
-                                
-                                <p className={styles["serviceDesc"]}>{service.detailedDescription}</p>
-                                
-                                <div className={styles["serviceDetails"]}>
-                                    <div className={styles["detailRow"]}>
-                                        <span>Duration:</span>
-                                        <span>{service.duration}</span>
-                                    </div>
-                                    <div className={styles["detailRow"]}>
-                                        <span>Availability:</span>
-                                        <span>{service.availability}</span>
+                        /* Desktop-style cards for all screen sizes - just navigate to service page */
+                        <div 
+                            key={service.id} 
+                            className={styles["detailedCard"]}
+                        >
+                                <div className={styles["cardImage"]} onClick={() => handleBookService(service)} style={{ cursor: 'pointer' }}>
+                                    <img src={service.image} alt={service.title} />
+                                    <div className={styles["imageOverlay"]}>
+                                        <span className={styles["categoryBadge"]}>{service.category}</span>
+                                        <span className={styles["priceBadge"]}>{service.price}</span>
                                     </div>
                                 </div>
                                 
-                                <div className={styles["featuresList"]}>
-                                    {service.features.slice(0, 3).map((feature, index) => (
-                                        <span key={index} className={styles["featureTag"]}>{feature}</span>
-                                    ))}
-                                    {service.features.length > 3 && (
-                                        <span className={styles["moreFeatures"]}>+{service.features.length - 3} more</span>
-                                    )}
+                                <div className={styles["cardContent"]}>
+                                    <div className={styles["contentHeader"]}>
+                                        <h4 className={styles["serviceTitle"]}>{service.title}</h4>
+                                    </div>
+                                    
+                                    <p className={styles["serviceDesc"]}>{service.detailedDescription}</p>
+                                    
+                                    <div className={styles["serviceDetails"]}>
+                                        <div className={styles["detailRow"]}>
+                                            <span>Duration:</span>
+                                            <span>{service.duration}</span>
+                                        </div>
+                                        <div className={styles["detailRow"]}>
+                                            <span>Availability:</span>
+                                            <span>{service.availability}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className={styles["featuresList"]}>
+                                        {service.features.slice(0, 3).map((feature, index) => (
+                                            <span key={index} className={styles["featureTag"]}>{feature}</span>
+                                        ))}
+                                        {service.features.length > 3 && (
+                                            <span className={styles["moreFeatures"]}>+{service.features.length - 3} more</span>
+                                        )}
+                                    </div>
+                                    
+                                    <div className={styles["cardActions"]}>
+                                        <button 
+                                            onClick={() => handleBookService(service)}
+                                            className={styles["bookBtn"]}
+                                        >
+                                            Book Now
+                                        </button>
+                                        <button 
+                                            className={styles["infoBtn"]}
+                                            onClick={() => openModal(service)}
+                                        >
+                                            More Info
+                                        </button>
+                                    </div>
                                 </div>
-                                
-                                <div className={styles["cardActions"]}>
-                                    <button 
-                                        onClick={() => handleBookService(service)}
-                                        className={styles["bookBtn"]}
-                                    >
-                                        Book Now
-                                    </button>
-                                    <button 
-                                        className={styles["infoBtn"]}
-                                        onClick={() => openModal(service)}
-                                    >
-                                        More Info
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     ))}
                 </div>
@@ -381,6 +433,98 @@ const Services = () => {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                )}
+                
+                {/* Bottom Sheet Modal - NOT USED ON MAIN SERVICES PAGE */}
+                {false && isBottomSheetOpen && bottomSheetService && (
+                    <div className={styles["bottomSheetOverlay"]} onClick={closeBottomSheet}>
+                        <div 
+                            className={styles["bottomSheet"]} 
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Handle Bar */}
+                            <div className={styles["bottomSheetHandle"]}></div>
+                            
+                            {/* Service Image */}
+                            <div className={styles["bottomSheetImage"]}>
+                                <img src={bottomSheetService.image} alt={bottomSheetService.title} />
+                            </div>
+                            
+                            {/* Service Info */}
+                            <div className={styles["bottomSheetContent"]}>
+                                <h3 className={styles["bottomSheetTitle"]}>{bottomSheetService.title}</h3>
+                                
+                                <div className={styles["bottomSheetMeta"]}>
+                                    <span className={styles["bottomSheetRating"]}>⭐ 4.8 (1.2K reviews)</span>
+                                    <span className={styles["bottomSheetDuration"]}>• {bottomSheetService.duration}</span>
+                                </div>
+                                
+                                <div className={styles["bottomSheetPrice"]}>
+                                    <span className={styles["priceLabel"]}>Starting from</span>
+                                    <span className={styles["priceValue"]}>{bottomSheetService.price}</span>
+                                </div>
+                                
+                                <div className={styles["bottomSheetDescription"]}>
+                                    <h4>About this service</h4>
+                                    <p>{bottomSheetService.detailedDescription}</p>
+                                </div>
+                                
+                                <div className={styles["bottomSheetFeatures"]}>
+                                    <h4>What's included</h4>
+                                    <ul>
+                                        {bottomSheetService.features.map((feature, index) => (
+                                            <li key={index}>✓ {feature}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                
+                                <div className={styles["bottomSheetDetails"]}>
+                                    <div className={styles["detailItem"]}>
+                                        <span>⏱️ Duration</span>
+                                        <span>{bottomSheetService.duration}</span>
+                                    </div>
+                                    <div className={styles["detailItem"]}>
+                                        <span>🕐 Availability</span>
+                                        <span>{bottomSheetService.availability}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Fixed Action Buttons */}
+                            <div className={styles["bottomSheetActions"]}>
+                                <button 
+                                    className={styles["addToCartBtn"]}
+                                    onClick={() => handleAddToCart(bottomSheetService)}
+                                >
+                                    Add to Cart
+                                </button>
+                                <button 
+                                    className={styles["bookNowBtn"]}
+                                    onClick={() => handleBookService(bottomSheetService)}
+                                >
+                                    Book Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                {/* Fixed Checkout Bar - NOT USED ON MAIN SERVICES PAGE */}
+                {false && isMobile && cartItems.length > 0 && (
+                    <div className={styles["fixedCheckoutBar"]}>
+                        <div className={styles["checkoutBarContent"]}>
+                            <div className={styles["cartInfo"]}>
+                                <span className={styles["cartCount"]}>{cartItems.length} item{cartItems.length > 1 ? 's' : ''}</span>
+                                <span className={styles["cartTotal"]}>View Cart</span>
+                            </div>
+                            <button 
+                                className={styles["checkoutBtn"]}
+                                onClick={() => navigate('/cart')}
+                            >
+                                Checkout →
+                            </button>
                         </div>
                     </div>
                 )}

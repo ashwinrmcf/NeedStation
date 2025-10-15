@@ -92,6 +92,16 @@ const CartNew = () => {
   // Handle Razorpay payment
   const handlePayment = async () => {
     if (!user) {
+      alert('Please login to continue with payment');
+      navigate('/login');
+      return;
+    }
+
+    // Check if user has an ID
+    const userId = user.id || user.userId || user.user_id;
+    if (!userId) {
+      console.error('User object:', user);
+      alert('User ID not found. Please login again.');
       navigate('/login');
       return;
     }
@@ -105,7 +115,7 @@ const CartNew = () => {
       return;
     }
 
-    // Create order on backend (you'll need to implement this endpoint)
+    // Create order on backend
     try {
       const orderResponse = await fetch('http://localhost:8080/api/payment/create-order', {
         method: 'POST',
@@ -114,14 +124,14 @@ const CartNew = () => {
           amount: total,
           currency: 'INR',
           receipt: `receipt_${Date.now()}`,
-          userId: user.id
+          userId: userId
         })
       });
 
       const orderData = await orderResponse.json();
 
       const options = {
-        key: process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_YOUR_KEY_ID', // Replace with your Razorpay key
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_YOUR_KEY_ID', // Replace with your Razorpay key
         amount: total * 100, // Amount in paise
         currency: 'INR',
         name: 'NeedStation',
@@ -162,6 +172,8 @@ const CartNew = () => {
 
   // Verify payment
   const verifyPayment = async (paymentData) => {
+    const userId = user.id || user.userId || user.user_id;
+    
     try {
       const response = await fetch('http://localhost:8080/api/payment/verify', {
         method: 'POST',
@@ -171,7 +183,7 @@ const CartNew = () => {
           razorpay_payment_id: paymentData.razorpay_payment_id,
           razorpay_signature: paymentData.razorpay_signature,
           cartItems: cartItems,
-          userId: user.id,
+          userId: userId,
           amount: total
         })
       });

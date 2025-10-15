@@ -25,6 +25,8 @@ const GenericServiceOptions = ({
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [expandedCards, setExpandedCards] = useState(new Set());
   const [isMobile, setIsMobile] = useState(false);
+  const [bottomSheetService, setBottomSheetService] = useState(null);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const { openBookingModal } = useBookingModal();
   const { addToCart: addToGlobalCart, isInCart, cartItems: globalCartItems, removeFromCart: removeFromGlobalCart, updateQuantity: updateGlobalQuantity, cartTotal } = useCart();
 
@@ -48,6 +50,25 @@ const GenericServiceOptions = ({
       newExpanded.add(serviceId);
     }
     setExpandedCards(newExpanded);
+  };
+  
+  // Bottom sheet functions
+  const openBottomSheet = (service) => {
+    setBottomSheetService(service);
+    setIsBottomSheetOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+  
+  const closeBottomSheet = () => {
+    setBottomSheetService(null);
+    setIsBottomSheetOpen(false);
+    document.body.style.overflow = 'auto';
+  };
+  
+  const handleCardClick = (service) => {
+    if (isMobile) {
+      openBottomSheet(service);
+    }
   };
 
   // All 13 services for left navigation
@@ -160,168 +181,40 @@ const GenericServiceOptions = ({
     service.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Mobile Service Card Component
+  // Mobile Service Card Component - Simplified Urban Company Style
   const MobileServiceCard = ({ service }) => {
-    const isExpanded = expandedCards.has(service.id);
-    
     return (
-      <div className={`${styles.serviceCard} ${styles.mobileCard} relative overflow-hidden`}>
-        {/* Compact Mobile Layout */}
-        <div className="flex items-start gap-3 p-4">
-          {/* Service Image */}
-          <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-            <img
-              src={service.imgUrl}
-              alt={service.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            {/* Title and Rating */}
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex-1">
-                <h3 className="font-semibold text-base leading-tight mb-1" style={{ color: 'var(--text-primary)' }}>
-                  {service.title}
-                </h3>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  <span className="flex items-center gap-1">
-                    ⭐ {service.rating}
-                  </span>
-                  <span>•</span>
-                  <span>45 mins</span>
-                </div>
-              </div>
-              <button
-                className="ml-2 p-1 rounded-full"
-                style={{ 
-                  backgroundColor: 'var(--accent-secondary)',
-                  color: 'white'
-                }}
-              >
-                Add
-              </button>
-            </div>
-            
-            {/* Price */}
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="font-bold text-lg" style={{ color: 'var(--text-primary)' }}>
-                {service.price}
-              </span>
-              {service.originalPrice && (
-                <span className="text-sm line-through" style={{ color: 'var(--text-muted)' }}>
-                  {service.originalPrice}
-                </span>
-              )}
-            </div>
-            
-            {/* Key Features (Always visible) */}
-            <div className="space-y-1 mb-3">
-              <div className="text-sm flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
-                <span>•</span>
-                <span>{service.subtitle}</span>
-              </div>
-              <div className="text-sm flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
-                <span>•</span>
-                <span>Professional service delivery</span>
-              </div>
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="flex gap-2">
-              <button 
-                onClick={() => handleAddToCart(service)}
-                className="flex-1 py-2 px-3 text-sm font-medium border rounded-lg transition-all duration-200"
-                style={{
-                  borderColor: 'var(--accent-secondary)',
-                  color: 'var(--accent-secondary)',
-                  backgroundColor: 'transparent',
-                  fontWeight: '600'
-                }}
-              >
-                Add to Cart
-              </button>
-              <button 
-                onClick={handleBookNow}
-                className="flex-1 py-2 px-3 text-sm font-semibold text-white rounded-lg transition-all duration-200"
-                style={{
-                  backgroundColor: 'var(--accent-secondary)',
-                  border: 'none'
-                }}
-              >
-                Book Now
-              </button>
-            </div>
-            
-            {/* View Details Toggle */}
-            <button
-              onClick={() => toggleCardExpansion(service.id)}
-              className="w-full mt-3 text-sm font-medium py-1"
-              style={{ color: 'var(--accent-secondary)' }}
-            >
-              {isExpanded ? 'Hide details' : 'View details'}
-            </button>
-          </div>
+      <div 
+        className={`${styles.serviceCard} ${styles.mobileCard} relative overflow-hidden cursor-pointer`}
+        onClick={() => handleCardClick(service)}
+      >
+        {/* Service Image */}
+        <div className="w-full h-48 overflow-hidden">
+          <img
+            src={service.imgUrl}
+            alt={service.title}
+            className="w-full h-full object-cover"
+          />
         </div>
         
-        {/* Expanded Details */}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="px-4 pb-4 border-t" style={{ borderColor: 'var(--border-color)' }}>
-                <div className="pt-4">
-                  {/* Service Features */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{service.urgency || 'PREMIUM SERVICE'}</h4>
-                      <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ 
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)', 
-                        color: '#22c55e' 
-                      }}>
-                        {service.discount || 'PREMIUM'}
-                      </span>
-                    </div>
-                    
-                    {/* Service Features */}
-                    <div className="grid grid-cols-2 gap-2 mb-3">
-                      {service.features && service.features.slice(0, 4).map((feature, idx) => (
-                        <div key={idx} className="text-xs flex items-start gap-1" style={{ color: 'var(--text-secondary)' }}>
-                          <span className="mt-0.5">•</span>
-                          <span>{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Why Choose This Service */}
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-lg border" style={{ borderColor: 'var(--border-color)' }}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Why Choose This?</span>
-                        <span className="text-xs px-2 py-1 rounded" style={{ 
-                          backgroundColor: 'var(--accent-secondary)', 
-                          color: 'white' 
-                        }}>
-                          ⭐ {service.rating || '4.8'}/5
-                        </span>
-                      </div>
-                      <div className="text-xs space-y-1" style={{ color: 'var(--text-secondary)' }}>
-                        <div>• {service.guarantee || 'Certified & Background Verified'}</div>
-                        <div>• {service.availability || 'Quick Response Time'}</div>
-                        <div>• "{service.testimonial || 'Excellent service quality!'}"</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Service Info */}
+        <div className="p-4">
+          <h3 className="font-semibold text-lg leading-tight mb-2" style={{ color: 'var(--text-primary)' }}>
+            {service.title}
+          </h3>
+          
+          <div className="flex items-center gap-2 text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
+            <span className="flex items-center gap-1">
+              ⭐ {service.rating}
+            </span>
+            <span>•</span>
+            <span>45 mins</span>
+          </div>
+          
+          <div className="font-bold text-xl" style={{ color: '#00c8ff' }}>
+            {service.price}
+          </div>
+        </div>
       </div>
     );
   };
@@ -958,6 +851,120 @@ const GenericServiceOptions = ({
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Bottom Sheet Modal - Mobile Only */}
+      {isBottomSheetOpen && bottomSheetService && (
+        <div className={styles.bottomSheetOverlay} onClick={closeBottomSheet}>
+          <div 
+            className={styles.bottomSheet} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button 
+              className={styles.bottomSheetClose}
+              onClick={closeBottomSheet}
+              aria-label="Close"
+            >
+              ✕
+            </button>
+            
+            {/* Handle Bar */}
+            <div className={styles.bottomSheetHandle}></div>
+            
+            {/* Service Image */}
+            <div className={styles.bottomSheetImage}>
+              <img src={bottomSheetService.imgUrl} alt={bottomSheetService.title} />
+            </div>
+            
+            {/* Service Info */}
+            <div className={styles.bottomSheetContent}>
+              <h3 className={styles.bottomSheetTitle}>{bottomSheetService.title}</h3>
+              
+              <div className={styles.bottomSheetMeta}>
+                <span className={styles.bottomSheetRating}>⭐ {bottomSheetService.rating} (1.2K reviews)</span>
+                <span className={styles.bottomSheetDuration}>• 45 mins</span>
+              </div>
+              
+              <div className={styles.bottomSheetPrice}>
+                <span className={styles.priceLabel}>Starting from</span>
+                <span className={styles.priceValue}>{bottomSheetService.price}</span>
+              </div>
+              
+              <div className={styles.bottomSheetDescription}>
+                <h4>About this service</h4>
+                <p>{bottomSheetService.subtitle}</p>
+              </div>
+              
+              <div className={styles.bottomSheetFeatures}>
+                <h4>What's included</h4>
+                <ul>
+                  {bottomSheetService.features?.map((feature, index) => (
+                    <li key={index}>✓ {feature}</li>
+                  )) || (
+                    <>
+                      <li>✓ Professional service delivery</li>
+                      <li>✓ Experienced professionals</li>
+                      <li>✓ Quality assurance</li>
+                      <li>✓ Flexible scheduling</li>
+                    </>
+                  )}
+                </ul>
+              </div>
+              
+              <div className={styles.bottomSheetDetails}>
+                <div className={styles.detailItem}>
+                  <span>⏱️ Duration</span>
+                  <span>45 mins</span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span>🕐 Availability</span>
+                  <span>{bottomSheetService.availability || '24/7'}</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Fixed Action Buttons */}
+            <div className={styles.bottomSheetActions}>
+              <button 
+                className={styles.addToCartBtn}
+                onClick={() => {
+                  handleAddToCart(bottomSheetService);
+                  closeBottomSheet();
+                }}
+              >
+                Add to Cart
+              </button>
+              <button 
+                className={styles.bookNowBtn}
+                onClick={() => {
+                  closeBottomSheet();
+                  handleBookNow();
+                }}
+              >
+                Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Fixed Checkout Bar - Mobile Only */}
+      {isMobile && globalCartItems.length > 0 && (
+        <div className={styles.fixedCheckoutBar}>
+          <div className={styles.checkoutBarContent}>
+            <div className={styles.cartInfo}>
+              <span className={styles.cartCount}>{globalCartItems.length} item{globalCartItems.length > 1 ? 's' : ''}</span>
+              <span className={styles.cartTotal}>View Cart</span>
+            </div>
+            <button 
+              className={styles.checkoutBtn}
+              onClick={() => navigate('/cart')}
+            >
+              Checkout →
+            </button>
           </div>
         </div>
       )}

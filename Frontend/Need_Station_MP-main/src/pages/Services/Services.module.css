@@ -1,3 +1,5 @@
+/* ===== SERVICES PAGE - MOBILE OPTIMIZED v2.0 ===== */
+
 /* Clean Header - Urban Company Style */
 .attractiveHeader {
   text-align: center;
@@ -84,6 +86,8 @@
   transition: all 0.2s ease;
   max-width: 450px;
   justify-self: center;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Lighter cards in dark mode */
@@ -144,6 +148,9 @@
 
 .cardContent {
   padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .contentHeader {
@@ -428,24 +435,26 @@
     margin: 0;
     border-radius: 10px;
     /* Mobile business card layout - vertical for better info display */
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    overflow: hidden;
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: visible !important;
+    min-height: 480px !important;
   }
   
   .cardImage {
-    width: 100%;
-    height: 160px;
+    width: 100% !important;
+    height: 160px !important;
     flex-shrink: 0;
   }
   
   .cardContent {
-    padding: 14px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    padding: 16px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    min-height: 300px !important;
   }
   
   .contentHeader {
@@ -561,88 +570,110 @@
   
   .detailedGrid {
     padding: 0 10px;
-    gap: 10px;
+    gap: 12px;
   }
   
   .detailedCard {
-    border-radius: 8px;
-    height: auto;
-    /* Keep vertical layout for better info display */
+    border-radius: 10px;
+    height: auto !important;
+    min-height: 500px !important; /* Ensure enough height for all content */
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important;
   }
   
   .cardImage {
-    width: 100%;
-    height: 140px;
+    width: 100% !important;
+    height: 150px !important;
+    flex-shrink: 0;
   }
   
   .imageOverlay {
-    top: 6px;
-    left: 6px;
-    right: 6px;
+    top: 8px;
+    left: 8px;
+    right: 8px;
   }
   
   .categoryBadge, .priceBadge {
-    padding: 3px 6px;
+    padding: 4px 8px;
     font-size: 0.7rem;
-    border-radius: 4px;
+    border-radius: 5px;
   }
   
   .cardContent {
-    padding: 12px;
+    padding: 16px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 320px !important;
+  }
+  
+  .contentHeader {
+    margin-bottom: 6px;
   }
   
   .serviceTitle {
-    font-size: 1rem;
+    font-size: 1.05rem;
     line-height: 1.3;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    font-weight: 600;
   }
   
   .serviceDesc {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     -webkit-line-clamp: 2;
     line-clamp: 2;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     line-height: 1.4;
   }
   
   .serviceDetails {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    margin-bottom: 6px;
+    gap: 4px;
+    margin-bottom: 8px;
   }
   
   .detailRow {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
+    padding: 3px 0;
   }
   
   .featuresList {
     display: flex;
     flex-wrap: wrap;
-    gap: 3px;
-    margin-bottom: 8px;
+    gap: 4px;
+    margin-bottom: 10px;
   }
   
   .featureTag {
-    font-size: 0.65rem;
-    padding: 2px 5px;
+    font-size: 0.68rem;
+    padding: 3px 6px;
+    border-radius: 5px;
   }
   
   .cardActions {
     display: flex;
-    gap: 6px;
+    gap: 8px;
+    margin-top: auto; /* Push buttons to bottom */
+    padding-top: 8px;
   }
   
   .bookBtn {
     flex: 2;
-    padding: 9px 14px;
-    font-size: 0.8rem;
+    padding: 11px 16px;
+    font-size: 0.85rem;
+    border-radius: 7px;
+    font-weight: 600;
+    white-space: nowrap;
   }
   
   .infoBtn {
     flex: 1;
-    padding: 9px 10px;
-    font-size: 0.75rem;
+    padding: 11px 12px;
+    font-size: 0.78rem;
+    border-radius: 7px;
+    white-space: nowrap;
   }
 }
 
@@ -838,8 +869,69 @@
   border-color: var(--text-secondary);
 }
 
-/* Mobile Modal Styles */
+/* ===== TABLET OPTIMIZATION (768px - 1024px) ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .detailedGrid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
+    gap: 2rem;
+    padding: 1rem;
+  }
+  
+  .detailedCard {
+    min-height: 24rem;
+  }
+  
+  .cardImage {
+    height: 200px;
+  }
+  
+  /* Use desktop cards on tablet, not mobile cards */
+  .mobileCard {
+    display: none;
+  }
+  
+  /* Bottom sheet and checkout bar only for mobile, not tablet */
+  .bottomSheetOverlay,
+  .fixedCheckoutBar {
+    display: none;
+  }
+}
+
+/* Mobile Styles - Desktop cards on all screen sizes */
 @media (max-width: 768px) {
+  .detailedGrid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .detailedCard {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .cardImage {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .cardContent {
+    padding: 16px;
+  }
+  
+  .cardActions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .bookBtn,
+  .infoBtn {
+    flex: 1;
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+  
   .modalOverlay {
     padding: 10px;
   }
@@ -879,6 +971,349 @@
   .modalBookBtn,
   .modalCloseBtn {
     width: 100%;
-    text-align: center;
   }
+}
+
+/* ===== MOBILE CARD STYLES ===== */
+.mobileCard {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.mobileCard:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 12px rgba(0, 200, 255, 0.2);
+}
+
+.mobileCardImage {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.mobileCardImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobileCardInfo {
+  padding: 14px;
+}
+
+.mobileCardTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.mobileCardMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.mobileCardRating {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.mobileCardPrice {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #00c8ff;
+  margin: 0;
+}
+
+/* ===== BOTTOM SHEET MODAL ===== */
+.bottomSheetOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.bottomSheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-radius: 20px 20px 0 0;
+  max-height: 85vh;
+  overflow-y: auto;
+  z-index: 1001;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.bottomSheetHandle {
+  width: 40px;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  margin: 12px auto 16px;
+}
+
+.bottomSheetImage {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+
+.bottomSheetImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bottomSheetContent {
+  padding: 20px;
+  padding-bottom: 100px; /* Space for fixed buttons */
+}
+
+.bottomSheetTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+.bottomSheetMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.bottomSheetRating {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.bottomSheetPrice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: rgba(0, 200, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.priceLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.priceValue {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #00c8ff;
+}
+
+.bottomSheetDescription h4,
+.bottomSheetFeatures h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.bottomSheetDescription p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 20px 0;
+}
+
+.bottomSheetFeatures ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.bottomSheetFeatures li {
+  padding: 10px 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.bottomSheetFeatures li:last-child {
+  border-bottom: none;
+}
+
+.bottomSheetDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+}
+
+.bottomSheetDetails .detailItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.bottomSheetDetails .detailItem span:first-child {
+  color: var(--text-secondary);
+}
+
+.bottomSheetDetails .detailItem span:last-child {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.bottomSheetActions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 12px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1002;
+}
+
+.addToCartBtn,
+.bookNowBtn {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addToCartBtn {
+  background: transparent;
+  color: #00c8ff;
+  border: 2px solid #00c8ff;
+}
+
+.addToCartBtn:active {
+  background: rgba(0, 200, 255, 0.1);
+}
+
+.bookNowBtn {
+  background: #00c8ff;
+  color: white;
+}
+
+.bookNowBtn:active {
+  background: #00b8ef;
+}
+
+/* ===== FIXED CHECKOUT BAR ===== */
+.fixedCheckoutBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid #00c8ff;
+  padding: 12px 20px;
+  z-index: 999;
+  box-shadow: 0 -4px 15px rgba(0, 200, 255, 0.15);
+  animation: slideUpBar 0.3s ease;
+}
+
+@keyframes slideUpBar {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.checkoutBarContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cartInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cartCount {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.cartTotal {
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.checkoutBtn {
+  background: #00c8ff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 200, 255, 0.3);
+}
+
+.checkoutBtn:active {
+  background: #00b8ef;
+  transform: scale(0.98);
 }
