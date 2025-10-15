@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom"; 
 import styles from "./Header.module.css";
@@ -13,6 +13,7 @@ import { FaBell, FaUser, FaCog, FaHistory, FaSignOutAlt, FaBars, FaTimes, FaHand
 const Header = () => {
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
+  const navigate = useNavigate();
   console.log("AuthContext user:", user);
 
   const [isTaskerDropdownOpen, setTaskerDropdownOpen] = useState(false);
@@ -21,6 +22,7 @@ const Header = () => {
   const [isWorkerDropdownOpen, setWorkerDropdownOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
+  const [showCartMessage, setShowCartMessage] = useState(false);
   const [userProfileData, setUserProfileData] = useState({
     fullName: user?.username || 'User',
     profileImageUrl: null
@@ -168,6 +170,24 @@ const Header = () => {
     logout();
   };
 
+  const handleCartClick = (e) => {
+    e.preventDefault();
+    if (cartCount === 0) {
+      // Show message and redirect to services page
+      setShowCartMessage(true);
+      setTimeout(() => {
+        navigate('/services');
+      }, 500);
+      // Hide message after 3 seconds
+      setTimeout(() => {
+        setShowCartMessage(false);
+      }, 3500);
+    } else {
+      // Navigate to cart if items exist
+      navigate('/cart');
+    }
+  };
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -244,12 +264,12 @@ const Header = () => {
             {user ? (
               <div className={styles.userProfileContainer}>
                 {/* Cart Icon */}
-                <Link to="/cart" className={styles.cartButton}>
+                <button onClick={handleCartClick} className={styles.cartButton}>
                   <FaShoppingCart size={16} />
                   {cartCount > 0 && (
                     <div className={styles.cartBadge}>{cartCount}</div>
                   )}
-                </Link>
+                </button>
                 
                 {/* User Profile Dropdown */}
                 <div className={styles.userProfile} ref={profileDropdownRef}>
@@ -401,6 +421,13 @@ const Header = () => {
         confirmText="Yes, log out"
         cancelText="Stay logged in"
       />
+
+      {/* Empty Cart Message */}
+      {showCartMessage && (
+        <div className={styles.cartMessage}>
+          Please add a service to the cart or book a service first
+        </div>
+      )}
     </>
   );
 };

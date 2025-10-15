@@ -174,18 +174,18 @@
 /* Google Sign-In button container styling */
 .g_id_signin {
   width: 35vw !important;
-  height: 8vh !important;
   margin-top: 1.393vh !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .g_id_signin > div {
   width: 100% !important;
-  height: 100% !important;
 }
 
 .g_id_signin iframe {
   width: 100% !important;
-  height: 100% !important;
 }
 
 .google-btn {
@@ -372,4 +372,132 @@
   margin-left: 0;
   margin-top: 0;
   flex-shrink: 0;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 1vh 5vw;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .logo {
+    width: auto;
+    height: auto;
+    font-size: 1.3rem;
+    line-height: normal;
+  }
+
+  .account-text {
+    width: auto;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .form-container {
+    width: 100%;
+    padding: 0 5vw;
+    margin-bottom: 3vh;
+  }
+
+  .form-container h2 {
+    font-size: 1.5rem;
+    padding: 0.5vh 0;
+  }
+
+  .input-box,
+  .continue-btn,
+  .social-btn,
+  .g_id_signin,
+  .input-group,
+  .otp-container,
+  .name-container {
+    width: 90vw;
+    max-width: 400px;
+  }
+
+  .input-box,
+  .continue-btn,
+  .social-btn {
+    height: 48px;
+    font-size: 0.9rem;
+    padding-left: 1rem;
+  }
+
+  .input-box::placeholder {
+    font-size: 0.85rem;
+  }
+
+  .toggle-container {
+    width: 90vw;
+    max-width: 400px;
+  }
+
+  .toggle-btn {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  .terms {
+    width: 90vw;
+    max-width: 400px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    margin: 1vh auto;
+  }
+
+  .separator {
+    width: 90vw;
+    max-width: 400px;
+    font-size: 0.85rem;
+    margin: 1vh 0;
+  }
+
+  .verify-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+    height: 42px;
+    white-space: nowrap;
+  }
+
+  .otp-instruction,
+  .name-instruction {
+    font-size: 0.75rem;
+  }
+
+  .otp-container,
+  .name-container {
+    padding: 0.8rem;
+    margin-top: 0.8rem;
+  }
+
+  .message {
+    font-size: 0.8rem;
+    margin-top: 0.8rem;
+  }
+
+  /* Optimize Google button for mobile */
+  .social-btn {
+    font-size: 0.85rem;
+    height: 48px;
+    padding: 0 1rem;
+  }
+
+  .g_id_signin {
+    margin-top: 1vh !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 90vw !important;
+    max-width: 400px !important;
+  }
+
+  .g_id_signin > div {
+    width: 100% !important;
+  }
+
+  .g_id_signin iframe {
+    width: 100% !important;
+  }
 }

@@ -178,32 +178,81 @@
 @media (max-width: 768px) {
   .headerContainer {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem;
+    align-items: center;
+    padding: 1rem 5vw;
+    gap: 0.5rem;
   }
   
   .logo {
     width: auto;
     height: auto;
-    font-size: 2rem;
+    font-size: 1.3rem;
+    line-height: normal;
+    text-align: center;
   }
   
   .accountText {
     width: auto;
-    margin-top: 1rem;
+    font-size: 0.8rem;
+    text-align: center;
+    line-height: 1.4;
   }
   
   .formContainer {
-    width: 90%;
-    padding: 0 1rem;
+    width: 100%;
+    padding: 0 5vw;
+    margin: 2vh auto;
+  }
+
+  .formContainer h2 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 1.2rem;
   }
   
+  .inputGroup {
+    margin-bottom: 0.8rem;
+  }
+
+  .inputGroup label {
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
+
   .inputBox {
     width: 100%;
+    height: 48px;
+    padding-left: 1rem;
+    font-size: 0.9rem;
     box-sizing: border-box;
+  }
+
+  .inputBox::placeholder {
+    font-size: 0.85rem;
   }
   
   .continueBtn {
     width: 100%;
+    height: 48px;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  .message {
+    font-size: 0.8rem;
+    margin: 0.8rem 0;
+  }
+
+  .separator {
+    width: 100%;
+    margin: 1.2rem 0;
+    font-size: 0.85rem;
+  }
+
+  .registrationLink {
+    font-size: 0.8rem;
   }
 }

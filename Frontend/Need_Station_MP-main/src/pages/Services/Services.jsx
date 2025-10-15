@@ -74,7 +74,7 @@ const Services = () => {
     };
 
     const handleBookService = (service) => {
-        // Allow navigation without login - auth check moved to final booking step
+        // Navigate to the service's subcategory page (e.g., /services/elderly-care)
         navigate(service.link);
     };
     

@@ -61,9 +61,11 @@ public class GoogleAuthService {
                 String jwtToken = generateJwtToken(user);
                 
                 GoogleAuthResponse.UserInfo userInfo = new GoogleAuthResponse.UserInfo(
+                    user.getId(),
                     user.getEmail(), 
                     user.getFirstName() != null ? user.getFirstName() : "", 
                     user.getLastName() != null ? user.getLastName() : "",
+                    user.getContactNumber() != null ? user.getContactNumber() : "",
                     picture);
                 return new GoogleAuthResponse(true, "Authentication successful", jwtToken, userInfo);
                 

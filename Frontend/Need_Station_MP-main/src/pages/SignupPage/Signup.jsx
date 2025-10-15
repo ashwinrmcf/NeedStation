@@ -370,7 +370,7 @@ const Signup = () => {
   // Step 2: OTP Verification
   const renderStep2 = () => (
     <div className={`${styles['form-container']} signup-form-spacing`}>
-      <h2>Verify your email</h2>
+      <h2>Verify your {contactType === 'email' ? 'email' : 'phone'}</h2>
       <p style={{ color: '#888', marginBottom: '20px', textAlign: 'center' }}>
         We sent a verification code to {contactType === 'email' ? formData.email : formData.phone}
       </p>

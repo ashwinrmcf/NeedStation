@@ -215,11 +215,8 @@ public class UserProfileController {
             if (profileData.containsKey("address")) {
                 user.setAddress((String) profileData.get("address"));
             }
-            if (profileData.containsKey("addressLine1")) {
-                user.setAddressLine1((String) profileData.get("addressLine1"));
-            }
-            if (profileData.containsKey("addressLine2")) {
-                user.setAddressLine2((String) profileData.get("addressLine2"));
+            if (profileData.containsKey("fullAddress")) {
+                user.setFullAddress((String) profileData.get("fullAddress"));
             }
             if (profileData.containsKey("landmark")) {
                 user.setLandmark((String) profileData.get("landmark"));
@@ -521,8 +518,7 @@ public class UserProfileController {
         
         // Address Information
         profileResponse.put("address", user.getAddress());
-        profileResponse.put("addressLine1", user.getAddressLine1());
-        profileResponse.put("addressLine2", user.getAddressLine2());
+        profileResponse.put("fullAddress", user.getFullAddress());
         profileResponse.put("landmark", user.getLandmark());
         profileResponse.put("city", user.getCity());
         profileResponse.put("state", user.getState());

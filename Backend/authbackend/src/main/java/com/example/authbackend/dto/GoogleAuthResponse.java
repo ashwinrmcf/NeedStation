@@ -56,11 +56,13 @@ public class GoogleAuthResponse {
 
     // Inner class for user information
     public static class UserInfo {
+        private Long id;
         private String email;
         private String name;
         private String firstName;
         private String lastName;
         private String picture;
+        private String contactNumber;
 
         public UserInfo() {}
 
@@ -75,6 +77,16 @@ public class GoogleAuthResponse {
             this.firstName = firstName;
             this.lastName = lastName;
             this.name = (firstName + " " + lastName).trim();
+            this.picture = picture;
+        }
+        
+        public UserInfo(Long id, String email, String firstName, String lastName, String contactNumber, String picture) {
+            this.id = id;
+            this.email = email;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.name = (firstName + " " + lastName).trim();
+            this.contactNumber = contactNumber;
             this.picture = picture;
         }
 
@@ -116,6 +128,22 @@ public class GoogleAuthResponse {
         
         public void setLastName(String lastName) {
             this.lastName = lastName;
+        }
+        
+        public Long getId() {
+            return id;
+        }
+        
+        public void setId(Long id) {
+            this.id = id;
+        }
+        
+        public String getContactNumber() {
+            return contactNumber;
+        }
+        
+        public void setContactNumber(String contactNumber) {
+            this.contactNumber = contactNumber;
         }
     }
 }

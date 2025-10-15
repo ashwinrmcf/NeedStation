@@ -469,3 +469,49 @@
   50% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
+
+/* Suggestion chips styling */
+.suggestion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.suggestion-chip {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(14, 165, 233, 0.05));
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+}
+
+.suggestion-chip:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.suggestion-chip:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.2);
+}
+
+/* Dark mode support for suggestions */
+[data-theme="dark"] .suggestion-chip {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(14, 165, 233, 0.08));
+  border-color: rgba(14, 165, 233, 0.6);
+}
+
+[data-theme="dark"] .suggestion-chip:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}

@@ -29,12 +29,16 @@ public class GoogleLoginController {
                 return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", response.getMessage(),
+                    "accessToken", response.getToken(),
                     "token", response.getToken(),
                     "user", Map.of(
+                        "id", response.getUser().getId(),
                         "email", response.getUser().getEmail(),
                         "firstName", response.getUser().getFirstName(),
                         "lastName", response.getUser().getLastName(),
-                        "displayName", response.getUser().getFirstName() + " " + response.getUser().getLastName()
+                        "displayName", response.getUser().getFirstName() + " " + response.getUser().getLastName(),
+                        "phone", response.getUser().getContactNumber() != null ? response.getUser().getContactNumber() : "",
+                        "contactNumber", response.getUser().getContactNumber() != null ? response.getUser().getContactNumber() : ""
                     )
                 ));
             } else {

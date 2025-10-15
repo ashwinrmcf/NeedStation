@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/bookings")
+// OLD BOOKING CONTROLLER - TEMPORARILY DISABLED
+// Use BookingNewController for new booking system
+//@RestController
+//@RequestMapping("/api/bookings")
 @CrossOrigin(origins = "*")
 public class BookingController {
     

@@ -3,6 +3,7 @@ import { FiSend, FiUser, FiMessageCircle, FiArrowRight, FiGlobe } from 'react-ic
 import { IoClose } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import smartTranslationService from '../services/SmartTranslationService';
+import NeedBotAI from '../services/NeedBotAI';
 import './NeedBot.css';
 
 const NeedBot = () => {
@@ -385,40 +386,74 @@ const NeedBot = () => {
     setIsLoading(true);
     
     try {
-      // Process the input using our rule-based system
-      const result = processUserInput(input);
+      // First try the old rule-based system for language changes and navigation
+      const oldResult = processUserInput(input);
       
       // Add a small delay to simulate processing
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      if (result.type === 'language_change') {
+      // Handle language changes with old system (it works well)
+      if (oldResult.type === 'language_change') {
         setMessages(prev => [...prev, { 
-          text: result.message, 
+          text: oldResult.message, 
           sender: 'bot'
         }]);
-        changeLanguage(result.langCode);
-      } else if (result.type === 'language_change_with_button') {
+        changeLanguage(oldResult.langCode);
+        setIsLoading(false);
+        return;
+      } else if (oldResult.type === 'language_change_with_button') {
         setMessages(prev => [...prev, { 
-          text: result.message, 
+          text: oldResult.message, 
           sender: 'bot',
           languageAction: {
-            langCode: result.langCode,
-            buttonText: result.buttonText,
-            languageName: result.languageName
+            langCode: oldResult.langCode,
+            buttonText: oldResult.buttonText,
+            languageName: oldResult.languageName
           }
         }]);
-      } else if (result.type === 'navigation') {
+        setIsLoading(false);
+        return;
+      }
+      
+      // Use AI service for intelligent responses
+      const aiResponse = await NeedBotAI.processQuery(input, { language: currentLanguage });
+      
+      // Handle AI response
+      if (aiResponse.type === 'navigation') {
         setMessages(prev => [...prev, { 
-          text: result.message, 
+          text: aiResponse.message, 
           sender: 'bot',
-          redirectUrl: result.route,
-          redirectButtonText: result.buttonText
+          redirectUrl: aiResponse.route,
+          redirectButtonText: aiResponse.buttonText,
+          suggestions: aiResponse.suggestions
         }]);
-      } else {
-        setMessages(prev => [...prev, { 
-          text: result.message, 
+      } else if (aiResponse.type === 'text') {
+        const botMessage = { 
+          text: aiResponse.message, 
           sender: 'bot'
-        }]);
+        };
+        
+        // Add suggestions if available
+        if (aiResponse.suggestions && aiResponse.suggestions.length > 0) {
+          botMessage.suggestions = aiResponse.suggestions;
+        }
+        
+        setMessages(prev => [...prev, botMessage]);
+      } else {
+        // Fallback to old system
+        if (oldResult.type === 'navigation') {
+          setMessages(prev => [...prev, { 
+            text: oldResult.message, 
+            sender: 'bot',
+            redirectUrl: oldResult.route,
+            redirectButtonText: oldResult.buttonText
+          }]);
+        } else {
+          setMessages(prev => [...prev, { 
+            text: oldResult.message, 
+            sender: 'bot'
+          }]);
+        }
       }
     } catch (error) {
       console.error('NeedBot processing error:', error);
@@ -488,6 +523,61 @@ const NeedBot = () => {
                     >
                       {message.languageAction.buttonText} <FiGlobe />
                     </button>
+                  )}
+                  
+                  {/* Quick suggestions */}
+                  {message.suggestions && message.suggestions.length > 0 && (
+                    <div className="suggestion-chips">
+                      {message.suggestions.map((suggestion, idx) => (
+                        <button
+                          key={idx}
+                          className="suggestion-chip"
+                          onClick={() => {
+                            setInput(suggestion);
+                            // Auto-submit the suggestion
+                            const syntheticEvent = { preventDefault: () => {} };
+                            setTimeout(() => {
+                              const submitInput = suggestion;
+                              setInput('');
+                              setMessages(prev => [...prev, { text: submitInput, sender: 'user' }]);
+                              setIsLoading(true);
+                              
+                              NeedBotAI.processQuery(submitInput, { language: currentLanguage })
+                                .then(aiResponse => {
+                                  if (aiResponse.type === 'navigation') {
+                                    setMessages(prev => [...prev, { 
+                                      text: aiResponse.message, 
+                                      sender: 'bot',
+                                      redirectUrl: aiResponse.route,
+                                      redirectButtonText: aiResponse.buttonText,
+                                      suggestions: aiResponse.suggestions
+                                    }]);
+                                  } else {
+                                    const botMessage = { 
+                                      text: aiResponse.message, 
+                                      sender: 'bot',
+                                      suggestions: aiResponse.suggestions
+                                    };
+                                    setMessages(prev => [...prev, botMessage]);
+                                  }
+                                })
+                                .catch(error => {
+                                  console.error('Suggestion error:', error);
+                                  setMessages(prev => [...prev, { 
+                                    text: "Sorry, I encountered an error.", 
+                                    sender: 'bot' 
+                                  }]);
+                                })
+                                .finally(() => {
+                                  setIsLoading(false);
+                                });
+                            }, 100);
+                          }}
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>

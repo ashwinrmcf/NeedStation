@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ArrowLeft, ArrowRight, MapPin, Clock, User, Phone, Calendar, Shield } from 'lucide-react';
 import { getServiceConfiguration } from '../../data/ServiceConfigurations';
+import { getServiceConfiguration as getServiceConfigFromAPI, createBooking } from '../../services/bookingApi';
 import LeafletMapPicker from '../Map/LeafletMapPicker';
 import styles from './BookingModal.module.css';
 
@@ -35,8 +36,10 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [isSavingLocation, setIsSavingLocation] = useState(false);
   const [locationSaved, setLocationSaved] = useState(false);
+  const [apiServiceConfig, setApiServiceConfig] = useState(null);
+  const [selectedSubServices, setSelectedSubServices] = useState([]);
 
-  // Get service configuration for dynamic fields
+  // Get service configuration for dynamic fields (fallback to local config)
   const serviceConfig = getServiceConfiguration(serviceName?.toUpperCase().replace(/\s+/g, '_') || '');
 
   // Auto-fill phone number and location data from database first, then fall back to profile
@@ -59,8 +62,8 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
         const userId = userProfile?.id || userProfile?.userId || localStorage.getItem('userId');
         console.log('🔍 Final userId to use:', userId);
         
-        if (!userId) {
-          console.warn('⚠️ No userId found - skipping data load');
+        if (!userId || userId === 'undefined' || userId === 'null') {
+          console.warn('⚠️ No valid userId found - skipping data load');
           // Set default form with just phone from profile
           setFormData({
             phone: userProfile?.phone || userProfile?.mobile || '',
@@ -80,10 +83,9 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
           return;
         }
         
-        if (userId) {
-          try {
-            // Fetch from database (single source of truth)
-            const response = await fetch(`http://localhost:8080/api/user/profile/${userId}`);
+        try {
+          // Fetch from database (single source of truth)
+          const response = await fetch(`http://localhost:8080/api/user/profile/${userId}`);
             if (response.ok) {
               const dbData = await response.json();
               console.log('📦 Database data received:', JSON.stringify(dbData, null, 2));
@@ -93,7 +95,9 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
               const isPhoneVerified = phone && dbData.phoneVerified;
               
               console.log('📞 Phone from DB:', phone);
-              console.log('✅ Phone verified:', isPhoneVerified);
+              console.log('🔍 dbData.phoneVerified value:', dbData.phoneVerified);
+              console.log('🔍 dbData.phoneVerified type:', typeof dbData.phoneVerified);
+              console.log('✅ Final isPhoneVerified:', isPhoneVerified);
               
               setPhoneVerified(isPhoneVerified);
               
@@ -103,7 +107,8 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
               if (hasLocationData) {
                 const savedLocation = {
                   lat: dbData.locationLat,
-                  lng: dbData.locationLng
+                  lng: dbData.locationLng,
+                  address: dbData.locationAddress || dbData.address || `${dbData.locationLat}, ${dbData.locationLng}`
                 };
                 
                 console.log('✅ Setting saved location from DB:', savedLocation);
@@ -187,29 +192,6 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
             });
             setSelectedLocation(null);
           }
-        } else {
-          console.log('⚠️ No userId found, using profile data only');
-          // No userId, use profile data
-          const phoneFromProfile = userProfile?.phone || userProfile?.mobile || '';
-          const isPhoneVerified = phoneFromProfile && userProfile?.phoneVerified;
-          setPhoneVerified(isPhoneVerified);
-          
-          setFormData({
-            phone: phoneFromProfile,
-            alternatePhone: '',
-            latitude: null,
-            longitude: null,
-            address: '',
-            pincode: '',
-            landmark: '',
-            serviceDetails: {},
-            preferredDate: '',
-            preferredTime: '',
-            urgency: 'normal',
-            preferredTimeSlot: ''
-          });
-          setSelectedLocation(null);
-        }
       };
       
       // Load user data
@@ -433,8 +415,8 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
   // Save contact and location information to user profile and database
   const saveContactAndLocationToProfile = async () => {
     const userId = userProfile?.id || userProfile?.userId || localStorage.getItem('userId');
-    if (!userId) {
-      console.log('⚠️ No userId found, skipping save to database');
+    if (!userId || userId === 'undefined' || userId === 'null') {
+      console.log('⚠️ No valid userId found, skipping save to database');
       return;
     }
     
@@ -494,20 +476,74 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
 
     setIsSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const userId = userProfile?.id || userProfile?.userId || localStorage.getItem('userId');
+      
+      // Get service ID from API config or use a mapping
+      const serviceCodeMap = {
+        'HOME SECURITY GUARD': 'HOME_SECURITY_GUARD',
+        'ELDERLY CARE': 'ELDERLY_CARE',
+        'NURSING CARE': 'NURSING_CARE',
+        'PATHOLOGY CARE': 'PATHOLOGY_CARE',
+        'DIABETES MANAGEMENT': 'DIABETES_MANAGEMENT',
+        'HEALTH CHECK-UP SERVICES': 'HEALTH_CHECKUP_SERVICES',
+        'PHYSIOTHERAPY': 'PHYSIOTHERAPY',
+        'POST-SURGERY CARE': 'POST_SURGERY_CARE',
+        'CARETAKER AT HOME': 'CARETAKER_AT_HOME',
+        'PARKINSONS CARE': 'PARKINSONS_CARE',
+        'BEDRIDDEN PATIENT CARE': 'BEDRIDDEN_PATIENT_CARE',
+        'MOTHER AND BABY CARE': 'MOTHER_AND_BABY_CARE',
+        'PARALYSIS CARE': 'PARALYSIS_CARE'
+      };
+      
+      const serviceCode = serviceCodeMap[serviceName?.toUpperCase()] || serviceName?.toUpperCase().replace(/\s+/g, '_');
+      
+      // Prepare booking data for new API
+      const bookingData = {
+        userId: parseInt(userId),
+        serviceId: apiServiceConfig?.service?.id || 1, // Will be set from API config
+        contactInfo: {
+          phone: formData.phone,
+          alternatePhone: formData.alternatePhone || null,
+          fullAddress: formData.address,
+          landmark: formData.landmark || null,
+          city: 'Indore', // You can make this dynamic
+          state: 'Madhya Pradesh',
+          pincode: formData.pincode || null,
+          locationLat: formData.latitude,
+          locationLng: formData.longitude,
+          locationAddress: selectedLocation?.address || formData.address
+        },
+        scheduling: {
+          preferredDate: formData.preferredDate,
+          preferredTime: formData.preferredTime || null,
+          preferredTimeSlot: formData.preferredTimeSlot || 'Morning',
+          urgency: formData.urgency?.toUpperCase() || 'NORMAL'
+        },
+        selectedSubServices: selectedSubServices, // Array of subservice IDs
+        formalityData: formData.serviceDetails, // Dynamic formality fields
+        specialInstructions: formData.specialInstructions || null
+      };
+      
+      console.log('📤 Sending booking data:', bookingData);
+      
+      // Call new booking API
+      const result = await createBooking(bookingData);
+      
+      console.log('✅ Booking created:', result);
       
       // Call parent callback with booking data
       onBookingComplete({
-        ...formData,
+        ...result.booking,
         serviceName,
-        bookingId: `BK${Date.now()}`,
-        status: 'confirmed'
+        bookingNumber: result.bookingNumber
       });
+      
+      alert(`✅ Booking created successfully!\nBooking Number: ${result.bookingNumber}`);
       
       onClose();
     } catch (error) {
-      console.error('Booking failed:', error);
+      console.error('❌ Booking failed:', error);
+      alert('Failed to create booking: ' + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -574,6 +610,11 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
           {currentStep === 1 && (
             <div>
               <h3 className={styles.stepTitle}>Contact & Location Information</h3>
+              
+              {/* Info Message */}
+              <div className={styles.infoMessage}>
+                ℹ️ Your contact details and address will be saved to your profile for future bookings
+              </div>
               
               {/* Phone Number Section */}
               <div className={styles.formGroup}>
@@ -680,7 +721,11 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                   Select Location on Map *
                 </label>
                 <div className={styles.mapContainer}>
-                  <LeafletMapPicker onLocationSelect={handleLocationSelect} />
+                  <LeafletMapPicker 
+                    onLocationSelect={handleLocationSelect}
+                    initialPosition={selectedLocation ? [selectedLocation.lat, selectedLocation.lng] : null}
+                    initialAddress={formData.address || ''}
+                  />
                 </div>
                 
                 {/* Save Location Button */}
@@ -690,6 +735,23 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                       <p className={styles.locationInfo}>
                         📍 Selected: {selectedLocation?.address || ''}
                       </p>
+                      {formData.latitude && formData.longitude && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedLocation(null);
+                            setFormData(prev => ({
+                              ...prev,
+                              latitude: null,
+                              longitude: null
+                            }));
+                            setLocationSaved(false);
+                          }}
+                          className={styles.changeLocationButton}
+                        >
+                          Change Location
+                        </button>
+                      )}
                     </div>
                     <button
                       type="button"
@@ -735,7 +797,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
               {/* Address Fields */}
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>
-                  Full Address * (Saved to your profile)
+                  Full Address *
                 </label>
                 <textarea
                   value={formData.address}
@@ -747,17 +809,12 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                 {errors.address && (
                   <p className={styles.errorMessage}>{errors.address}</p>
                 )}
-                {formData.address && (
-                  <p className={styles.successMessage}>
-                    ✓ This address will be saved to your profile for future bookings
-                  </p>
-                )}
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <div className={styles.formGroup} style={{ flex: 1 }}>
                   <label className={styles.formLabel}>
-                    Pincode * (Saved to your profile)
+                    Pincode *
                   </label>
                   <input
                     type="text"
@@ -774,7 +831,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
 
                 <div className={styles.formGroup} style={{ flex: 1 }}>
                   <label className={styles.formLabel}>
-                    Landmark (Optional, saved to your profile)
+                    Landmark (Optional)
                   </label>
                   <input
                     type="text"

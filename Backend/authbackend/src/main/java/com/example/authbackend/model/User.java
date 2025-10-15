@@ -118,11 +118,8 @@ public class User {
     private String profileImageUrl;
 
     // NEW PROFILE FIELDS - Structured Address
-    @Column(name = "address_line1")
-    private String addressLine1;
-
-    @Column(name = "address_line2")
-    private String addressLine2;
+    @Column(name = "full_address", columnDefinition = "TEXT")
+    private String fullAddress;
 
     @Column(name = "city", length = 100)
     private String city;
@@ -348,20 +345,12 @@ public class User {
     }
 
     // NEW GETTERS AND SETTERS - Structured Address
-    public String getAddressLine1() {
-        return addressLine1;
+    public String getFullAddress() {
+        return fullAddress;
     }
 
-    public void setAddressLine1(String addressLine1) {
-        this.addressLine1 = addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
-    }
-
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
     }
 
     public String getCity() {

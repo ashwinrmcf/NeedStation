@@ -177,7 +177,25 @@
   font-size: 1.375rem; /* Increased from 1.125rem for better readability */
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 1.25rem; /* Slightly increased margin */
+  margin-bottom: 1rem;
+}
+
+.infoMessage {
+  background: rgba(0, 200, 255, 0.1);
+  border-left: 3px solid #00c8ff;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+[data-theme="dark"] .infoMessage {
+  background: rgba(0, 200, 255, 0.08);
+  color: #a0aec0;
 }
 
 .formGroup {
@@ -501,12 +519,17 @@
 
 .locationPreview {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .locationInfo {
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin: 0;
+  flex: 1;
   padding: 0.5rem;
   background: var(--bg-secondary);
   border-radius: 6px;
@@ -515,6 +538,26 @@
 
 [data-theme="dark"] .locationInfo {
   background: #242738;
+}
+
+.changeLocationButton {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1.5px solid #ff6b6b;
+  color: #ff6b6b;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.changeLocationButton:hover {
+  background: #ff6b6b;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
 .saveLocationButton {

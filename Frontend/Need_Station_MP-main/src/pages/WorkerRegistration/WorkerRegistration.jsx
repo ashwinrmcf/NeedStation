@@ -360,12 +360,15 @@ const WorkerRegistration = () => {
 
   // Display progress indicator with glowing effect
   const renderProgressBar = () => {
+    const stepLabels = ['Basic Info', 'Address', 'Work', 'Verification', 'Payment', 'Review'];
+    const mobileLabels = ['Info', 'Address', 'Work', 'Verify', 'Payment', 'Review'];
+    
     return (
-      <div className="mb-2">
-        <div className="flex justify-between items-center">
-          {['Basic Info', 'Address', 'Work', 'Verification', 'Payment', 'Review'].map((label, idx) => (
-            <div key={idx} className="flex flex-col items-center">
-              <div className="relative">
+      <div className="mb-2 px-2">
+        <div className="flex justify-between items-center gap-1">
+          {stepLabels.map((label, idx) => (
+            <div key={idx} className="flex flex-col items-center flex-1 min-w-0">
+              <div className="relative mb-1 flex items-center justify-center">
                 {/* Glow effect div positioned absolutely */}
                 <div className={`absolute inset-0 rounded-full blur-sm
                   ${step > idx + 1 ? 'bg-green-500/60' : 
@@ -373,28 +376,47 @@ const WorkerRegistration = () => {
                   transition-all duration-300`}></div>
                   
                 {/* Main circle indicator */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center relative
+                <div 
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full relative
                   ${step > idx + 1 ? 'bg-green-500 ring-2 ring-green-400' : 
                     step === idx + 1 ? 'bg-teal-500 ring-2 ring-teal-400' : 'bg-gray-700'}
-                  transition-all duration-300`}>
+                  transition-all duration-300`}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    lineHeight: '0'
+                  }}>
                   {step > idx + 1 ? (
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20" style={{ display: 'block' }}>
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   ) : (
-                    <span className="text-white text-sm">{idx + 1}</span>
+                    <span 
+                      className="text-white font-bold" 
+                      style={{ 
+                        fontSize: '12px',
+                        lineHeight: '0',
+                        display: 'block'
+                      }}
+                    >
+                      {idx + 1}
+                    </span>
                   )}
                 </div>
               </div>
-              <span className={`text-xs mt-2 ${step === idx + 1 ? 'text-teal-500 font-semibold' : 'text-gray-400'}`}>
-                {label}
+              {/* Mobile: Show abbreviated labels, Desktop: Show full labels */}
+              <span className={`text-[10px] sm:text-xs mt-1 text-center leading-tight truncate w-full
+                ${step === idx + 1 ? 'text-teal-500 font-semibold' : 'text-gray-400'}`}>
+                <span className="hidden sm:inline">{label}</span>
+                <span className="sm:hidden">{mobileLabels[idx]}</span>
               </span>
             </div>
           ))}
         </div>
-        <div className="w-full bg-gray-700 h-1 mt-4 rounded-full overflow-hidden">
+        <div className="w-full bg-gray-700 h-1 mt-3 rounded-full overflow-hidden">
           <div 
-            className="bg-teal-500 h-1 rounded-full shadow-lg shadow-teal-500/70" 
+            className="bg-teal-500 h-1 rounded-full shadow-lg shadow-teal-500/70 transition-all duration-300" 
             style={{ width: `${((step - 1) / 5) * 100}%` }}
           />
         </div>
@@ -403,9 +425,8 @@ const WorkerRegistration = () => {
   };
 
   return (
-    <div className="min-h-screen text-white p-4 form-content-spacing">
+    <div className="min-h-screen text-white p-4 sm:p-6 form-content-spacing">
       <div className="max-w-4xl mx-auto">
-        {/* Warning Dialog */}
         {showWarningDialog && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-gray-800 p-6 rounded-lg max-w-md mx-4">

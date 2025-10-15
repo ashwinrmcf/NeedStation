@@ -119,7 +119,7 @@ const GenericServiceOptions = ({
   }, [trustIndicators]);
 
   const handleBookNow = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     
     // Check if user is logged in
     if (!user) {

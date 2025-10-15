@@ -551,7 +551,7 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
           <div className="grid grid-cols-3 gap-4">
             {['Male', 'Female', 'Other'].map((option) => (
               <label key={option}
-                className={`flex items-center justify-center p-3 border rounded-md cursor-pointer transition ${
+                className={`flex items-center justify-center p-3 border rounded-md cursor-pointer transition min-h-[48px] ${
                   data.gender === option
                     ? 'bg-teal-500 border-teal-600 text-white'
                     : 'border-gray-700 text-gray-300 hover:bg-gray-800'
@@ -651,7 +651,7 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
         {/* Contact Number with OTP verification */}
         <div>
           <label htmlFor="phone" className="block text-lg font-medium mb-2">Contact Number</label>
-          <div className="flex space-x-3">
+          <div className="flex space-x-3 items-center">
             <input
               type="tel"
               id="phone"
@@ -660,7 +660,7 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
               onChange={handleInputChange}
               pattern="[0-9]{10}"
               placeholder="10-digit number"
-              className="w-full p-3 bg-gray-900 border border-gray-700 rounded-md"
+              className="flex-1 p-3 bg-gray-900 border border-gray-700 rounded-md min-h-[48px]"
               required
               disabled={otpVerified}
             />
@@ -669,7 +669,7 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
                 type="button" 
                 onClick={generateOtp}
                 disabled={!data.phone || data.phone.length !== 10 || otpLoading}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${!data.phone || data.phone.length !== 10 || otpLoading ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600 text-white'}`}
+                className={`px-6 py-3 rounded-md font-medium transition-colors whitespace-nowrap min-h-[48px] ${!data.phone || data.phone.length !== 10 || otpLoading ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600 text-white'}`}
               >
                 {otpLoading ? (
                   <span className="flex items-center">

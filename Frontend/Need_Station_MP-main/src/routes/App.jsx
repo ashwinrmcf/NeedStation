@@ -19,6 +19,7 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { AdvancedImage } from '@cloudinary/react';
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
+import MobileBackButton from "../components/MobileBackButton/MobileBackButton.jsx";
 
 function App() {
   const location = useLocation();
@@ -325,6 +326,7 @@ function App() {
       <BookingModalProvider>
         <ScrollToTop />
         <Header />
+        <MobileBackButton />
         <div className="container my-4">
           <AdvancedImage cldImg={img} />
         </div>

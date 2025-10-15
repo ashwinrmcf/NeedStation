@@ -273,6 +273,15 @@ public class SignupController {
             user.setFullName(userData.get("firstName") + " " + userData.get("lastName"));
             user.setProvider(isGoogleSignup ? "GOOGLE" : "LOCAL");
             user.setVerified(true); // Contact was verified via OTP
+            
+            // Set phone/email verified flags based on signup method
+            if ("phone".equals(contactType)) {
+                user.setPhoneVerified(true); // Phone was verified via OTP
+                user.setEmailVerified(false); // No email provided
+            } else {
+                user.setEmailVerified(true); // Email was verified via OTP
+                user.setPhoneVerified(false); // No phone provided yet
+            }
 
             // Check if user already exists
             if ("phone".equals(contactType)) {

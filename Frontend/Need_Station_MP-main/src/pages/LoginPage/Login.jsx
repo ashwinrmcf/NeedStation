@@ -88,26 +88,27 @@ const Login = () => {
         console.log("🔍 Extracted data:", {
           displayName,
           userId: data.user.id,
-          token: data.token,
+          token: data.accessToken || data.token,
           email: data.user.email,
-          phone: data.user.phone
+          phone: data.user.phone || data.user.contactNumber
         });
         
         // Store user data BEFORE calling login
-        localStorage.setItem("token", data.token);
+        const token = data.accessToken || data.token; // Support both accessToken and token
+        localStorage.setItem("token", token);
         localStorage.setItem("userId", data.user.id);
         localStorage.setItem("workerId", data.user.id);
         localStorage.setItem("username", displayName);
         localStorage.setItem("userEmail", data.user.email || '');
-        localStorage.setItem("userPhone", data.user.phone || '');
+        localStorage.setItem("userPhone", data.user.phone || data.user.contactNumber || '');
         
         // Call login with additional user data
         login(displayName, {
           id: data.user.id,
           userId: data.user.id,
           email: data.user.email,
-          phone: data.user.phone,
-          token: data.token
+          phone: data.user.phone || data.user.contactNumber,
+          token: token
         });
         
         // If we came from a service page, redirect to user-details with the service data
@@ -146,20 +147,21 @@ const Login = () => {
         const displayName = `${data.user.firstName} ${data.user.lastName}`.trim();
         
         // Store user data BEFORE calling login (same as manual login)
-        localStorage.setItem("token", data.token);
+        const googleToken = data.accessToken || data.token; // Support both accessToken and token
+        localStorage.setItem("token", googleToken);
         localStorage.setItem("userId", data.user.id);
         localStorage.setItem("workerId", data.user.id);
         localStorage.setItem("username", displayName);
         localStorage.setItem("userEmail", data.user.email || '');
-        localStorage.setItem("userPhone", data.user.phone || '');
+        localStorage.setItem("userPhone", data.user.phone || data.user.contactNumber || '');
         
         // Call login with additional user data (same as manual login)
         login(displayName, {
           id: data.user.id,
           userId: data.user.id,
           email: data.user.email,
-          phone: data.user.phone,
-          token: data.token,
+          phone: data.user.phone || data.user.contactNumber,
+          token: googleToken,
           firstName: data.user.firstName,
           lastName: data.user.lastName
         });
@@ -215,9 +217,8 @@ const Login = () => {
                 shape: 'rectangular',
                 theme: 'outline',
                 text: 'continue_with',
-                size: 'large',
-                logo_alignment: 'left',
-                width: 400
+                size: 'medium',
+                logo_alignment: 'left'
               });
             }
           }, 100);

@@ -59,12 +59,20 @@ const LocationMarker = ({ position, setPosition, onLocationSelect }) => {
   );
 };
 
-const LeafletMapPicker = ({ onLocationSelect }) => {
-  const [position, setPosition] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
+const LeafletMapPicker = ({ onLocationSelect, initialPosition = null, initialAddress = "" }) => {
+  const [position, setPosition] = useState(initialPosition);
+  const [searchQuery, setSearchQuery] = useState(initialAddress);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const mapRef = useRef(null);
+
+  // Update position when initialPosition changes
+  useEffect(() => {
+    if (initialPosition) {
+      setPosition(initialPosition);
+      console.log('🗺️ Setting initial position on map:', initialPosition);
+    }
+  }, [initialPosition]);
 
   // Search function using Nominatim
   const searchLocation = async (query) => {
@@ -207,13 +215,14 @@ const LeafletMapPicker = ({ onLocationSelect }) => {
 
       {/* Map Container */}
       <MapContainer
-        center={defaultCenter}
-        zoom={13}
+        center={position || defaultCenter}
+        zoom={position ? 15 : 13}
         style={containerStyle}
         ref={mapRef}
         whenCreated={(mapInstance) => {
           mapRef.current = mapInstance;
         }}
+        key={position ? `${position[0]}-${position[1]}` : 'default'}
       >
         <LayersControl position="topright">
           <LayersControl.BaseLayer checked name="Street Map">
