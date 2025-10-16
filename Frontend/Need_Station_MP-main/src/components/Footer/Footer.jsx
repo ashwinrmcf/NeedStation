@@ -44,7 +44,7 @@ const Footer = () => {
                 <IoMdMail /> <span>support@needstation.in</span> 
               </p>
               <p>
-                <FaLocationDot /> <span>2972 Westheimer Rd, Santa Ana, Illinois 85486</span> 
+                <FaLocationDot /> <span>Scheme 74, Indore, Madhya Pradesh, 452010</span> 
               </p>
             </div>
           </div>

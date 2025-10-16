@@ -46,15 +46,21 @@ public class BookingServiceNew {
      */
     @Transactional
     public BookingResponseDTO createBooking(CreateBookingDTO dto) {
-        // 1. Get service details
-        com.example.authbackend.model.Service service = serviceService.getServiceById(dto.getServiceId());
-        
-        // 2. Get user details
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        // 3. Calculate total amount
-        BigDecimal totalAmount = calculateTotalAmount(service, dto.getSelectedSubServices());
+        try {
+            System.out.println("📝 Creating booking for userId: " + dto.getUserId() + ", serviceId: " + dto.getServiceId());
+            
+            // 1. Get service details
+            com.example.authbackend.model.Service service = serviceService.getServiceById(dto.getServiceId());
+            System.out.println("✅ Service found: " + service.getServiceName());
+            
+            // 2. Get user details
+            User user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
+            System.out.println("✅ User found: " + user.getUsername());
+            
+            // 3. Calculate total amount
+            BigDecimal totalAmount = calculateTotalAmount(service, dto.getSelectedSubServices());
+            System.out.println("✅ Total amount calculated: " + totalAmount);
         
         // 4. Create booking record
         BookingNew booking = new BookingNew();
@@ -64,7 +70,13 @@ public class BookingServiceNew {
         // Denormalized fields (will be auto-filled by trigger, but set manually for safety)
         booking.setServiceName(service.getServiceName());
         booking.setServiceCode(service.getServiceCode());
-        booking.setUserName(user.getFullName());
+        
+        // Handle user name - fallback to username if fullName is null
+        String userName = user.getFullName();
+        if (userName == null || userName.trim().isEmpty()) {
+            userName = user.getUsername();
+        }
+        booking.setUserName(userName);
         booking.setUserEmail(user.getEmail());
         
         // Contact & Location
@@ -173,7 +185,14 @@ public class BookingServiceNew {
         response.setFullAddress(booking.getFullAddress());
         response.setCity(booking.getCity());
         
+        System.out.println("✅ Booking created successfully: " + response.getBookingNumber());
         return response;
+        
+        } catch (Exception e) {
+            System.err.println("❌ Error creating booking: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create booking: " + e.getMessage(), e);
+        }
     }
     
     /**

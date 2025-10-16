@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class CreateBookingDTO {
     @AllArgsConstructor
     public static class Scheduling {
         private LocalDate preferredDate;
-        private LocalTime preferredTime;
+        private String preferredTime; // Changed from LocalTime to String to accept "afternoon", "10:00", etc.
         private String preferredTimeSlot;
         private String urgency;
     }

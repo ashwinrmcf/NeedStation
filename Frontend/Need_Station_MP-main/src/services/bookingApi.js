@@ -51,6 +51,9 @@ export const getAllServices = async () => {
  */
 export const createBooking = async (bookingData) => {
   try {
+    console.log('📤 Sending booking request to:', `${API_BASE_URL}/bookings`);
+    console.log('📦 Booking data:', JSON.stringify(bookingData, null, 2));
+    
     const response = await fetch(`${API_BASE_URL}/bookings`, {
       method: 'POST',
       headers: {
@@ -59,15 +62,19 @@ export const createBooking = async (bookingData) => {
       body: JSON.stringify(bookingData),
     });
     
-    const data = await response.json();
+    console.log('📥 Response status:', response.status);
     
-    if (!data.success) {
-      throw new Error(data.message || 'Failed to create booking');
+    const data = await response.json();
+    console.log('📥 Response data:', data);
+    
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || `Server error: ${response.status}`);
     }
     
     return data;
   } catch (error) {
-    console.error('Error creating booking:', error);
+    console.error('❌ Error creating booking:', error);
+    console.error('❌ Error details:', error.message);
     throw error;
   }
 };

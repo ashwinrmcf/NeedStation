@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -79,8 +78,8 @@ public class BookingNew {
     @Column(name = "preferred_date", nullable = false)
     private LocalDate preferredDate;
     
-    @Column(name = "preferred_time")
-    private LocalTime preferredTime;
+    @Column(name = "preferred_time", length = 50)
+    private String preferredTime; // Changed from LocalTime to String to accept "afternoon", "10:00", etc.
     
     @Column(name = "preferred_time_slot", length = 50)
     private String preferredTimeSlot; // Morning, Afternoon, Evening

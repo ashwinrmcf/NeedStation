@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +20,7 @@ public class BookingResponseDTO {
     private String paymentStatus;
     private BigDecimal totalAmount;
     private LocalDate preferredDate;
-    private LocalTime preferredTime;
+    private String preferredTime; // Changed from LocalTime to String
     private String preferredTimeSlot;
     private String urgency;
     private LocalDateTime createdAt;
