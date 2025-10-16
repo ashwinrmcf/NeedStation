@@ -61,6 +61,9 @@ public class SecurityConfig {
                 // Booking endpoints - allow access for testing
                 .requestMatchers("/api/bookings/**").permitAll()
                 
+                // Services endpoints - public access for browsing services
+                .requestMatchers("/api/services/**").permitAll()
+                
                 // Payment endpoints - allow access for payment processing
                 .requestMatchers("/api/payment/**").permitAll()
                 

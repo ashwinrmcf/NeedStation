@@ -40,7 +40,10 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
   const [selectedSubServices, setSelectedSubServices] = useState([]);
 
   // Get service configuration for dynamic fields (fallback to local config)
-  const serviceConfig = getServiceConfiguration(serviceName?.toUpperCase().replace(/\s+/g, '_') || '');
+  // Remove apostrophes and special characters before converting to config key
+  const serviceConfig = getServiceConfiguration(
+    serviceName?.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_') || ''
+  );
 
   // Fetch service configuration from API
   useEffect(() => {
@@ -57,13 +60,14 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
             'PHYSIOTHERAPY': 'PHYSIOTHERAPY',
             'POST-SURGERY CARE': 'POST_SURGERY_CARE',
             'CARETAKER AT HOME': 'CARETAKER_AT_HOME',
+            "PARKINSON'S CARE": 'PARKINSONS_CARE',
             'PARKINSONS CARE': 'PARKINSONS_CARE',
             'BEDRIDDEN PATIENT CARE': 'BEDRIDDEN_PATIENT_CARE',
             'MOTHER AND BABY CARE': 'MOTHER_AND_BABY_CARE',
             'PARALYSIS CARE': 'PARALYSIS_CARE'
           };
           
-          const serviceCode = serviceCodeMap[serviceName.toUpperCase()] || serviceName.toUpperCase().replace(/\s+/g, '_');
+          const serviceCode = serviceCodeMap[serviceName.toUpperCase()] || serviceName.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_');
           console.log('🔍 Fetching service config for:', serviceCode);
           
           const config = await getServiceConfigFromAPI(serviceCode);
@@ -72,7 +76,19 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
           setApiServiceConfig(config);
         } catch (error) {
           console.error('❌ Error loading service config:', error);
-          // Will fallback to local config
+          // Create a fallback config with dummy service ID
+          const fallbackConfig = {
+            service: {
+              id: 1, // Fallback ID - will need to be updated when services are added
+              serviceName: serviceName,
+              serviceCode: serviceCode,
+              basePrice: 500.00
+            },
+            subServices: [],
+            formalities: []
+          };
+          console.log('⚠️ Using fallback config:', fallbackConfig);
+          setApiServiceConfig(fallbackConfig);
         }
       }
     };
@@ -90,6 +106,15 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
       setErrors({});
       setOtpSent(false);
       setOtp('');
+      setPhoneVerified(false); // Reset phone verification status
+      
+      // Scroll to top when modal opens
+      setTimeout(() => {
+        const modalContent = document.querySelector(`.${styles.modalContent}`);
+        if (modalContent) {
+          modalContent.scrollTo({ top: 0, behavior: 'auto' });
+        }
+      }, 100);
       
       // Load user data from database (priority: DB -> Profile)
       const loadUserData = async () => {
@@ -131,14 +156,20 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
               
               // Get all data from database only
               const phone = dbData.contactNumber || '';
-              const isPhoneVerified = phone && dbData.phoneVerified;
               
               console.log('📞 Phone from DB:', phone);
               console.log('🔍 dbData.phoneVerified value:', dbData.phoneVerified);
               console.log('🔍 dbData.phoneVerified type:', typeof dbData.phoneVerified);
-              console.log('✅ Final isPhoneVerified:', isPhoneVerified);
               
-              setPhoneVerified(isPhoneVerified);
+              // If phone exists in database, assume it's verified
+              // This is because if user has a phone saved, they must have entered it before
+              if (phone && phone.trim() !== '') {
+                console.log('✅ Phone exists in DB - marking as verified');
+                setPhoneVerified(true);
+              } else {
+                console.log('⚠️ No phone in DB - needs verification');
+                setPhoneVerified(false);
+              }
               
               // Check if we have saved location data in DB
               const hasLocationData = dbData.locationLat && dbData.locationLng;
@@ -191,7 +222,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
               }
             } else {
               console.log('⚠️ Failed to fetch from DB');
-              // If DB fetch fails, show empty form
+              // If DB fetch fails, show empty form and require verification
               setFormData({
                 phone: '',
                 alternatePhone: '',
@@ -207,13 +238,13 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                 preferredTimeSlot: ''
               });
               setSelectedLocation(null);
+              setPhoneVerified(false);
             }
           } catch (error) {
             console.error('❌ Error loading user data:', error);
-            // Set default form on error with profile fallback
+            // Set default form on error - require verification
             const phoneFromProfile = userProfile?.phone || userProfile?.mobile || '';
-            const isPhoneVerified = phoneFromProfile && userProfile?.phoneVerified;
-            setPhoneVerified(isPhoneVerified);
+            setPhoneVerified(false); // Always require verification on error
             
             setFormData({
               phone: phoneFromProfile,
@@ -405,6 +436,32 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
         const updatedUser = { ...currentUser, phone: formData.phone };
         localStorage.setItem('user', JSON.stringify(updatedUser));
       }
+      
+      // Save phone verification to database
+      const userId = userProfile?.id || userProfile?.userId || localStorage.getItem('userId');
+      if (userId && userId !== 'undefined' && userId !== 'null') {
+        try {
+          const response = await fetch(`http://localhost:8080/api/user/verify-phone`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId,
+              phone: formData.phone,
+              verified: true
+            })
+          });
+          
+          if (response.ok) {
+            console.log('✅ Phone verification saved to database');
+          } else {
+            console.error('⚠️ Failed to save phone verification to database');
+          }
+        } catch (error) {
+          console.error('❌ Error saving phone verification:', error);
+        }
+      }
     } catch (error) {
       setErrors(prev => ({ ...prev, otp: 'Verification failed. Please try again.' }));
     } finally {
@@ -448,6 +505,14 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
         await saveContactAndLocationToProfile();
       }
       setCurrentStep(prev => Math.min(prev + 1, 3));
+      
+      // Scroll to top of modal content
+      setTimeout(() => {
+        const modalContent = document.querySelector(`.${styles.modalContent}`);
+        if (modalContent) {
+          modalContent.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 100);
     }
   };
   
@@ -508,6 +573,14 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
 
   const prevStep = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
+    
+    // Scroll to top of modal content
+    setTimeout(() => {
+      const modalContent = document.querySelector(`.${styles.modalContent}`);
+      if (modalContent) {
+        modalContent.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   const handleSubmit = async () => {
@@ -528,18 +601,19 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
         'PHYSIOTHERAPY': 'PHYSIOTHERAPY',
         'POST-SURGERY CARE': 'POST_SURGERY_CARE',
         'CARETAKER AT HOME': 'CARETAKER_AT_HOME',
+        "PARKINSON'S CARE": 'PARKINSONS_CARE',
         'PARKINSONS CARE': 'PARKINSONS_CARE',
         'BEDRIDDEN PATIENT CARE': 'BEDRIDDEN_PATIENT_CARE',
         'MOTHER AND BABY CARE': 'MOTHER_AND_BABY_CARE',
         'PARALYSIS CARE': 'PARALYSIS_CARE'
       };
       
-      const serviceCode = serviceCodeMap[serviceName?.toUpperCase()] || serviceName?.toUpperCase().replace(/\s+/g, '_');
+      const serviceCode = serviceCodeMap[serviceName?.toUpperCase()] || serviceName?.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_');
       
       // Prepare booking data for new API
       const bookingData = {
         userId: parseInt(userId),
-        serviceId: apiServiceConfig?.service?.id || 1, // Will be set from API config
+        serviceId: apiServiceConfig?.service?.id || 1,
         contactInfo: {
           phone: formData.phone,
           alternatePhone: formData.alternatePhone || null,
@@ -577,8 +651,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
         bookingNumber: result.bookingNumber
       });
       
-      alert(`✅ Booking created successfully!\nBooking Number: ${result.bookingNumber}`);
-      
+      // Close modal without showing alert
       onClose();
     } catch (error) {
       console.error('❌ Booking failed:', error);
@@ -697,11 +770,6 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                 </div>
                 {errors.phone && (
                   <p className={styles.errorMessage}>{errors.phone}</p>
-                )}
-                {phoneVerified && formData.phone && (
-                  <p className={styles.successMessage}>
-                    ✓ Phone number auto-filled from database and verified
-                  </p>
                 )}
               </div>
 
@@ -946,11 +1014,11 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
               {/* Dynamic service fields based on service configuration */}
               {Object.entries(serviceConfig).map(([sectionKey, sectionConfig]) => (
                 <div key={sectionKey} className={styles.formGroup}>
-                  <h4 className={styles.formLabel} style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600' }}>
+                  <h4 className={styles.formLabel} style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', textTransform: 'capitalize' }}>
                     {sectionKey.replace(/_/g, ' ')}
                   </h4>
                   
-                  {Object.entries(sectionConfig).slice(0, 3).map(([fieldKey, fieldConfig]) => {
+                  {Object.entries(sectionConfig).map(([fieldKey, fieldConfig]) => {
                     const fieldName = `${sectionKey}_${fieldKey}`;
                     
                     if (typeof fieldConfig === 'string' && fieldConfig.includes('/')) {
@@ -1033,7 +1101,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                   value={formData.preferredDate}
                   onChange={(e) => handleInputChange('preferredDate', e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  max={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                  max={new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
                   className={`${styles.formInput} ${errors.preferredDate ? styles.error : ''}`}
                 />
                 {errors.preferredDate && (
@@ -1066,8 +1134,8 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
                 </label>
                 <div className={styles.urgencyOptions}>
                   {[
-                    { value: 'normal', label: 'Normal', desc: 'Within 24-48 hours' },
-                    { value: 'urgent', label: 'Urgent', desc: 'Within 2-4 hours' }
+                    { value: 'normal', label: 'Normal', desc: 'Within 1-4 days' },
+                    { value: 'urgent', label: 'Urgent', desc: 'Same day or next day' }
                   ].map(option => (
                     <button
                       key={option.value}

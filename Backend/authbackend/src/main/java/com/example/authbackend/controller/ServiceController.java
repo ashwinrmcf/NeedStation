@@ -76,4 +76,30 @@ public class ServiceController {
             return ResponseEntity.status(500).body(errorResponse);
         }
     }
+    
+    /**
+     * Populate sub-services data
+     * POST /api/services/populate-subservices
+     * 
+     * This endpoint populates the sub_services table with initial data
+     */
+    @PostMapping("/populate-subservices")
+    public ResponseEntity<Map<String, Object>> populateSubServices() {
+        try {
+            int count = serviceService.populateSubServices();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Sub-services populated successfully");
+            response.put("count", count);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Failed to populate sub-services: " + e.getMessage());
+            
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
 }

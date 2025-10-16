@@ -911,4 +911,45 @@ public class UserProfileController {
         String maskedLocal = localPart.substring(0, 2) + "***" + localPart.substring(localPart.length() - 1);
         return maskedLocal + "@" + domain;
     }
+    
+    // Verify phone number and save to database
+    @PostMapping("/verify-phone")
+    public ResponseEntity<?> verifyPhone(@RequestBody Map<String, Object> request) {
+        try {
+            Long userId = Long.valueOf(request.get("userId").toString());
+            String phone = (String) request.get("phone");
+            Boolean verified = (Boolean) request.get("verified");
+            
+            logger.info("📱 Verifying phone for user ID: {}, phone: {}", userId, phone);
+            
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isEmpty()) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "User not found");
+                return ResponseEntity.notFound().build();
+            }
+            
+            User user = userOptional.get();
+            user.setContactNumber(phone);
+            user.setPhoneVerified(verified);
+            userRepository.save(user);
+            
+            logger.info("✅ Phone verification saved for user: {}", user.getUsername());
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Phone verification saved successfully");
+            response.put("phoneVerified", verified);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("❌ Error saving phone verification: {}", e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error saving phone verification: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
 }

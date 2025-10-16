@@ -28,4 +28,7 @@ public interface BookingNewRepository extends JpaRepository<BookingNew, Long> {
     
     @Query("SELECT b FROM BookingNew b WHERE b.deletedAt IS NULL ORDER BY b.createdAt DESC")
     List<BookingNew> findAllNotDeleted();
+    
+    @Query("SELECT COUNT(b) FROM BookingNew b WHERE DATE(b.createdAt) = CURRENT_DATE")
+    long countBookingsCreatedToday();
 }
