@@ -1,5 +1,13 @@
 import styles from './Cards.module.css';
 import { useState } from 'react';
+import { 
+  Heart, Stethoscope, Home, Bed, Activity, Dumbbell, Shield, Baby, 
+  Accessibility, TestTube, Droplet, ClipboardCheck, Scissors,
+  Users, Pill, Utensils, PersonStanding, Syringe, Bandage, 
+  Droplets, TrendingUp, Bath, RotateCcw, HeartPulse, Sparkles,
+  MessageCircle, Eye, DoorOpen, AlertCircle, Milk, HandHeart, Moon,
+  CircleDot, ClipboardList, Apple
+} from 'lucide-react';
 
 // Real service images
 import securityImage from '../../assets/images/services/realservices/se.png';
@@ -30,12 +38,12 @@ const Cards = () => {
       link: "/services/elderly-care",
       alt: "Elderly Care",
       category: "Elder Care",
-      icon: "👨‍⚕️",
+      icon: Heart,
       subcategories: [
-        { name: "Companionship", icon: "👥" },
-        { name: "Medication Reminders", icon: "💊" },
-        { name: "Meal Preparation", icon: "🍽️" },
-        { name: "Mobility Assistance", icon: "🚶" }
+        { name: "Companionship", icon: Users },
+        { name: "Medication Reminders", icon: Pill },
+        { name: "Meal Preparation", icon: Utensils },
+        { name: "Mobility Assistance", icon: PersonStanding }
       ]
     },
     {
@@ -45,12 +53,12 @@ const Cards = () => {
       link: "/services/nursing-care",
       alt: "Nursing Care",
       category: "Medical Care",
-      icon: "🏥",
+      icon: Stethoscope,
       subcategories: [
-        { name: "Medication Administration", icon: "💉" },
-        { name: "Wound Dressing", icon: "🩹" },
-        { name: "IV Therapy", icon: "💧" },
-        { name: "Vital Monitoring", icon: "📊" }
+        { name: "Medication Administration", icon: Syringe },
+        { name: "Wound Dressing", icon: Bandage },
+        { name: "IV Therapy", icon: Droplets },
+        { name: "Vital Monitoring", icon: TrendingUp }
       ]
     },
     {
@@ -60,12 +68,12 @@ const Cards = () => {
       link: "/services/caretaker-at-home",
       alt: "Caretaker at Home",
       category: "Personal Care",
-      icon: "👥",
+      icon: Users,
       subcategories: [
-        { name: "Daily Activities Support", icon: "🏠" },
-        { name: "Personal Hygiene", icon: "🛁" },
-        { name: "Light Housekeeping", icon: "🧹" },
-        { name: "Companionship", icon: "💬" }
+        { name: "Daily Activities Support", icon: Home },
+        { name: "Personal Hygiene", icon: Bath },
+        { name: "Light Housekeeping", icon: Sparkles },
+        { name: "Companionship", icon: MessageCircle }
       ]
     },
     {
@@ -75,12 +83,12 @@ const Cards = () => {
       link: "/services/bedridden-patient-care",
       alt: "Bedridden Patient Care",
       category: "Specialized Care",
-      icon: "🏠",
+      icon: Bed,
       subcategories: [
-        { name: "Personal Hygiene", icon: "🛁" },
-        { name: "Positioning Care", icon: "🔄" },
-        { name: "Wound Care", icon: "🩹" },
-        { name: "Emotional Support", icon: "❤️" }
+        { name: "Personal Hygiene", icon: Bath },
+        { name: "Positioning Care", icon: RotateCcw },
+        { name: "Wound Care", icon: Bandage },
+        { name: "Emotional Support", icon: Heart }
       ]
     },
     {
@@ -90,12 +98,12 @@ const Cards = () => {
       link: "/services/parkinsons-care",
       alt: "Parkinsons Care",
       category: "Specialized Care",
-      icon: "⚕️",
+      icon: Activity,
       subcategories: [
-        { name: "Medication Management", icon: "💊" },
-        { name: "Mobility Support", icon: "🚶" },
-        { name: "Speech Therapy", icon: "🗣️" },
-        { name: "Exercise Assistance", icon: "🏃" }
+        { name: "Medication Management", icon: Pill },
+        { name: "Mobility Support", icon: PersonStanding },
+        { name: "Speech Therapy", icon: MessageCircle },
+        { name: "Exercise Assistance", icon: Activity }
       ]
     },
     {
@@ -105,12 +113,12 @@ const Cards = () => {
       link: "/services/physiotherapy",
       alt: "Physiotherapy",
       category: "Rehabilitation",
-      icon: "💪",
+      icon: Dumbbell,
       subcategories: [
-        { name: "Pain Management", icon: "💆" },
-        { name: "Mobility Training", icon: "🚶" },
-        { name: "Strength Building", icon: "💪" },
-        { name: "Post-Injury Recovery", icon: "🩹" }
+        { name: "Pain Management", icon: HandHeart },
+        { name: "Mobility Training", icon: PersonStanding },
+        { name: "Strength Building", icon: Dumbbell },
+        { name: "Post-Injury Recovery", icon: Bandage }
       ]
     },
     {
@@ -120,12 +128,12 @@ const Cards = () => {
       link: "/services/security-guard",
       alt: "Home Security Guard",
       category: "Security",
-      icon: "🔒",
+      icon: Shield,
       subcategories: [
-        { name: "24/7 Monitoring", icon: "👁️" },
-        { name: "Access Control", icon: "🚪" },
-        { name: "Emergency Response", icon: "🚨" },
-        { name: "Regular Patrols", icon: "🚶" }
+        { name: "24/7 Monitoring", icon: Eye },
+        { name: "Access Control", icon: DoorOpen },
+        { name: "Emergency Response", icon: AlertCircle },
+        { name: "Regular Patrols", icon: PersonStanding }
       ]
     },
     {
@@ -135,12 +143,12 @@ const Cards = () => {
       link: "/services/mother-baby-care",
       alt: "Mother and Baby Care",
       category: "Maternity Care",
-      icon: "👩‍👧‍👦",
+      icon: Baby,
       subcategories: [
-        { name: "Breastfeeding Support", icon: "🍼" },
-        { name: "Newborn Care", icon: "👶" },
-        { name: "Mother's Recovery", icon: "💆" },
-        { name: "Sleep Training", icon: "😴" }
+        { name: "Breastfeeding Support", icon: Milk },
+        { name: "Newborn Care", icon: Baby },
+        { name: "Mother's Recovery", icon: HandHeart },
+        { name: "Sleep Training", icon: Moon }
       ]
     },
     {
@@ -150,12 +158,12 @@ const Cards = () => {
       link: "/services/paralysis-care",
       alt: "Paralysis Care",
       category: "Specialized Care",
-      icon: "🩺",
+      icon: Accessibility,
       subcategories: [
-        { name: "Physical Therapy", icon: "💪" },
-        { name: "Mobility Assistance", icon: "♿" },
-        { name: "Daily Living Support", icon: "🏠" },
-        { name: "Rehabilitation", icon: "🔄" }
+        { name: "Physical Therapy", icon: Dumbbell },
+        { name: "Mobility Assistance", icon: CircleDot },
+        { name: "Daily Living Support", icon: Home },
+        { name: "Rehabilitation", icon: RotateCcw }
       ]
     },
     {
@@ -165,12 +173,12 @@ const Cards = () => {
       link: "/services/pathology-care",
       alt: "Pathology Care",
       category: "Diagnostic",
-      icon: "🧪",
+      icon: TestTube,
       subcategories: [
-        { name: "Sample Collection", icon: "💉" },
-        { name: "Blood Tests", icon: "🩸" },
-        { name: "Diagnostic Reports", icon: "📋" },
-        { name: "Home Visit", icon: "🏠" }
+        { name: "Sample Collection", icon: Syringe },
+        { name: "Blood Tests", icon: Droplet },
+        { name: "Diagnostic Reports", icon: ClipboardList },
+        { name: "Home Visit", icon: Home }
       ]
     },
     {
@@ -180,12 +188,12 @@ const Cards = () => {
       link: "/services/diabetes-management",
       alt: "Diabetes Management",
       category: "Health Management",
-      icon: "📊",
+      icon: Droplet,
       subcategories: [
-        { name: "Blood Sugar Monitoring", icon: "📈" },
-        { name: "Diet Planning", icon: "🥗" },
-        { name: "Medication Support", icon: "💊" },
-        { name: "Lifestyle Guidance", icon: "🏃" }
+        { name: "Blood Sugar Monitoring", icon: TrendingUp },
+        { name: "Diet Planning", icon: Apple },
+        { name: "Medication Support", icon: Pill },
+        { name: "Lifestyle Guidance", icon: Activity }
       ]
     },
     {
@@ -195,12 +203,12 @@ const Cards = () => {
       link: "/services/health-check-up-services",
       alt: "Health Check Up Services",
       category: "Preventive Care",
-      icon: "✅",
+      icon: ClipboardCheck,
       subcategories: [
-        { name: "Full Body Checkup", icon: "🩺" },
-        { name: "Blood Tests", icon: "💉" },
-        { name: "ECG & X-Ray", icon: "📊" },
-        { name: "Health Reports", icon: "📋" }
+        { name: "Full Body Checkup", icon: Stethoscope },
+        { name: "Blood Tests", icon: Syringe },
+        { name: "ECG & X-Ray", icon: HeartPulse },
+        { name: "Health Reports", icon: ClipboardList }
       ]
     },
     {
@@ -210,12 +218,12 @@ const Cards = () => {
       link: "/services/post-surgery-care",
       alt: "Post Surgery Care",
       category: "Recovery Care",
-      icon: "🔄",
+      icon: Scissors,
       subcategories: [
-        { name: "Wound Care", icon: "🩹" },
-        { name: "Pain Management", icon: "💊" },
-        { name: "Mobility Support", icon: "🚶" },
-        { name: "Recovery Monitoring", icon: "📊" }
+        { name: "Wound Care", icon: Bandage },
+        { name: "Pain Management", icon: Pill },
+        { name: "Mobility Support", icon: PersonStanding },
+        { name: "Recovery Monitoring", icon: TrendingUp }
       ]
     }
   ];
@@ -235,7 +243,14 @@ const Cards = () => {
             {/* Left Half - Service Subcategories */}
             <div className={styles["quickInfoPanel"]}>
               <div className={styles["panelHeader"]}>
-                <div className={styles["serviceIconLarge"]}>{allServices[selectedService].icon}</div>
+                <div className={styles["serviceIconLarge"]}>
+                  {(() => {
+                    const IconComponent = allServices[selectedService].icon;
+                    return IconComponent && typeof IconComponent !== 'string' ? (
+                      <IconComponent size={48} strokeWidth={2} />
+                    ) : IconComponent;
+                  })()}
+                </div>
                 <div className={styles["headerText"]}>
                   <h4 className={styles["quickTitle"]}>What's Included</h4>
                   <span className={styles["categoryBadge"]}>{allServices[selectedService].category}</span>
@@ -244,14 +259,21 @@ const Cards = () => {
               
               <div className={styles["infoCards"]}>
                 {allServices[selectedService].subcategories ? (
-                  allServices[selectedService].subcategories.map((sub, idx) => (
-                    <div key={idx} className={styles["infoCard"]}>
-                      <div className={styles["cardIcon"]}>{sub.icon}</div>
-                      <div className={styles["cardContent"]}>
-                        <span className={styles["cardValue"]}>{sub.name}</span>
+                  allServices[selectedService].subcategories.map((sub, idx) => {
+                    const SubIcon = sub.icon;
+                    return (
+                      <div key={idx} className={styles["infoCard"]}>
+                        <div className={styles["cardIcon"]}>
+                          {SubIcon && typeof SubIcon !== 'string' ? (
+                            <SubIcon size={24} strokeWidth={2} />
+                          ) : SubIcon}
+                        </div>
+                        <div className={styles["cardContent"]}>
+                          <span className={styles["cardValue"]}>{sub.name}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <>
                     <div className={styles["infoCard"]}>
@@ -317,25 +339,32 @@ const Cards = () => {
         <div className={styles["servicesGrid"]}>
           <h4 className={styles["gridTitle"]}>All Our Services</h4>
           <div className={styles["servicesList"]}>
-            {allServices.map((service, index) => (
-              <Link 
-                key={index}
-                to={service.link}
-                className={`${styles["serviceItem"]} ${index === selectedService ? styles["active"] : ''}`}
-                onMouseEnter={() => setSelectedService(index)}
-                role="button"
-                aria-label={`Go to ${service.title} service page`}
-              >
-                <div className={styles["serviceIcon"]}>{service.icon}</div>
-                <div className={styles["serviceInfo"]}>
-                  <h5 className={styles["serviceName"]}>{service.title}</h5>
-                  <span className={styles["serviceCategory"]}>{service.category}</span>
-                </div>
-                <div className={styles["serviceArrow"]}>
-                  {index === selectedService ? '▶' : '→'}
-                </div>
-              </Link>
-            ))}
+            {allServices.map((service, index) => {
+              const ServiceIcon = service.icon;
+              return (
+                <Link 
+                  key={index}
+                  to={service.link}
+                  className={`${styles["serviceItem"]} ${index === selectedService ? styles["active"] : ''}`}
+                  onMouseEnter={() => setSelectedService(index)}
+                  role="button"
+                  aria-label={`Go to ${service.title} service page`}
+                >
+                  <div className={styles["serviceIcon"]}>
+                    {ServiceIcon && typeof ServiceIcon !== 'string' ? (
+                      <ServiceIcon size={24} strokeWidth={2} />
+                    ) : ServiceIcon}
+                  </div>
+                  <div className={styles["serviceInfo"]}>
+                    <h5 className={styles["serviceName"]}>{service.title}</h5>
+                    <span className={styles["serviceCategory"]}>{service.category}</span>
+                  </div>
+                  <div className={styles["serviceArrow"]}>
+                    {index === selectedService ? '▶' : '→'}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
           <Link to="/services" className={styles["viewAllButton"]}>
             View all

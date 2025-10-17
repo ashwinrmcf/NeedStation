@@ -21,19 +21,19 @@ const SearchbarContainer = () => {
   // Initialize with comprehensive list of services with appropriate articles
   useEffect(() => {
     const services = [
-      "home security guard 🔒",
-      "parkinsons care 🤲",
-      "bedridden patient care 🛏️",
-      "mother and baby care 👶",
-      "paralysis care 🤝",
-      "elderly care 👴",
-      "nursing care 👩‍⚕️",
-      "pathology care 🩺",
-      "diabetes management 💉",
-      "health check up services 🏥",
-      "physiotherapy 💪",
-      "post surgery care 🏥",
-      "caretaker at home 🏠"
+      "home security guard",
+      "parkinsons care",
+      "bedridden patient care",
+      "mother and baby care",
+      "paralysis care",
+      "elderly care",
+      "nursing care",
+      "pathology care",
+      "diabetes management",
+      "health check up services",
+      "physiotherapy",
+      "post surgery care",
+      "caretaker at home"
     ];
     
     // Fisher-Yates shuffle algorithm

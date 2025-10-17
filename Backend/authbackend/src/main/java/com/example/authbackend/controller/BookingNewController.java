@@ -211,6 +211,44 @@ public class BookingNewController {
     }
     
     /**
+     * Confirm payment for a booking
+     * POST /api/bookings/{bookingId}/confirm-payment
+     * 
+     * Request Body: { "paymentMethod": "RAZORPAY", "transactionId": "pay_xxx", "paidAmount": 1500.00 }
+     */
+    @PostMapping("/{bookingId}/confirm-payment")
+    public ResponseEntity<Map<String, Object>> confirmPayment(
+            @PathVariable Long bookingId,
+            @RequestBody Map<String, Object> request) {
+        try {
+            String paymentMethod = (String) request.get("paymentMethod");
+            String transactionId = (String) request.get("transactionId");
+            java.math.BigDecimal paidAmount = new java.math.BigDecimal(request.get("paidAmount").toString());
+            
+            BookingResponseDTO booking = bookingService.confirmPayment(bookingId, paymentMethod, transactionId, paidAmount);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Payment confirmed successfully. Booking is now confirmed!");
+            response.put("booking", booking);
+            
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            
+            return ResponseEntity.status(400).body(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Failed to confirm payment: " + e.getMessage());
+            
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+    
+    /**
      * Rate a completed booking
      * POST /api/bookings/{bookingId}/rate
      * 

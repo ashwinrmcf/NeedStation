@@ -14,6 +14,8 @@ public interface BookingNewRepository extends JpaRepository<BookingNew, Long> {
     
     Optional<BookingNew> findByBookingNumber(String bookingNumber);
     
+    boolean existsByBookingNumber(String bookingNumber);
+    
     @Query("SELECT b FROM BookingNew b WHERE b.userId = :userId AND b.deletedAt IS NULL ORDER BY b.createdAt DESC")
     List<BookingNew> findByUserIdNotDeleted(Long userId);
     

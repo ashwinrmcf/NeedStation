@@ -203,17 +203,33 @@ public class BookingServiceNew {
     /**
      * Generate unique booking number
      * Format: BK-YYYYMMDD-XXXXX (e.g., BK-20251017-00001)
+     * 
+     * Uses synchronized method to prevent race conditions
      */
-    private String generateBookingNumber() {
+    private synchronized String generateBookingNumber() {
         String datePrefix = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
         
-        // Get count of bookings created today
-        long todayCount = bookingRepository.countBookingsCreatedToday();
+        // Try to generate a unique booking number with retry logic
+        int maxRetries = 10;
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            // Get count of bookings created today
+            long todayCount = bookingRepository.countBookingsCreatedToday();
+            
+            // Generate sequential number (5 digits, zero-padded)
+            String sequentialNumber = String.format("%05d", todayCount + attempt);
+            String bookingNumber = "BK-" + datePrefix + "-" + sequentialNumber;
+            
+            // Check if this booking number already exists
+            if (!bookingRepository.existsByBookingNumber(bookingNumber)) {
+                return bookingNumber;
+            }
+            
+            System.out.println("⚠️ Booking number collision detected, retrying... (attempt " + attempt + ")");
+        }
         
-        // Generate sequential number (5 digits, zero-padded)
-        String sequentialNumber = String.format("%05d", todayCount + 1);
-        
-        return "BK-" + datePrefix + "-" + sequentialNumber;
+        // Fallback: use timestamp-based unique number
+        String timestamp = String.valueOf(System.currentTimeMillis()).substring(7);
+        return "BK-" + datePrefix + "-" + timestamp;
     }
     
     /**
@@ -243,6 +259,30 @@ public class BookingServiceNew {
     public BookingResponseDTO getBookingByNumber(String bookingNumber) {
         BookingNew booking = bookingRepository.findByBookingNumber(bookingNumber)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
+        
+        return convertToDetailedResponseDTO(booking);
+    }
+    
+    /**
+     * Confirm payment and update booking status
+     */
+    @Transactional
+    public BookingResponseDTO confirmPayment(Long bookingId, String paymentMethod, String transactionId, java.math.BigDecimal paidAmount) {
+        BookingNew booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        
+        // Update payment details
+        booking.setPaymentMethod(paymentMethod);
+        booking.setTransactionId(transactionId);
+        booking.setPaymentStatus("PAID");
+        
+        // Update booking status from DRAFT to CONFIRMED
+        booking.setStatus("CONFIRMED");
+        booking.setUpdatedAt(LocalDateTime.now());
+        
+        bookingRepository.save(booking);
+        
+        System.out.println("✅ Payment confirmed for booking: " + booking.getBookingNumber());
         
         return convertToDetailedResponseDTO(booking);
     }

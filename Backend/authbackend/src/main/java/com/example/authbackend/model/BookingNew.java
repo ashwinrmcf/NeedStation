@@ -89,7 +89,7 @@ public class BookingNew {
     
     // Status & Tracking
     @Column(name = "status", length = 50)
-    private String status = "PENDING"; // PENDING, CONFIRMED, ASSIGNED, IN_PROGRESS, COMPLETED, CANCELLED
+    private String status = "DRAFT"; // DRAFT, PAYMENT_PENDING, CONFIRMED, ASSIGNED, IN_PROGRESS, COMPLETED, CANCELLED
     
     @Column(name = "assigned_worker_id")
     private Long assignedWorkerId;

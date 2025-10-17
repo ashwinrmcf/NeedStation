@@ -5,6 +5,30 @@ import { useCart } from '../../store/CartContext';
 import { useBookingModal } from '../BookingModal/BookingModalProvider';
 import { useAuth } from '../../store/AuthContext';
 import styles from './GenericServiceOptions.module.css';
+import { 
+  Heart, 
+  Stethoscope, 
+  Home, 
+  Bed, 
+  Activity, 
+  Dumbbell,
+  Shield, 
+  Baby, 
+  Accessibility,
+  TestTube,
+  Droplet,
+  ClipboardCheck,
+  Scissors,
+  Search,
+  Trophy,
+  Users,
+  Star,
+  Bath,
+  Brain,
+  Clock,
+  AlertCircle,
+  Bandage
+} from 'lucide-react';
 
 const GenericServiceOptions = ({ 
   serviceName, 
@@ -71,21 +95,71 @@ const GenericServiceOptions = ({
     }
   };
 
+  // Icon mapping for services
+  const serviceIconMap = {
+    'elderly-care': Heart,
+    'nursing-care': Stethoscope,
+    'caretaker-at-home': Home,
+    'bedridden-patient-care': Bed,
+    'parkinsons-care': Activity,
+    'physiotherapy': Dumbbell,
+    'security-guard': Shield,
+    'mother-baby-care': Baby,
+    'paralysis-care': Accessibility,
+    'pathology-care': TestTube,
+    'diabetes-management': Droplet,
+    'health-check-up': ClipboardCheck,
+    'post-surgery-care': Scissors
+  };
+
+  // Icon mapping for trust indicators and service cards
+  const iconComponentMap = {
+    'Trophy': Trophy,
+    'Users': Users,
+    'Star': Star,
+    'Bath': Bath,
+    'Brain': Brain,
+    'Clock': Clock,
+    'AlertCircle': AlertCircle,
+    'Bandage': Bandage,
+    'Stethoscope': Stethoscope,
+    'Baby': Baby,
+    'Heart': Heart,
+    'Home': Home,
+    'Bed': Bed,
+    'Activity': Activity,
+    'Dumbbell': Dumbbell,
+    'Shield': Shield,
+    'Accessibility': Accessibility,
+    'TestTube': TestTube,
+    'Droplet': Droplet,
+    'ClipboardCheck': ClipboardCheck,
+    'Scissors': Scissors
+  };
+
+  // Helper function to render icon
+  const renderIcon = (iconName, size = 20, className = '') => {
+    const IconComponent = iconComponentMap[iconName];
+    return IconComponent ? (
+      <IconComponent size={size} className={className} strokeWidth={2} />
+    ) : null;
+  };
+
   // All 13 services for left navigation
   const allServices = [
-    { id: 'elderly-care', name: 'Elderly Care', icon: '👨‍⚕️', link: '/services/elderly-care' },
-    { id: 'nursing-care', name: 'Nursing Care', icon: '🏥', link: '/services/nursing-care' },
-    { id: 'caretaker-at-home', name: 'Caretaker at Home', icon: '👥', link: '/services/caretaker-at-home' },
-    { id: 'bedridden-patient-care', name: 'Bedridden Patient Care', icon: '🏠', link: '/services/bedridden-patient-care' },
-    { id: 'parkinsons-care', name: 'Parkinsons Care', icon: '⚕️', link: '/services/parkinsons-care' },
-    { id: 'physiotherapy', name: 'Physiotherapy', icon: '💪', link: '/services/physiotherapy' },
-    { id: 'security-guard', name: 'Home Security Guard', icon: '🔒', link: '/services/security-guard' },
-    { id: 'mother-baby-care', name: 'Mother and Baby Care', icon: '👩‍👧‍👦', link: '/services/mother-baby-care' },
-    { id: 'paralysis-care', name: 'Paralysis Care', icon: '🩺', link: '/services/paralysis-care' },
-    { id: 'pathology-care', name: 'Pathology Care', icon: '🧪', link: '/services/pathology-care' },
-    { id: 'diabetes-management', name: 'Diabetes Management', icon: '📊', link: '/services/diabetes-management' },
-    { id: 'health-check-up', name: 'Health Check Up Services', icon: '✅', link: '/services/health-check-up-services' },
-    { id: 'post-surgery-care', name: 'Post Surgery Care', icon: '🔄', link: '/services/post-surgery-care' }
+    { id: 'elderly-care', name: 'Elderly Care', link: '/services/elderly-care' },
+    { id: 'nursing-care', name: 'Nursing Care', link: '/services/nursing-care' },
+    { id: 'caretaker-at-home', name: 'Caretaker at Home', link: '/services/caretaker-at-home' },
+    { id: 'bedridden-patient-care', name: 'Bedridden Patient Care', link: '/services/bedridden-patient-care' },
+    { id: 'parkinsons-care', name: 'Parkinsons Care', link: '/services/parkinsons-care' },
+    { id: 'physiotherapy', name: 'Physiotherapy', link: '/services/physiotherapy' },
+    { id: 'security-guard', name: 'Home Security Guard', link: '/services/security-guard' },
+    { id: 'mother-baby-care', name: 'Mother and Baby Care', link: '/services/mother-baby-care' },
+    { id: 'paralysis-care', name: 'Paralysis Care', link: '/services/paralysis-care' },
+    { id: 'pathology-care', name: 'Pathology Care', link: '/services/pathology-care' },
+    { id: 'diabetes-management', name: 'Diabetes Management', link: '/services/diabetes-management' },
+    { id: 'health-check-up', name: 'Health Check Up Services', link: '/services/health-check-up-services' },
+    { id: 'post-surgery-care', name: 'Post Surgery Care', link: '/services/post-surgery-care' }
   ];
 
   // Service categories for current page filtering
@@ -362,7 +436,9 @@ const GenericServiceOptions = ({
           <div className="flex justify-center items-center gap-8 mt-8 flex-wrap">
             {trustIndicators.map((indicator, index) => (
               <div key={index} className="flex items-center gap-2 rounded-full px-4 py-2 shadow-lg" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
-                <span className="text-2xl">{indicator.icon}</span>
+                <span style={{ color: 'var(--accent-secondary)' }}>
+                  {renderIcon(indicator.icon, 24)}
+                </span>
                 <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
                   {animatedStats[indicator.key] || 0}{indicator.suffix} {indicator.label}
                 </span>
@@ -392,8 +468,8 @@ const GenericServiceOptions = ({
                       color: 'var(--text-primary)'
                     }}
                   />
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-xl" style={{ color: 'var(--text-secondary)' }}>
-                    🔍
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2" style={{ color: 'var(--text-secondary)' }}>
+                    <Search size={20} strokeWidth={2} />
                   </div>
                 </div>
               </div>
@@ -418,7 +494,16 @@ const GenericServiceOptions = ({
                         textDecoration: 'none'
                       })}
                     >
-                      <span className="text-xl flex-shrink-0">{service.icon}</span>
+                      {(() => {
+                        const IconComponent = serviceIconMap[service.id];
+                        return IconComponent ? (
+                          <IconComponent 
+                            size={20} 
+                            className="flex-shrink-0"
+                            strokeWidth={2}
+                          />
+                        ) : null;
+                      })()}
                       <span className="font-medium text-sm truncate">{service.name}</span>
                     </NavLink>
                   ))}

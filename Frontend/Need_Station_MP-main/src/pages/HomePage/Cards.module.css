@@ -150,7 +150,8 @@
 
 .serviceIconLarge {
   font-size: 36px;
-  background: rgba(255, 255, 255, 0.9);
+  background: #F5E6D3;
+  color: var(--text-primary);
   padding: 12px;
   border-radius: 16px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -159,6 +160,11 @@
   justify-content: center;
   min-width: 60px;
   height: 60px;
+}
+
+[data-theme="dark"] .serviceIconLarge {
+  background: #2A2D3A;
+  color: #5CE1E6;
 }
 
 .headerText {
@@ -201,7 +207,7 @@
 }
 
 .infoCard {
-  background: rgba(255, 255, 255, 0.7);
+  background: #F5E6D3;
   border-radius: 12px;
   padding: 12px;
   display: flex;
@@ -212,7 +218,7 @@
 }
 
 [data-theme="dark"] .infoCard {
-  background: rgba(255, 255, 255, 0.05);
+  background: #2A2D3A;
   border: 1px solid rgba(92, 225, 230, 0.1);
 }
 
@@ -224,11 +230,11 @@
 
 .cardIcon {
   font-size: 18px;
-  background: var(--gradient-text);
+  background: #5CE1E6;
   color: white;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,8 +242,8 @@
 }
 
 [data-theme="dark"] .cardIcon {
-  background: #5CE1E6;
-  color: #1A1D29;
+  background: #2A2D3A;
+  color: #5CE1E6;
 }
 
 .cardContent {

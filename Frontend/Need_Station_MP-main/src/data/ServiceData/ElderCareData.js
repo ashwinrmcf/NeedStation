@@ -10,13 +10,13 @@ import nurseImage from '../../assets/images/services/realservices/nurse].jpg';
 
 export const elderCareData = {
   serviceName: "Elderly Care",
-  serviceDescription: "👨‍⚕️ Compassionate and professional care tailored to meet the needs of seniors.",
+  serviceDescription: "Compassionate and professional care tailored to meet the needs of seniors.",
   serviceHighlight: "Complete elderly care with dignity and respect.",
   
   trustIndicators: [
-    { key: 'families', value: 10000, suffix: '+', label: 'Families Served', icon: '🏆' },
-    { key: 'caregivers', value: 200, suffix: '+', label: 'Caregivers', icon: '👨‍⚕️' },
-    { key: 'rating', value: 48, suffix: '/50', label: 'Rating', icon: '⭐' }
+    { key: 'families', value: 10000, suffix: '+', label: 'Families Served', icon: 'Trophy' },
+    { key: 'caregivers', value: 200, suffix: '+', label: 'Caregivers', icon: 'Users' },
+    { key: 'rating', value: 48, suffix: '/50', label: 'Rating', icon: 'Star' }
   ],
 
   services: [
@@ -29,13 +29,13 @@ export const elderCareData = {
       originalPrice: "₹1,000",
       duration: "/day",
       discount: "20% OFF",
-      urgency: "👥 Most Popular",
+      urgency: "Most Popular",
       features: ["Social interaction", "Light activities", "Meal assistance", "Medication reminders"],
       imgUrl: companionImage,
       rating: 4.8,
       bookings: "5,234+",
       testimonial: "Wonderful companionship!",
-      icon: "👥",
+      icon: "Users",
       gradient: "from-blue-500 to-cyan-500",
       availability: "Available today",
       guarantee: "Trained Companions"
@@ -49,13 +49,13 @@ export const elderCareData = {
       originalPrice: "₹1,500",
       duration: "/day",
       discount: "20% OFF",
-      urgency: "🛁 Premium Care",
+      urgency: "Premium Care",
       features: ["Bathing assistance", "Dressing help", "Grooming", "Mobility support"],
       imgUrl: personalCareImage,
       rating: 4.9,
       bookings: "4,567+",
       testimonial: "Very caring staff!",
-      icon: "🛁",
+      icon: "Bath",
       gradient: "from-green-500 to-teal-500",
       availability: "Available today",
       guarantee: "Certified Caregivers"
@@ -69,13 +69,13 @@ export const elderCareData = {
       originalPrice: "₹2,200",
       duration: "/day",
       discount: "18% OFF",
-      urgency: "🧠 Specialized",
+      urgency: "Specialized",
       features: ["Memory care", "Safety monitoring", "Cognitive activities", "24/7 supervision"],
       imgUrl: dementiaImage,
       rating: 4.9,
       bookings: "2,345+",
       testimonial: "Excellent dementia care!",
-      icon: "🧠",
+      icon: "Brain",
       gradient: "from-purple-500 to-pink-500",
       availability: "Schedule required",
       guarantee: "Dementia Specialists"
@@ -89,13 +89,13 @@ export const elderCareData = {
       originalPrice: "₹1,300",
       duration: "/day",
       discount: "23% OFF",
-      urgency: "⏰ Flexible",
+      urgency: "Flexible",
       features: ["Temporary relief", "Flexible scheduling", "Trained caregivers", "Peace of mind"],
       imgUrl: respiteImage,
       rating: 4.7,
       bookings: "3,890+",
       testimonial: "Great relief service!",
-      icon: "⏰",
+      icon: "Clock",
       gradient: "from-orange-500 to-red-500",
       availability: "Same day available",
       guarantee: "Flexible Hours"
