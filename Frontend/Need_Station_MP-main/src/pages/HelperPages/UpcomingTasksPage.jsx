@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 import { 
   Clock, CheckCircle, XCircle, AlertCircle, 
   Filter, Search, Calendar, MapPin, Phone, Mail,
-  Star, MessageCircle, Receipt, Eye, Download
+  Star, MessageCircle, Receipt, Eye, Download, Loader2
 } from "lucide-react";
 
 import DashboardHeader from "../../components/common/DashboardHeader";
@@ -14,9 +15,51 @@ const UpcomingTaskPage = () => {
 	const { t } = useTranslation();
 	const [activeFilter, setActiveFilter] = useState('all');
 	const [searchTerm, setSearchTerm] = useState('');
-
-	// Sample task data with different statuses
-	const [allTasks] = useState([
+	const [allTasks, setAllTasks] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	
+	const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+	
+	// Fetch upcoming tasks and available bookings
+	useEffect(() => {
+		const fetchTasks = async () => {
+			try {
+				setLoading(true);
+				const workerId = localStorage.getItem('workerId');
+				
+				if (!workerId) {
+					setError('Worker ID not found. Please log in again.');
+					return;
+				}
+				
+				// Fetch both upcoming tasks (assigned to worker) and available bookings (within radius)
+				const [upcomingResponse, availableResponse] = await Promise.all([
+					axios.get(`${API_URL}/worker/dashboard/tasks/upcoming/${workerId}`),
+					axios.get(`${API_URL}/worker/dashboard/tasks/available/${workerId}`)
+				]);
+				
+				// Combine both lists - available bookings first (new requests), then assigned tasks
+				const combinedTasks = [
+					...availableResponse.data.map(task => ({ ...task, isNewRequest: true })),
+					...upcomingResponse.data
+				];
+				
+				setAllTasks(combinedTasks);
+				setError(null);
+			} catch (err) {
+				console.error('Error fetching tasks:', err);
+				setError('Failed to load tasks');
+			} finally {
+				setLoading(false);
+			}
+		};
+		
+		fetchTasks();
+	}, []);
+	
+	// Sample fallback data structure (not used anymore)
+	const sampleTasks = [
 		{
 			id: 1,
 			customerName: "Mrs. Sharma",
@@ -125,9 +168,14 @@ const UpcomingTaskPage = () => {
 			paymentMethod: "Bank Transfer",
 			canReview: false
 		}
-	]);
+	];
 
 	const statusConfig = {
+		'CONFIRMED': { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
+		'ASSIGNED': { color: 'bg-yellow-600', icon: Clock, label: 'Accepted' },
+		'IN_PROGRESS': { color: 'bg-orange-600', icon: Clock, label: 'In Progress' },
+		'COMPLETED': { color: 'bg-green-600', icon: CheckCircle, label: 'Completed' },
+		'CANCELLED': { color: 'bg-red-600', icon: XCircle, label: 'Cancelled' },
 		new: { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
 		accepted: { color: 'bg-yellow-600', icon: Clock, label: 'Accepted' },
 		'in-progress': { color: 'bg-orange-600', icon: Clock, label: 'In Progress' },
@@ -136,14 +184,61 @@ const UpcomingTaskPage = () => {
 	};
 
 	const filteredTasks = allTasks.filter(task => {
-		const matchesFilter = activeFilter === 'all' || task.status === activeFilter;
-		const matchesSearch = task.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-							 task.service.toLowerCase().includes(searchTerm.toLowerCase());
+		const matchesFilter = activeFilter === 'all' || task.status === activeFilter.toUpperCase();
+		const matchesSearch = (task.customerName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+							 (task.serviceName || '').toLowerCase().includes(searchTerm.toLowerCase());
 		return matchesFilter && matchesSearch;
 	});
+	
+	const handleAcceptTask = async (taskId) => {
+		try {
+			const workerId = localStorage.getItem('workerId');
+			await axios.post(`${API_URL}/worker/dashboard/tasks/${taskId}/accept?workerId=${workerId}`);
+			// Refresh tasks
+			const response = await axios.get(`${API_URL}/worker/dashboard/tasks/upcoming/${workerId}`);
+			setAllTasks(response.data);
+			alert('Task accepted successfully!');
+		} catch (err) {
+			console.error('Error accepting task:', err);
+			alert('Failed to accept task');
+		}
+	};
+	
+	const handleDeclineTask = async (taskId) => {
+		try {
+			const workerId = localStorage.getItem('workerId');
+			const reason = prompt('Please provide a reason for declining:');
+			if (!reason) return;
+			
+			await axios.post(`${API_URL}/worker/dashboard/tasks/${taskId}/decline?workerId=${workerId}&reason=${encodeURIComponent(reason)}`);
+			// Refresh tasks
+			const response = await axios.get(`${API_URL}/worker/dashboard/tasks/upcoming/${workerId}`);
+			setAllTasks(response.data);
+			alert('Task declined');
+		} catch (err) {
+			console.error('Error declining task:', err);
+			alert('Failed to decline task');
+		}
+	};
+	
+	const handleCompleteTask = async (taskId) => {
+		try {
+			const workerId = localStorage.getItem('workerId');
+			await axios.post(`${API_URL}/worker/dashboard/tasks/${taskId}/complete?workerId=${workerId}`);
+			// Refresh tasks
+			const response = await axios.get(`${API_URL}/worker/dashboard/tasks/upcoming/${workerId}`);
+			setAllTasks(response.data);
+			alert('Task marked as completed!');
+		} catch (err) {
+			console.error('Error completing task:', err);
+			alert('Failed to complete task');
+		}
+	};
 
 	const TaskCard = ({ task }) => {
-		const StatusIcon = statusConfig[task.status].icon;
+		const statusKey = task.status || 'CONFIRMED';
+		const config = statusConfig[statusKey] || statusConfig['CONFIRMED'];
+		const StatusIcon = config.icon;
 		
 		return (
 			<motion.div
@@ -153,38 +248,40 @@ const UpcomingTaskPage = () => {
 			>
 				<div className="flex justify-between items-start mb-4">
 					<div>
-						<h3 className="text-lg font-semibold text-white">{task.customerName}</h3>
-						<p className="text-[#00E0B8] font-medium">{task.service}</p>
+						<h3 className="text-lg font-semibold text-white">{task.customerName || 'Customer'}</h3>
+						<p className="text-[#00E0B8] font-medium">{task.serviceName}</p>
 					</div>
-					<div className={`px-3 py-1 rounded-full text-white text-sm flex items-center gap-2 ${statusConfig[task.status].color}`}>
+					<div className={`px-3 py-1 rounded-full text-white text-sm flex items-center gap-2 ${config.color}`}>
 						<StatusIcon size={16} />
-						{statusConfig[task.status].label}
+						{config.label}
 					</div>
 				</div>
 
-				<p className="text-gray-300 mb-4">{task.description}</p>
+				<p className="text-gray-300 mb-4">{task.specialInstructions || task.description || 'No description provided'}</p>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 					<div className="flex items-center gap-2 text-gray-400">
 						<Calendar size={16} />
-						<span>{task.date} at {task.time}</span>
+						<span>{task.preferredDate} {task.preferredTime && `at ${task.preferredTime}`}</span>
 					</div>
 					<div className="flex items-center gap-2 text-gray-400">
 						<MapPin size={16} />
-						<span>{task.location}</span>
+						<span>{task.city || task.fullAddress}</span>
 					</div>
 					<div className="flex items-center gap-2 text-gray-400">
 						<Phone size={16} />
-						<span>{task.customerPhone}</span>
+						<span>{task.phone}</span>
 					</div>
-					<div className="flex items-center gap-2 text-gray-400">
-						<Mail size={16} />
-						<span>{task.customerEmail}</span>
-					</div>
+					{task.alternatePhone && (
+						<div className="flex items-center gap-2 text-gray-400">
+							<Phone size={16} />
+							<span>{task.alternatePhone}</span>
+						</div>
+					)}
 				</div>
 
 				{/* Completed Task Additional Info */}
-				{task.status === 'completed' && (
+				{task.status === 'COMPLETED' && (
 					<div className="border-t border-gray-700 pt-4 mt-4">
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 							<div className="text-sm text-gray-400">
@@ -240,29 +337,41 @@ const UpcomingTaskPage = () => {
 				)}
 
 				<div className="flex justify-between items-center">
-					<span className="text-green-400 font-semibold text-lg">{task.payment}</span>
+					<span className="text-green-400 font-semibold text-lg">₹{task.totalAmount}</span>
 					<div className="flex gap-2">
-						{task.status === 'new' && (
+						{task.status === 'CONFIRMED' && (
 							<>
-								<button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+								<button 
+									onClick={() => handleAcceptTask(task.id)}
+									className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+								>
 									Accept
 								</button>
-								<button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+								<button 
+									onClick={() => handleDeclineTask(task.id)}
+									className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+								>
 									Decline
 								</button>
 							</>
 						)}
-						{task.status === 'accepted' && (
-							<button className="bg-[#00E0B8] hover:bg-[#00C4A0] text-gray-900 px-4 py-2 rounded-lg transition-colors">
+						{task.status === 'ASSIGNED' && (
+							<button 
+								onClick={() => handleCompleteTask(task.id)}
+								className="bg-[#00E0B8] hover:bg-[#00C4A0] text-gray-900 px-4 py-2 rounded-lg transition-colors"
+							>
 								Start Task
 							</button>
 						)}
-						{task.status === 'in-progress' && (
-							<button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+						{task.status === 'IN_PROGRESS' && (
+							<button 
+								onClick={() => handleCompleteTask(task.id)}
+								className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+							>
 								Mark Complete
 							</button>
 						)}
-						{task.status === 'completed' && (
+						{task.status === 'COMPLETED' && (
 							<>
 								<button className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-lg transition-colors flex items-center gap-2">
 									<Eye size={16} />
@@ -308,7 +417,7 @@ const UpcomingTaskPage = () => {
 
 					{/* Status Filters */}
 					<div className="flex flex-wrap gap-2">
-						{['all', 'new', 'accepted', 'in-progress', 'completed'].map((status) => (
+						{['all', 'confirmed', 'assigned', 'in_progress', 'completed'].map((status) => (
 							<button
 								key={status}
 								onClick={() => setActiveFilter(status)}
@@ -318,28 +427,38 @@ const UpcomingTaskPage = () => {
 										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
 								}`}
 							>
-								{status === 'all' ? 'All Tasks' : statusConfig[status]?.label || status}
+								{status === 'all' ? 'All Tasks' : statusConfig[status.toUpperCase()]?.label || status}
 							</button>
 						))}
 					</div>
 				</div>
 
 				{/* Task List */}
-				<div className="space-y-4">
-					{filteredTasks.length > 0 ? (
-						filteredTasks.map((task) => (
-							<TaskCard key={task.id} task={task} />
-						))
-					) : (
-						<div className="text-center py-12">
-							<AlertCircle className="mx-auto mb-4 text-gray-400" size={48} />
-							<p className="text-gray-400 text-lg">No tasks found matching your criteria</p>
-						</div>
-					)}
-				</div>
+				{loading ? (
+					<div className="flex items-center justify-center py-12">
+						<Loader2 className="animate-spin text-[#00E0B8]" size={48} />
+					</div>
+				) : error ? (
+					<div className="text-center py-12">
+						<AlertCircle className="mx-auto mb-4 text-red-400" size={48} />
+						<p className="text-red-400 text-lg">{error}</p>
+					</div>
+				) : (
+					<div className="space-y-4">
+						{filteredTasks.length > 0 ? (
+							filteredTasks.map((task) => (
+								<TaskCard key={task.id} task={task} />
+							))
+						) : (
+							<div className="text-center py-12">
+								<AlertCircle className="mx-auto mb-4 text-gray-400" size={48} />
+								<p className="text-gray-400 text-lg">No tasks found matching your criteria</p>
+							</div>
+						)}
+					</div>
+				)}
 			</main>
 		</div>
 	);
 };
 export default UpcomingTaskPage;
-

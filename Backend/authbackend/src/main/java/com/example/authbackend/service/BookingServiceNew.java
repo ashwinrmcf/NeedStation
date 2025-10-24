@@ -39,6 +39,9 @@ public class BookingServiceNew {
     @Autowired
     private UserRepository userRepository;
     
+    @Autowired
+    private WorkerAssignmentService workerAssignmentService;
+    
     private final ObjectMapper objectMapper = new ObjectMapper();
     
     /**
@@ -121,8 +124,31 @@ public class BookingServiceNew {
         
         // Save booking
         booking = bookingRepository.save(booking);
+        System.out.println("✅ Booking saved with ID: " + booking.getId());
         
-        // 5. Create booking subservices
+        // 5. Automatically find and notify available workers within 30km radius
+        try {
+            List<com.example.authbackend.model.Worker> availableWorkers = 
+                workerAssignmentService.findAvailableWorkersForBooking(booking.getId());
+            
+            if (!availableWorkers.isEmpty()) {
+                System.out.println("✅ Found " + availableWorkers.size() + " available workers within 30km radius");
+                // TODO: Send notifications to all available workers
+                // For now, workers will see this in their "Upcoming Tasks" page
+                booking.setStatus("PENDING_WORKER_ASSIGNMENT");
+            } else {
+                System.out.println("⚠️ No available workers found within 30km radius");
+                booking.setStatus("PENDING_WORKER_ASSIGNMENT");
+            }
+            bookingRepository.save(booking);
+        } catch (Exception e) {
+            System.err.println("⚠️ Error finding available workers: " + e.getMessage());
+            // Continue with booking creation even if worker assignment fails
+            booking.setStatus("PENDING_WORKER_ASSIGNMENT");
+            bookingRepository.save(booking);
+        }
+        
+        // 6. Create booking subservices
         List<String> subServiceNames = new ArrayList<>();
         if (dto.getSelectedSubServices() != null && !dto.getSelectedSubServices().isEmpty()) {
             for (Long subServiceId : dto.getSelectedSubServices()) {
@@ -140,31 +166,16 @@ public class BookingServiceNew {
             }
         }
         
-        // 6. Create booking formality data
-        Map<String, String> formalityDataMap = new HashMap<>();
+        // 6. Store formality data as JSON
         if (dto.getFormalityData() != null && !dto.getFormalityData().isEmpty()) {
-            for (Map.Entry<String, String> entry : dto.getFormalityData().entrySet()) {
-                String fieldName = entry.getKey();
-                String fieldValue = entry.getValue();
-                
-                // Find formality by field name
-                ServiceFormality formality = serviceFormalityRepository.findByServiceIdNotDeleted(dto.getServiceId())
-                        .stream()
-                        .filter(f -> f.getFieldName().equals(fieldName))
-                        .findFirst()
-                        .orElse(null);
-                
-                if (formality != null) {
-                    BookingFormalityData bfd = new BookingFormalityData();
-                    bfd.setBooking(booking);
-                    bfd.setFormalityId(formality.getId());
-                    bfd.setFieldName(formality.getFieldName());
-                    bfd.setFieldLabel(formality.getFieldLabel());
-                    bfd.setFieldValue(fieldValue);
-                    
-                    bookingFormalityDataRepository.save(bfd);
-                    formalityDataMap.put(fieldName, fieldValue);
-                }
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                String formalityJson = objectMapper.writeValueAsString(dto.getFormalityData());
+                booking.setFormalityDataJson(formalityJson);
+                booking.setFormalitySummary(formalityJson); // Keep for backward compatibility
+            } catch (JsonProcessingException e) {
+                System.err.println("❌ Error converting formality data to JSON: " + e.getMessage());
+                // Continue without formality data rather than failing the entire booking
             }
         }
         
@@ -186,7 +197,7 @@ public class BookingServiceNew {
         response.setPhone(booking.getPhone());
         response.setSubServices(subServiceNames);
         response.setSubservicesCount(subServiceNames.size());
-        response.setFormalityData(formalityDataMap);
+        response.setFormalityData(dto.getFormalityData()); // Use original DTO data
         response.setFullAddress(booking.getFullAddress());
         response.setCity(booking.getCity());
         
@@ -413,14 +424,21 @@ public class BookingServiceNew {
     private BookingResponseDTO convertToDetailedResponseDTO(BookingNew booking) {
         BookingResponseDTO dto = convertToResponseDTO(booking);
         
-        // Get formality data
-        List<BookingFormalityData> formalityDataList = bookingFormalityDataRepository.findByBookingId(booking.getId());
-        Map<String, String> formalityMap = formalityDataList.stream()
-                .collect(Collectors.toMap(
-                        BookingFormalityData::getFieldName,
-                        BookingFormalityData::getFieldValue
-                ));
-        dto.setFormalityData(formalityMap);
+        // Get formality data from JSON column
+        if (booking.getFormalityDataJson() != null && !booking.getFormalityDataJson().isEmpty()) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                @SuppressWarnings("unchecked")
+                Map<String, String> formalityMap = objectMapper.readValue(
+                    booking.getFormalityDataJson(), 
+                    Map.class
+                );
+                dto.setFormalityData(formalityMap);
+            } catch (JsonProcessingException e) {
+                System.err.println("❌ Error parsing formality JSON: " + e.getMessage());
+                dto.setFormalityData(new java.util.HashMap<>());
+            }
+        }
         
         // Get subservices
         List<BookingSubService> subServices = bookingSubServiceRepository.findByBookingId(booking.getId());

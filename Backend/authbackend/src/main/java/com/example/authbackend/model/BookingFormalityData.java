@@ -22,7 +22,7 @@ public class BookingFormalityData {
     @JoinColumn(name = "booking_id", nullable = false)
     private BookingNew booking;
     
-    @Column(name = "formality_id", nullable = false)
+    @Column(name = "formality_id", nullable = true)
     private Long formalityId;
     
     // Denormalized for performance

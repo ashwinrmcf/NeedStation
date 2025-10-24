@@ -145,6 +145,7 @@ const router = createBrowserRouter([
       {path: "/service-modal-demo", element: <ServiceModalDemo/>},
       {path: "/cart", element: <Cart/>},
       {path: "/booking-success", element: <BookingSuccess/>},
+      {path: "/available-helpers", element: <AvailableHelpers />},
     ],
   },
 
@@ -209,7 +210,6 @@ const router = createBrowserRouter([
     element: <CaretakerAtHomeUniqueDetails />,
   },
   { path: "/payment-gateway", element: <PaymentGateway /> },
-  { path: "/available-helpers", element: <AvailableHelpers /> },
   {
     path: "/helper",
     element: <HelperLayout />,

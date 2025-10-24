@@ -51,7 +51,7 @@ public class ServiceService {
                         ss.getSubServiceName(),
                         ss.getDescription(),
                         ss.getAdditionalPrice(),
-                        ss.getDisplayOrder()
+                        0
                 ))
                 .collect(Collectors.toList());
         
@@ -67,7 +67,7 @@ public class ServiceService {
                         sf.getPlaceholder(),
                         sf.getValidationRules(),
                         sf.getHelpText(),
-                        sf.getDisplayOrder()
+                        0
                 ))
                 .collect(Collectors.toList());
         
@@ -223,7 +223,7 @@ public class ServiceService {
             subService.setSubServiceName(subServiceName);
             subService.setDescription(description);
             subService.setAdditionalPrice(additionalPrice);
-            subService.setDisplayOrder(displayOrder);
+            // displayOrder field removed - not in database
             subService.setIsActive(true);
             
             subServiceRepository.save(subService);

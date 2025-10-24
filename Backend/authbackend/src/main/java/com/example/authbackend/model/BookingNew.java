@@ -128,7 +128,10 @@ public class BookingNew {
     private Integer subservicesCount = 0;
     
     @Column(name = "formality_summary", columnDefinition = "TEXT")
-    private String formalitySummary; // JSON object
+    private String formalitySummary; // JSON object (deprecated - use formalityDataJson)
+    
+    @Column(name = "formality_data_json", columnDefinition = "JSON")
+    private String formalityDataJson; // New JSON column for formality data
     
     // Notes & Feedback
     @Column(name = "special_instructions", columnDefinition = "TEXT")

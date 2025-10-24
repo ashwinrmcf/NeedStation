@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface SubServiceRepository extends JpaRepository<SubService, Long> {
     
-    @Query("SELECT ss FROM SubService ss WHERE ss.service.id = :serviceId AND ss.isActive = true AND ss.deletedAt IS NULL ORDER BY ss.displayOrder")
+    @Query("SELECT ss FROM SubService ss WHERE ss.service.id = :serviceId AND ss.isActive = true ORDER BY ss.id")
     List<SubService> findByServiceIdActive(Long serviceId);
     
-    @Query("SELECT ss FROM SubService ss WHERE ss.service.id = :serviceId AND ss.deletedAt IS NULL ORDER BY ss.displayOrder")
+    @Query("SELECT ss FROM SubService ss WHERE ss.service.id = :serviceId ORDER BY ss.id")
     List<SubService> findByServiceIdNotDeleted(Long serviceId);
 }

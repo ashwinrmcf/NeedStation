@@ -1,24 +1,20 @@
-.header {
-  width: 80vw;
-  height: 74px;
-  margin: 48px auto;
+/* Progress Container */
+.progress-container {
+  width: 90%;
+  max-width: 1200px;
+  height: auto;
+  min-height: 74px;
+  margin: 32px auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   border-radius: 16px;
-  padding: 0 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 20px 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   backdrop-filter: blur(42px);
-  color: #FFFFFF;
-}
-
-
-.logo {
-  font-size: 24px;
-  font-weight: bold;
-  color: #ffffff;
-  margin-right: 2vw;
+  color: var(--text-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .progress-bar {
@@ -39,57 +35,59 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #5CE1E6;
-  box-shadow: 0 0 10px #5CE1E6;
+  background: var(--accent-secondary);
+  box-shadow: 0 0 10px var(--accent-secondary);
 }
 
 .step span {
   font-size: 12px;
   margin-top: 5px;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .line {
   width: 15vw;
   height: 2px;
-  background: #5CE1E6;
+  background: var(--accent-secondary);
   margin: 0 5px;
 }
 
 .line1{
   width: 5vw;
   height: 2px;
-  background: #5CE1E6;
+  background: var(--accent-secondary);
   margin: 0 5px;
 }
 
 .step.active .circle {
-  background: #5CE1E6;
-  box-shadow: 0 0 15px #5CE1E6;
+  background: var(--accent-secondary);
+  box-shadow: 0 0 15px var(--accent-secondary);
 }
 
 .helper-list{
-  font-size: small;
+  font-size: 14px;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 
 
 
 .rectangle {
-  width: 80vw;
+  width: 90%;
   max-width: 1200px;
   height: auto;
   padding: 30px;
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
-  border-radius: 25px;
-  border: 2px solid #5CE1E6;
-  background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+  border-radius: 20px;
+  border: 1px solid var(--accent-secondary);
+  background: var(--bg-surface);
   gap: 40px;
   position: relative;
-  color: #FFFFFF;
-  margin: 0 auto;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(92, 225, 230, 0.1);
+  color: var(--text-primary);
+  margin: 80px auto 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(20px);
 }
 
@@ -109,7 +107,7 @@
   top: 15%;
   bottom: 15%;
   width: 1px;
-  background: rgba(92, 225, 230, 0.3);
+  background: var(--border-color);
   left: 33.33%;
 }
 
@@ -119,7 +117,7 @@
   top: 15%;
   bottom: 15%;
   width: 1px;
-  background: rgba(92, 225, 230, 0.3);
+  background: var(--border-color);
   left: 66.66%;
 }
 
@@ -134,21 +132,20 @@
 }
 
 .rating-group h2 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  color: #5CE1E6;
+  color: var(--accent-secondary);
   text-align: left;
   margin: 0 0 15px 0;
-  text-shadow: 0 0 10px rgba(92, 225, 230, 0.3);
 }
 
 .filter-dropdown {
   width: 100%;
   padding: 12px 15px;
-  border: 1px solid rgba(92, 225, 230, 0.3);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: rgba(26, 26, 26, 0.8);
-  color: #FFFFFF;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   outline: none;
@@ -157,18 +154,18 @@
 }
 
 .filter-dropdown:hover {
-  border-color: #5CE1E6;
-  box-shadow: 0 0 15px rgba(92, 225, 230, 0.2);
+  border-color: var(--accent-secondary);
+  background: var(--hover-bg);
 }
 
 .filter-dropdown:focus {
-  border-color: #5CE1E6;
-  box-shadow: 0 0 20px rgba(92, 225, 230, 0.3);
+  border-color: var(--accent-secondary);
+  box-shadow: 0 0 0 3px rgba(92, 225, 230, 0.1);
 }
 
 .filter-dropdown option {
-  background: #1a1a1a;
-  color: #FFFFFF;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   padding: 8px;
 }
 
@@ -202,12 +199,11 @@
 }
 
 .price-group h2 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  color: #5CE1E6;
+  color: var(--accent-secondary);
   text-align: left;
   margin: 0 0 15px 0;
-  text-shadow: 0 0 10px rgba(92, 225, 230, 0.3);
 }
 
 /* Urgency Section */
@@ -221,12 +217,11 @@
 }
 
 .urgency-group h2 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  color: #5CE1E6;
+  color: var(--accent-secondary);
   text-align: left;
   margin: 0 0 15px 0;
-  text-shadow: 0 0 10px rgba(92, 225, 230, 0.3);
 }
 /* Container Styling */
 .tasker-profile {
@@ -234,16 +229,22 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 30px;
-  width: 80vw;
+  width: 90%;
   max-width: 1200px;
-  background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
-  border: 2px solid #5CE1E6;
-  border-radius: 25px;
-  color: #FFFFFF;
+  background: var(--bg-surface);
+  border: 1px solid var(--accent-secondary);
+  border-radius: 20px;
+  color: var(--text-primary);
   gap: 30px;
   margin: 20px auto;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(92, 225, 230, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(20px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tasker-profile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
 /* Profile Section Styling */
@@ -259,39 +260,53 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #C4C4C4; /* Placeholder for profile image */
-  margin-bottom: 1vw;
+  background: var(--bg-primary);
+  margin-bottom: 20px;
+  border: 3px solid var(--accent-secondary);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .profile-link {
-  font-size: 1.2vw;
+  font-size: 14px;
   font-weight: 500;
-  color: #7DE7EB;
-  margin-bottom: 1vw;
+  color: var(--accent-secondary);
+  margin-bottom: 16px;
   cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.profile-link:hover {
+  color: var(--accent-tertiary);
+  text-decoration: underline;
 }
 
 .select-button {
-  padding: 0.8vw 1.5vw;
-  font-size: 1vw;
-  font-weight: 500;
-  background-color: #7DE7EB;
-  color: #15111D;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--accent-secondary);
+  color: var(--bg-primary);
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-bottom: 1vw;
-  transition: background 0.3s ease-in-out;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(92, 225, 230, 0.3);
 }
 
 .select-button:hover {
-  background-color: #5FC2C7;
+  background: var(--accent-tertiary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(92, 225, 230, 0.4);
 }
 
 .note {
-  font-size: 0.9vw;
+  font-size: 12px;
   line-height: 1.5;
-  color: #B3B3B3;
+  color: var(--text-muted);
 }
 
 /* Info Section Styling */
@@ -299,7 +314,7 @@
   width: 65%;
   display: flex;
   flex-direction: column;
-  gap: 1vw;
+  gap: 16px;
 }
 
 .info-header {
@@ -309,59 +324,182 @@
 }
 
 .tasker-name {
-  font-size: 1.8vw;
+  font-size: 24px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .rate {
-  font-size: 1.8vw;
-  font-weight: 600;
-  color: #7DE7EB;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-secondary);
 }
 
 .reviews,
-.tasks {
-  font-size: 1vw;
-  color: #7DE7EB;
+.tasks,
+.experience {
+  font-size: 14px;
+  color: var(--text-secondary);
 }
 
 .help-section {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 1.5vw;
-  border-radius: 10px;
-  border: 1px solid #7DE7EB;
+  background: var(--bg-primary);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
 }
 
 .help-section h3 {
-  font-size: 1.2vw;
-  margin-bottom: 0.5vw;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
 }
 
 .help-description {
-  font-size: 1vw;
-  line-height: 1.5;
-  color: #FFFFFF;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
 }
 
 .read-more {
-  color: #7DE7EB;
+  color: var(--accent-secondary);
   cursor: pointer;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
-/* Profile Image Placeholder with Real Image */
-.profile-image {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden; /* Ensures image stays inside the circle */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #C4C4C4; /* Backup background color */
+.read-more:hover {
+  color: var(--accent-tertiary);
+  text-decoration: underline;
 }
 
 .profile-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures the image scales correctly */
+  object-fit: cover;
+}
+
+.specialties {
+  margin-top: 16px;
+}
+
+.specialties h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-secondary);
+  margin-bottom: 8px;
+}
+
+.specialties ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.specialties li {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  border: 1px solid var(--border-color);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .progress-container {
+    width: 95%;
+    padding: 16px;
+    margin: 16px auto;
+  }
+
+  .progress-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .line, .line1 {
+    width: 30px;
+  }
+
+  .helper-list {
+    font-size: 12px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .rectangle {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .rectangle::before,
+  .rectangle::after {
+    display: none;
+  }
+
+  .rating-group,
+  .price-group,
+  .urgency-group {
+    width: 100%;
+    padding: 0;
+  }
+
+  .tasker-profile {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .profile-section,
+  .info-section {
+    width: 100%;
+  }
+
+  .tasker-name,
+  .rate {
+    font-size: 20px;
+  }
+
+  .help-section {
+    padding: 16px;
+  }
+}
+
+/* Tablet Responsive */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .progress-container {
+    width: 95%;
+    padding: 16px 20px;
+  }
+
+  .rectangle {
+    width: 95%;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .tasker-profile {
+    width: 95%;
+    padding: 24px;
+  }
+
+  .profile-section {
+    width: 35%;
+  }
+
+  .info-section {
+    width: 60%;
+  }
+
+  .tasker-name,
+  .rate {
+    font-size: 20px;
+  }
 }

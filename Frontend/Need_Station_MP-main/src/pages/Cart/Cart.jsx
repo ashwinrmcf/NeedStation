@@ -1,19 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../store/CartContext';
+import axios from 'axios';
 import { 
   Heart, Shield, Clock, MapPin, Phone, Calendar, User, Star, 
   CheckCircle, AlertCircle, Trash2, Plus, Minus, ArrowLeft, 
   CreditCard, Smartphone, Wallet, Gift, Info, ChevronDown,
-  Activity, Stethoscope, Pill, UserCheck, Home, Zap
+  Activity, Stethoscope, Pill, UserCheck, Home, Zap, X, Loader2, Package
 } from 'lucide-react';
 import styles from './Cart.module.css';
 
 const Cart = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { cartItems, updateQuantity, removeFromCart } = useCart();
   const [currentStep, setCurrentStep] = useState(1);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successBookingData, setSuccessBookingData] = useState(null);
+  const [userBookings, setUserBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
+  
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+  
+  // Check for booking success from location state
+  useEffect(() => {
+    if (location.state?.bookingSuccess && location.state?.bookingData) {
+      setShowSuccessMessage(true);
+      setSuccessBookingData(location.state.bookingData);
+      
+      // Clear the state
+      window.history.replaceState({}, document.title);
+      
+      // Auto-hide after 10 seconds
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 10000);
+    }
+  }, [location.state]);
+  
+  // Fetch user's bookings
+  useEffect(() => {
+    const fetchUserBookings = async () => {
+      try {
+        setLoadingBookings(true);
+        const userId = localStorage.getItem('userId');
+        
+        if (!userId) {
+          console.log('No userId found');
+          return;
+        }
+        
+        const response = await axios.get(`${API_URL}/bookings/user/${userId}`);
+        if (response.data.success) {
+          setUserBookings(response.data.bookings || []);
+        }
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+      } finally {
+        setLoadingBookings(false);
+      }
+    };
+    
+    fetchUserBookings();
+  }, [successBookingData]); // Refetch when new booking is created
   
   // If cart is empty, show sample items for demo purposes
   const displayItems = cartItems.length > 0 ? cartItems : [
@@ -227,6 +277,39 @@ const Cart = () => {
 
   return (
     <div className={styles.container}>
+      {/* Success Message Banner */}
+      <AnimatePresence>
+        {showSuccessMessage && successBookingData && (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            className={styles.successBanner}
+          >
+            <div className={styles.successContent}>
+              <div className={styles.successIcon}>
+                <CheckCircle className="w-8 h-8 text-green-500" />
+              </div>
+              <div className={styles.successText}>
+                <h3>🎉 Booking Confirmed Successfully!</h3>
+                <p>
+                  <strong>Booking #{successBookingData.bookingNumber}</strong> - {successBookingData.serviceName}
+                </p>
+                <p className={styles.successSubtext}>
+                  We're finding the best workers near you! You'll be notified once a worker accepts your booking.
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowSuccessMessage(false)}
+                className={styles.closeSuccess}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* Modern Header */}
       <motion.header 
         className={styles.modernHeader}
@@ -385,6 +468,38 @@ const Cart = () => {
           <div className={styles.modernGrid}>
             {/* Main Content */}
             <div className={styles.mainContent}>
+              {/* Pending Bookings Section */}
+              {userBookings.length > 0 && (
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.6 }}
+                  className={styles.pendingBookingsSection}
+                  style={{ marginBottom: '2rem' }}
+                >
+                  <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>
+                      <Package className="w-6 h-6" />
+                      Your Bookings
+                    </h2>
+                    <span className={styles.bookingCount}>{userBookings.length} booking(s)</span>
+                  </div>
+                  
+                  <div className={styles.bookingsGrid}>
+                    {loadingBookings ? (
+                      <div style={{ textAlign: 'center', padding: '2rem' }}>
+                        <Loader2 className="w-8 h-8 animate-spin" style={{ margin: '0 auto' }} />
+                        <p>Loading bookings...</p>
+                      </div>
+                    ) : (
+                      userBookings.map((booking, index) => (
+                        <PendingBookingCard key={booking.id} booking={booking} index={index} />
+                      ))
+                    )}
+                  </div>
+                </motion.section>
+              )}
+              
               {/* Services Section */}
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
@@ -1366,6 +1481,130 @@ const TrustIndicators = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Pending Booking Card Component
+const PendingBookingCard = ({ booking, index }) => {
+  const getStatusColor = (status) => {
+    const colors = {
+      'PENDING_WORKER_ASSIGNMENT': 'bg-yellow-500',
+      'CONFIRMED': 'bg-blue-500',
+      'ASSIGNED': 'bg-green-500',
+      'IN_PROGRESS': 'bg-purple-500',
+      'COMPLETED': 'bg-gray-500',
+      'CANCELLED': 'bg-red-500'
+    };
+    return colors[status] || 'bg-gray-500';
+  };
+  
+  const getStatusText = (status) => {
+    const texts = {
+      'PENDING_WORKER_ASSIGNMENT': 'Finding Worker',
+      'CONFIRMED': 'Worker Confirmed',
+      'ASSIGNED': 'Assigned',
+      'IN_PROGRESS': 'In Progress',
+      'COMPLETED': 'Completed',
+      'CANCELLED': 'Cancelled'
+    };
+    return texts[status] || status;
+  };
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      className={styles.bookingCard}
+      style={{
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '16px',
+        padding: '1.5rem',
+        marginBottom: '1rem'
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+        <div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+            {booking.serviceName}
+          </h3>
+          <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>
+            Booking #{booking.bookingNumber}
+          </p>
+        </div>
+        <span 
+          className={`${getStatusColor(booking.status)}`}
+          style={{
+            padding: '0.5rem 1rem',
+            borderRadius: '9999px',
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            color: 'white'
+          }}
+        >
+          {getStatusText(booking.status)}
+        </span>
+      </div>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Calendar className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.7)' }} />
+          <span style={{ fontSize: '0.875rem' }}>{booking.preferredDate}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Clock className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.7)' }} />
+          <span style={{ fontSize: '0.875rem' }}>{booking.preferredTimeSlot || booking.preferredTime}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <MapPin className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.7)' }} />
+          <span style={{ fontSize: '0.875rem' }}>{booking.city}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <CreditCard className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.7)' }} />
+          <span style={{ fontSize: '0.875rem', fontWeight: '600' }}>₹{booking.totalAmount}</span>
+        </div>
+      </div>
+      
+      {booking.status === 'PENDING_WORKER_ASSIGNMENT' && (
+        <div 
+          style={{
+            background: 'rgba(59, 130, 246, 0.1)',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            borderRadius: '8px',
+            padding: '0.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#3b82f6' }} />
+          <span style={{ fontSize: '0.875rem', color: '#3b82f6' }}>
+            We're finding the best worker near you...
+          </span>
+        </div>
+      )}
+      
+      {booking.status === 'CONFIRMED' && (
+        <div 
+          style={{
+            background: 'rgba(34, 197, 94, 0.1)',
+            border: '1px solid rgba(34, 197, 94, 0.3)',
+            borderRadius: '8px',
+            padding: '0.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <CheckCircle className="w-4 h-4" style={{ color: '#22c55e' }} />
+          <span style={{ fontSize: '0.875rem', color: '#22c55e' }}>
+            Worker confirmed! Awaiting quotation...
+          </span>
+        </div>
+      )}
+    </motion.div>
   );
 };
 

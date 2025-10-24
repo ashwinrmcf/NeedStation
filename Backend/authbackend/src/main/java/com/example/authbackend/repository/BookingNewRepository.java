@@ -33,4 +33,13 @@ public interface BookingNewRepository extends JpaRepository<BookingNew, Long> {
     
     @Query("SELECT COUNT(b) FROM BookingNew b WHERE DATE(b.createdAt) = CURRENT_DATE")
     long countBookingsCreatedToday();
+    
+    @Query("SELECT b FROM BookingNew b WHERE b.assignedWorkerId = :workerId AND b.preferredDate = :date AND b.deletedAt IS NULL ORDER BY b.preferredTime")
+    List<BookingNew> findByAssignedWorkerIdAndPreferredDate(Long workerId, LocalDate date);
+    
+    @Query("SELECT b FROM BookingNew b WHERE b.assignedWorkerId = :workerId AND b.status = :status AND b.deletedAt IS NULL ORDER BY b.preferredDate, b.preferredTime")
+    List<BookingNew> findByAssignedWorkerIdAndStatus(Long workerId, String status);
+    
+    @Query("SELECT b FROM BookingNew b WHERE b.assignedWorkerId = :workerId AND b.status IN :statuses AND b.deletedAt IS NULL ORDER BY b.scheduledAt DESC")
+    Optional<BookingNew> findFirstByAssignedWorkerIdAndStatusInOrderByScheduledAtDesc(Long workerId, List<String> statuses);
 }

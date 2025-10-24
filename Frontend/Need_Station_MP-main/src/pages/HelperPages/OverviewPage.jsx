@@ -1,15 +1,17 @@
 import { 
   DollarSign, Clock, ClipboardList, Calendar, XCircle, Star, Eye, 
   Phone, AlertTriangle, Heart, Shield, MapPin, MessageCircle,
-  CheckCircle, Users, Stethoscope, Pill, Activity
+  CheckCircle, Users, Stethoscope, Pill, Activity, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 
 import DashboardHeader from "../../components/common/DashboardHeader";
 import WelcomeCard from "../../components/overview/WelcomeCard";
 import LanguageSelector from "../../components/common/LanguageSelector";
+import ActiveBookingCard from "../../components/WorkerDashboard/ActiveBookingCard";
 
 const OverviewPage = () => {
 	const { t, ready } = useTranslation();
@@ -17,19 +19,55 @@ const OverviewPage = () => {
 	// State to track welcome card visibility
 	const [isWelcomeCardVisible, setIsWelcomeCardVisible] = useState(true);
 	
-	// Sample data - in real app, this would come from API
-	const [todaysTasks] = useState([
-		{ id: 1, patient: "Mrs. Sharma", service: "elderlycare", time: "2:00 PM", status: "upcoming" },
-		{ id: 2, patient: "Baby Care", service: "newMotherSupport", time: "4:30 PM", status: "upcoming" },
-		{ id: 3, patient: "Mr. Kumar", service: "diabetesCheck", time: "6:00 PM", status: "upcoming" }
-	]);
+	// Dynamic data from API
+	const [todaysTasks, setTodaysTasks] = useState([]);
+	const [stats, setStats] = useState(null);
+	const [activeBooking, setActiveBooking] = useState(null);
+	const [hasActiveBooking, setHasActiveBooking] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 	
-	const [weeklyStats] = useState({
-		tasksCompleted: 12,
-		earnings: 8500,
-		rating: 4.8,
-		newMessages: 2
-	});
+	const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+	
+	// Fetch worker data
+	useEffect(() => {
+		const fetchDashboardData = async () => {
+			try {
+				setLoading(true);
+				const workerId = localStorage.getItem('workerId');
+				
+				if (!workerId) {
+					setError('Worker ID not found. Please log in again.');
+					return;
+				}
+				
+				// Fetch stats, today's tasks, and active booking in parallel
+				const [statsResponse, tasksResponse, activeBookingResponse] = await Promise.all([
+					axios.get(`${API_URL}/worker/dashboard/stats/${workerId}`),
+					axios.get(`${API_URL}/worker/dashboard/tasks/today/${workerId}`),
+					axios.get(`${API_URL}/worker/${workerId}/active-booking`)
+				]);
+				
+				setStats(statsResponse.data);
+				setTodaysTasks(tasksResponse.data);
+				
+				// Handle active booking
+				if (activeBookingResponse.data.hasActiveBooking) {
+					setHasActiveBooking(true);
+					setActiveBooking(activeBookingResponse.data.booking);
+				}
+				
+				setError(null);
+			} catch (err) {
+				console.error('Error fetching dashboard data:', err);
+				setError('Failed to load dashboard data');
+			} finally {
+				setLoading(false);
+			}
+		};
+		
+		fetchDashboardData();
+	}, []);
 	
 	// Always show welcome card for 10 seconds on dashboard load, then allow manual control
 	useEffect(() => {
@@ -54,11 +92,23 @@ const OverviewPage = () => {
 		}
 	};
 
-	// Show loading if translations aren't ready
-	if (!ready) {
+	// Show loading if translations aren't ready or data is loading
+	if (!ready || loading) {
 		return (
 			<div className='flex-1 flex items-center justify-center h-full'>
-				<div className='text-white text-xl'>Loading...</div>
+				<div className='text-white text-xl flex items-center gap-2'>
+					<Loader2 className='animate-spin' size={24} />
+					Loading...
+				</div>
+			</div>
+		);
+	}
+	
+	// Show error if data fetch failed
+	if (error) {
+		return (
+			<div className='flex-1 flex items-center justify-center h-full'>
+				<div className='text-red-400 text-xl'>{error}</div>
 			</div>
 		);
 	}
@@ -73,6 +123,11 @@ const OverviewPage = () => {
 
 			{/* Content area */}
 			<main className='flex-1 py-6 px-4 lg:px-8 max-w-7xl mx-auto w-full'>
+				{/* Active Booking Card - Shows when worker has an active booking */}
+				{hasActiveBooking && activeBooking && (
+					<ActiveBookingCard booking={activeBooking} />
+				)}
+				
 				{/* Welcome Card for newly registered workers */}
 				<AnimatePresence>
 					{isWelcomeCardVisible ? (
@@ -108,20 +163,21 @@ const OverviewPage = () => {
 						{t("todaysTasks")}
 					</h3>
 					<div className='space-y-3'>
-						{todaysTasks.map((task, index) => (
+						{todaysTasks.map((task) => (
 							<div key={task.id} className='bg-gray-700 rounded-lg p-4 flex items-center justify-between'>
 								<div className='flex items-center gap-4'>
 									<div className='bg-[#00E0B8] rounded-full p-2'>
 										<Heart className='text-gray-900' size={20} />
 									</div>
 									<div>
-										<p className='text-white font-medium'>{task.patient}</p>
-										<p className='text-gray-300 text-sm'>{t(task.service)}</p>
+										<p className='text-white font-medium'>{task.customerName || 'Customer'}</p>
+										<p className='text-gray-300 text-sm'>{task.serviceName}</p>
+										{task.city && <p className='text-gray-400 text-xs'>{task.city}</p>}
 									</div>
 								</div>
 								<div className='text-right'>
-									<p className='text-[#00E0B8] font-semibold'>{task.time}</p>
-									<p className='text-gray-400 text-sm'>{t("time")}</p>
+									<p className='text-[#00E0B8] font-semibold'>{task.preferredTime || task.preferredTimeSlot}</p>
+									<p className='text-gray-400 text-sm'>₹{task.totalAmount}</p>
 								</div>
 							</div>
 						))}
@@ -143,22 +199,22 @@ const OverviewPage = () => {
 				>
 					<div className='bg-gray-800 rounded-lg p-4 text-center'>
 						<CheckCircle className='text-green-400 mx-auto mb-2' size={32} />
-						<p className='text-2xl font-bold text-white'>{weeklyStats.tasksCompleted}</p>
+						<p className='text-2xl font-bold text-white'>{stats?.tasksThisWeek || 0}</p>
 						<p className='text-gray-400 text-sm'>{t("tasksThisWeek")}</p>
 					</div>
 					<div className='bg-gray-800 rounded-lg p-4 text-center'>
 						<DollarSign className='text-green-400 mx-auto mb-2' size={32} />
-						<p className='text-2xl font-bold text-white'>₹{weeklyStats.earnings}</p>
+						<p className='text-2xl font-bold text-white'>₹{stats?.monthlyEarnings || 0}</p>
 						<p className='text-gray-400 text-sm'>{t("monthlyEarnings")}</p>
 					</div>
 					<div className='bg-gray-800 rounded-lg p-4 text-center'>
 						<Star className='text-yellow-400 mx-auto mb-2' size={32} />
-						<p className='text-2xl font-bold text-white'>{weeklyStats.rating}/5</p>
+						<p className='text-2xl font-bold text-white'>{stats?.averageRating?.toFixed(1) || 0}/5</p>
 						<p className='text-gray-400 text-sm'>{t("yourRating")}</p>
 					</div>
 					<div className='bg-gray-800 rounded-lg p-4 text-center'>
 						<MessageCircle className='text-blue-400 mx-auto mb-2' size={32} />
-						<p className='text-2xl font-bold text-white'>{weeklyStats.newMessages}</p>
+						<p className='text-2xl font-bold text-white'>{stats?.newMessages || 0}</p>
 						<p className='text-gray-400 text-sm'>{t("newMessages")}</p>
 					</div>
 				</motion.div>

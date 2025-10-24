@@ -18,6 +18,7 @@
   --accent-tertiary: #00D4AA;
   --border-color: transparent;
   --hover-bg: rgba(255, 255, 255, 0.1);
+  --step-number-color: #FFFFFF;
 }
 
 /* Global Scroll Animation Styles */
@@ -69,6 +70,7 @@
   --gradient-primary: linear-gradient(90.78deg, #EC83BB 8.06%, #B664DB 73.25%);
   --gradient-secondary: linear-gradient(144.39deg, #F8E8C8 0%, #F5DEB3 50%, #F0D49A 100%);
   --gradient-text: linear-gradient(135deg, #00D4AA 0%, #5CE1E6 50%, #00B4D8 100%);
+  --step-number-color: #1A1D29;
 }
 
 body {

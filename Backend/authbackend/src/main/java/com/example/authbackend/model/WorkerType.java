@@ -1,0 +1,17 @@
+package com.example.authbackend.model;
+
+public enum WorkerType {
+    NURSE,
+    CAREGIVER,
+    CARETAKER,
+    PHYSIOTHERAPIST,
+    ATTENDANT,
+    MEDICAL_ASSISTANT,
+    HOME_NURSE,
+    ICU_NURSE,
+    PEDIATRIC_NURSE,
+    GERIATRIC_NURSE,
+    REHABILITATION_SPECIALIST,
+    MEDICAL_TECHNICIAN,
+    OTHER
+}

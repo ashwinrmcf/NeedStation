@@ -27,7 +27,8 @@ import {
   Brain,
   Clock,
   AlertCircle,
-  Bandage
+  Bandage,
+  ShoppingCart
 } from 'lucide-react';
 
 const GenericServiceOptions = ({ 
@@ -544,7 +545,7 @@ const GenericServiceOptions = ({
 
                 {globalCartItems.length === 0 ? (
                   <div className="text-center py-8">
-                    <div className="text-6xl mb-4">🛒</div>
+                    <ShoppingCart size={64} className="mx-auto mb-4" style={{ color: 'var(--text-muted)', strokeWidth: 1.5 }} />
                     <p className="text-lg font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Your cart is empty</p>
                     <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Add services to get started</p>
                   </div>

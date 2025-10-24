@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "service_formalities")
+@Table(name = "booking_formality_data")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -48,34 +48,4 @@ public class ServiceFormality {
     
     @Column(name = "help_text", length = 500)
     private String helpText;
-    
-    @Column(name = "display_order")
-    private Integer displayOrder = 0;
-    
-    // Audit fields
-    @Column(name = "created_by")
-    private Long createdBy;
-    
-    @Column(name = "updated_by")
-    private Long updatedBy;
-    
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-    
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

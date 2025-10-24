@@ -109,6 +109,16 @@ public class Worker {
     @Column(name = "service_radius_km", nullable = false)
     private Integer serviceRadiusKm = 10;
     
+    // Geolocation - captured on login
+    @Column(name = "current_latitude")
+    private Double currentLatitude;
+    
+    @Column(name = "current_longitude")
+    private Double currentLongitude;
+    
+    @Column(name = "last_location_update")
+    private LocalDateTime lastLocationUpdate;
+    
     @Column(precision = 3, scale = 2, nullable = false)
     private BigDecimal rating = BigDecimal.valueOf(0.00);
     
@@ -173,9 +183,7 @@ public class Worker {
         MALE, FEMALE, OTHER
     }
     
-    public enum WorkerType {
-        NURSE, CARETAKER, SECURITY_GUARD, PHYSIOTHERAPIST, PATHOLOGIST
-    }
+    // Removed nested WorkerType enum - using standalone com.example.authbackend.model.WorkerType instead
     
     public enum VerificationStatus {
         PENDING, VERIFIED, FAILED, NOT_REQUIRED
@@ -726,6 +734,31 @@ public class Worker {
 
     public void setEducation(String education) {
         this.educationQualification = education;
+    }
+    
+    // Geolocation getters and setters
+    public Double getCurrentLatitude() {
+        return currentLatitude;
+    }
+    
+    public void setCurrentLatitude(Double currentLatitude) {
+        this.currentLatitude = currentLatitude;
+    }
+    
+    public Double getCurrentLongitude() {
+        return currentLongitude;
+    }
+    
+    public void setCurrentLongitude(Double currentLongitude) {
+        this.currentLongitude = currentLongitude;
+    }
+    
+    public LocalDateTime getLastLocationUpdate() {
+        return lastLocationUpdate;
+    }
+    
+    public void setLastLocationUpdate(LocalDateTime lastLocationUpdate) {
+        this.lastLocationUpdate = lastLocationUpdate;
     }
     
     // Legacy constructor for backward compatibility

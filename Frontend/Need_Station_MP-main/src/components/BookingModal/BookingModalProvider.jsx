@@ -65,22 +65,19 @@ export const BookingModalProvider = ({ children }) => {
   };
 
   const handleBookingComplete = (bookingData) => {
-    console.log('Booking completed:', bookingData);
+    console.log('✅ Booking completed:', bookingData);
     
     // Store booking data in localStorage for persistence
     localStorage.setItem('needstation_latest_booking', JSON.stringify(bookingData));
     
-    // Navigate to available helpers or confirmation page
-    navigate('/available-helpers', {
+    // Navigate to user bookings page (or create a dedicated bookings page)
+    // For now, navigate to home with success state
+    navigate('/', {
       state: {
-        service: bookingData.serviceName,
-        bookingDetails: bookingData,
-        fromModal: true
+        bookingSuccess: true,
+        bookingData: bookingData
       }
     });
-    
-    // Show success notification (you can integrate with your notification system)
-    // toast.success(`Booking confirmed! ID: ${bookingData.bookingId}`);
   };
 
   const contextValue = {

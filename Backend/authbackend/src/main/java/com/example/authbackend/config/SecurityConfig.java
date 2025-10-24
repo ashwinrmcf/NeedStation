@@ -80,6 +80,17 @@ public class SecurityConfig {
                 .requestMatchers("/api/worker/login").permitAll()
                 .requestMatchers("/api/worker/details/**").permitAll()
                 
+                // Worker dashboard endpoints - allow access for testing
+                .requestMatchers("/api/worker/dashboard/**").permitAll()
+                
+                // Worker active booking and location endpoints
+                .requestMatchers("/api/worker/*/active-booking").permitAll()
+                .requestMatchers("/api/worker/*/location").permitAll()
+                .requestMatchers("/api/worker/available-for-booking/**").permitAll()
+                .requestMatchers("/api/worker/accept-booking/**").permitAll()
+                .requestMatchers("/api/worker/booking/*/start").permitAll()
+                .requestMatchers("/api/worker/booking/*/complete").permitAll()
+                
                 // Worker authenticated endpoints - require WORKER role
                 .requestMatchers("/api/worker/profile").hasRole("WORKER")
                 .requestMatchers("/api/worker/registration/**").hasRole("WORKER")

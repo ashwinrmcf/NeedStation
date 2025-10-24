@@ -1,111 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Star, Clock, MapPin, Phone, Receipt, Eye, Calendar, DollarSign } from "lucide-react";
-
-const userData = [
-	{ 
-		id: 1, 
-		name: "Mrs. Sharma", 
-		email: "sharma@email.com", 
-		phone: "+91-9876543210",
-		service: "Elderly Care",
-		completionDate: "2025-01-14", 
-		completionTime: "4:30 PM",
-		duration: "6 hours",
-		location: "Koramangala, Bangalore",
-		amountEarned: "₹3,500",
-		paymentStatus: "paid",
-		paymentMethod: "UPI",
-		customerRating: 5,
-		customerFeedback: "Excellent care for my mother. Very professional and caring.",
-		serviceNotes: "Assisted with daily activities, medication reminders, and mobility support."
-	},
-	{ 
-		id: 2, 
-		name: "Rajesh Kumar", 
-		email: "rajesh@email.com", 
-		phone: "+91-8765432109",
-		service: "Diabetes Management",
-		completionDate: "2025-01-13", 
-		completionTime: "6:00 PM",
-		duration: "4 hours",
-		location: "Whitefield, Bangalore",
-		amountEarned: "₹2,200",
-		paymentStatus: "paid",
-		paymentMethod: "Cash",
-		customerRating: 4,
-		customerFeedback: "Good service, helped with blood sugar monitoring.",
-		serviceNotes: "Blood glucose monitoring, insulin administration, diet guidance."
-	},
-	{ 
-		id: 3, 
-		name: "Dr. Priya Nair", 
-		email: "priya@email.com", 
-		phone: "+91-7654321098",
-		service: "Post Surgery Care",
-		completionDate: "2025-01-12", 
-		completionTime: "2:00 PM",
-		duration: "3 hours",
-		location: "Indiranagar, Bangalore",
-		amountEarned: "₹4,200",
-		paymentStatus: "pending",
-		paymentMethod: "Bank Transfer",
-		customerRating: 5,
-		customerFeedback: "Outstanding post-operative care. Highly recommended!",
-		serviceNotes: "Wound dressing, medication administration, mobility assistance."
-	},
-	{ 
-		id: 4, 
-		name: "Sunita Reddy", 
-		email: "sunita@email.com", 
-		phone: "+91-5432109876",
-		service: "Physiotherapy",
-		completionDate: "2025-01-11", 
-		completionTime: "5:30 PM",
-		duration: "2.5 hours",
-		location: "Jayanagar, Bangalore",
-		amountEarned: "₹1,800",
-		paymentStatus: "paid",
-		paymentMethod: "UPI",
-		customerRating: 4,
-		customerFeedback: "Very helpful with knee exercises. Professional approach.",
-		serviceNotes: "Knee rehabilitation exercises, pain management techniques."
-	},
-	{ 
-		id: 5, 
-		name: "Amit Patel", 
-		email: "amit@email.com", 
-		phone: "+91-4321098765",
-		service: "Nursing Care",
-		completionDate: "2025-01-10", 
-		completionTime: "8:00 PM",
-		duration: "8 hours",
-		location: "HSR Layout, Bangalore",
-		amountEarned: "₹6,800",
-		paymentStatus: "paid",
-		paymentMethod: "Cash",
-		customerRating: null,
-		customerFeedback: null,
-		serviceNotes: "24-hour nursing care, medication management, patient monitoring."
-	}
-];
+import axios from "axios";
+import { Search, Star, Clock, MapPin, Phone, Receipt, Eye, Calendar, DollarSign, Loader2 } from "lucide-react";
 
 const TaskHistoryTable = () => {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [filteredUsers, setFilteredUsers] = useState(userData);
+	const [userData, setUserData] = useState([]);
+	const [filteredUsers, setFilteredUsers] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	
+	const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+	
+	// Fetch completed tasks
+	useEffect(() => {
+		const fetchCompletedTasks = async () => {
+			try {
+				setLoading(true);
+				const workerId = localStorage.getItem('workerId');
+				
+				if (!workerId) {
+					setError('Worker ID not found');
+					return;
+				}
+				
+				const response = await axios.get(`${API_URL}/worker/dashboard/tasks/completed/${workerId}`);
+				setUserData(response.data);
+				setFilteredUsers(response.data);
+				setError(null);
+			} catch (err) {
+				console.error('Error fetching completed tasks:', err);
+				setError('Failed to load completed tasks');
+			} finally {
+				setLoading(false);
+			}
+		};
+		
+		fetchCompletedTasks();
+	}, []);
 
 	const handleSearch = (e) => {
 		const term = e.target.value.toLowerCase();
 		setSearchTerm(term);
 		const filtered = userData.filter(
 			(user) => 
-				user.name.toLowerCase().includes(term) || 
-				user.email.toLowerCase().includes(term) ||
-				user.service.toLowerCase().includes(term) ||
-				user.location.toLowerCase().includes(term)
+				(user.customerName || '').toLowerCase().includes(term) || 
+				(user.serviceName || '').toLowerCase().includes(term) ||
+				(user.city || '').toLowerCase().includes(term) ||
+				(user.fullAddress || '').toLowerCase().includes(term)
 		);
 		setFilteredUsers(filtered);
 	};
+	
+	if (loading) {
+		return (
+			<div className='flex items-center justify-center py-12'>
+				<Loader2 className='animate-spin text-[#00E0B8]' size={48} />
+			</div>
+		);
+	}
+	
+	if (error) {
+		return (
+			<div className='text-center py-12'>
+				<p className='text-red-400 text-lg'>{error}</p>
+			</div>
+		);
+	}
 
 	return (
 		<motion.div
@@ -146,22 +107,18 @@ const TaskHistoryTable = () => {
 							<div className="flex justify-between items-start mb-4">
 								<div className="flex items-center gap-3">
 									<div className='h-12 w-12 rounded-full bg-gradient-to-r from-[#00E0B8] to-[#00C4A0] flex items-center justify-center text-gray-900 font-bold text-lg'>
-										{task.name.charAt(0)}
+										{(task.customerName || 'C').charAt(0)}
 									</div>
 									<div>
-										<h3 className="text-lg font-semibold text-white">{task.name}</h3>
-										<p className="text-[#00E0B8] font-medium">{task.service}</p>
+										<h3 className="text-lg font-semibold text-white">{task.customerName || 'Customer'}</h3>
+										<p className="text-[#00E0B8] font-medium">{task.serviceName}</p>
 									</div>
 								</div>
 								<div className="text-right">
-									<div className="text-2xl font-bold text-green-400">{task.amountEarned}</div>
-									<div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-										task.paymentStatus === 'paid' 
-											? 'bg-green-600 text-white' 
-											: 'bg-yellow-600 text-white'
-									}`}>
+									<div className="text-2xl font-bold text-green-400">₹{task.totalAmount}</div>
+									<div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-600 text-white">
 										<DollarSign size={12} className="mr-1" />
-										{task.paymentStatus === 'paid' ? 'Paid' : 'Pending'}
+										Paid
 									</div>
 								</div>
 							</div>
@@ -170,15 +127,15 @@ const TaskHistoryTable = () => {
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 								<div className="flex items-center gap-2 text-gray-400">
 									<Calendar size={16} />
-									<span>{task.completionDate} at {task.completionTime}</span>
+									<span>{task.completedAt ? new Date(task.completedAt).toLocaleString() : task.preferredDate}</span>
 								</div>
 								<div className="flex items-center gap-2 text-gray-400">
 									<Clock size={16} />
-									<span>Duration: {task.duration}</span>
+									<span>Time: {task.preferredTime || task.preferredTimeSlot || 'N/A'}</span>
 								</div>
 								<div className="flex items-center gap-2 text-gray-400">
 									<MapPin size={16} />
-									<span>{task.location}</span>
+									<span>{task.city || task.fullAddress}</span>
 								</div>
 								<div className="flex items-center gap-2 text-gray-400">
 									<Phone size={16} />
@@ -187,11 +144,13 @@ const TaskHistoryTable = () => {
 							</div>
 
 							{/* Service notes */}
-							<div className="bg-gray-700 rounded-lg p-3 mb-4">
-								<p className="text-sm text-gray-300">
-									<span className="font-medium text-gray-200">Service Notes:</span> {task.serviceNotes}
-								</p>
-							</div>
+							{task.specialInstructions && (
+								<div className="bg-gray-700 rounded-lg p-3 mb-4">
+									<p className="text-sm text-gray-300">
+										<span className="font-medium text-gray-200">Service Notes:</span> {task.specialInstructions}
+									</p>
+								</div>
+							)}
 
 							{/* Customer rating and feedback */}
 							{task.customerRating ? (
@@ -222,7 +181,7 @@ const TaskHistoryTable = () => {
 							{/* Action buttons */}
 							<div className="flex justify-between items-center">
 								<div className="text-sm text-gray-400">
-									<span className="font-medium">Payment:</span> {task.paymentMethod}
+									<span className="font-medium">Booking #:</span> {task.bookingNumber || task.id}
 								</div>
 								<div className="flex gap-2">
 									<button className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm">

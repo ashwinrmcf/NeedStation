@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import availableHelpersData from '../../data/AvailableHelperData.js';
 import { FaStar, FaRupeeSign, FaBriefcase, FaFilter } from 'react-icons/fa';
+import Header from '../../components/Header/Header.jsx';
 
 const AvailableHelpers = () => {
     const location = useLocation();
@@ -85,33 +86,8 @@ const AvailableHelpers = () => {
     }, [location]);
 
     return (
-        <div className={styles['container']}>
-            <div className={styles["header"]}>
-                <Link to="/">
-                    <div className={styles["logo"]}>
-                        Need<span style={{ color: "#5CE1E6" }}>Station</span>
-                    </div>
-                </Link>
-                <div className={styles["progress-bar"]}>
-                    <div className={`${styles["step"]} ${styles["active"]}`}>
-                        <div className={styles["circle"]}></div>
-                    </div>
-                    <div className={styles["line"]}></div>
-                    <div className={styles["step"]}>
-                        <div className={styles["circle"]}></div>
-                    </div>
-                    <div className={styles["line1"]}></div>
-                    <span className={styles["helper-list"]}>Browse {serviceName} Taskers and Price</span>
-                    <div className={styles["line1"]}></div>
-                    <div className={styles["step"]}>
-                        <div className={styles["circle"]}></div>
-                    </div>
-                    <div className={styles["line"]}></div>
-                    <div className={styles["step"]}>
-                        <div className={styles["circle"]}></div>
-                    </div>
-                </div>
-            </div>
+        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '40px' }}>
+            <Header />
 
             <div className={styles["container2"]}>
                 <div className={styles['rectangle']}>

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sub_services")
+@Table(name = "booking_sub_services")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,34 +34,4 @@ public class SubService {
     
     @Column(name = "is_active")
     private Boolean isActive = true;
-    
-    @Column(name = "display_order")
-    private Integer displayOrder = 0;
-    
-    // Audit fields
-    @Column(name = "created_by")
-    private Long createdBy;
-    
-    @Column(name = "updated_by")
-    private Long updatedBy;
-    
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-    
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }

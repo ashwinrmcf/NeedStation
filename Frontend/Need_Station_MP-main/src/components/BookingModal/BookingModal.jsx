@@ -628,8 +628,7 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
         },
         scheduling: {
           preferredDate: formData.preferredDate,
-          preferredTime: formData.preferredTime || null,
-          preferredTimeSlot: formData.preferredTimeSlot || 'Morning',
+          preferredTimeSlot: formData.preferredTimeSlot || formData.preferredTime || 'Morning',
           urgency: formData.urgency?.toUpperCase() || 'NORMAL'
         },
         selectedSubServices: selectedSubServices, // Array of subservice IDs

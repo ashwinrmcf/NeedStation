@@ -548,25 +548,31 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
         {/* Gender */}
         <div>
           <label className="block text-lg font-medium mb-2">Gender</label>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4" style={{ alignItems: 'start' }}>
             {['Male', 'Female', 'Other'].map((option) => (
-              <label key={option}
-                className={`flex items-center justify-center p-3 border rounded-md cursor-pointer transition min-h-[48px] ${
+              <button
+                key={option}
+                type="button"
+                onClick={() => handleInputChange({ target: { name: 'gender', value: option } })}
+                className={`flex items-center justify-center rounded-md cursor-pointer transition text-xs sm:text-base ${
                   data.gender === option
-                    ? 'bg-teal-500 border-teal-600 text-white'
-                    : 'border-gray-700 text-gray-300 hover:bg-gray-800'
+                    ? 'bg-teal-500 text-white border-2 border-teal-600'
+                    : 'border-2 border-gray-700 text-gray-300 hover:bg-gray-800'
                 }`}
+                style={{ 
+                  height: '48px',
+                  lineHeight: '48px',
+                  padding: '0 4px',
+                  boxSizing: 'border-box',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: 0,
+                  verticalAlign: 'top'
+                }}
               >
-                <input
-                  type="radio"
-                  name="gender"
-                  value={option}
-                  checked={data.gender === option}
-                  onChange={handleInputChange}
-                  className="hidden"
-                />
-                {option}
-              </label>
+                <span style={{ lineHeight: 'normal' }}>{option}</span>
+              </button>
             ))}
           </div>
         </div>
@@ -651,7 +657,7 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
         {/* Contact Number with OTP verification */}
         <div>
           <label htmlFor="phone" className="block text-lg font-medium mb-2">Contact Number</label>
-          <div className="flex space-x-3 items-center">
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             <input
               type="tel"
               id="phone"
@@ -660,7 +666,7 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
               onChange={handleInputChange}
               pattern="[0-9]{10}"
               placeholder="10-digit number"
-              className="flex-1 p-3 bg-gray-900 border border-gray-700 rounded-md min-h-[48px]"
+              className="w-full sm:flex-1 p-3 bg-gray-900 border border-gray-700 rounded-md min-h-[48px]"
               required
               disabled={otpVerified}
             />
@@ -669,10 +675,10 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
                 type="button" 
                 onClick={generateOtp}
                 disabled={!data.phone || data.phone.length !== 10 || otpLoading}
-                className={`px-6 py-3 rounded-md font-medium transition-colors whitespace-nowrap min-h-[48px] ${!data.phone || data.phone.length !== 10 || otpLoading ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600 text-white'}`}
+                className={`w-full sm:w-auto px-6 py-3 rounded-md font-medium transition-colors whitespace-nowrap min-h-[48px] ${!data.phone || data.phone.length !== 10 || otpLoading ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600 text-white'}`}
               >
                 {otpLoading ? (
-                  <span className="flex items-center">
+                  <span className="flex items-center justify-center">
                     <Loader2 className="animate-spin mr-2" size={16} />
                     Sending...
                   </span>
@@ -682,9 +688,9 @@ export default function Step1BasicInfo({ data, updateForm, next, workerId, updat
               </button>
             )}
             {otpVerified && (
-              <div className="flex items-center text-green-500">
+              <div className="flex items-center text-green-500 justify-center sm:justify-start">
                 <CheckCircle size={20} className="mr-2" />
-                Verified
+                <span className="whitespace-nowrap">Verified</span>
               </div>
             )}
           </div>

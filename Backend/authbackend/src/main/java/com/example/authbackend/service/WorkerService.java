@@ -4,6 +4,7 @@ import com.example.authbackend.config.TwilioConfig;
 import com.example.authbackend.dto.WorkerDTO;
 import com.example.authbackend.dto.WorkerRegistrationDTO;
 import com.example.authbackend.model.Worker;
+import com.example.authbackend.model.WorkerType;
 import com.example.authbackend.repository.WorkerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.rest.verify.v2.service.Verification;
@@ -779,7 +780,7 @@ public class WorkerService {
         worker.setDob(LocalDate.of(2000, 1, 1)); // Set a reasonable default DOB
         
         // Set required enum fields with defaults
-        worker.setWorkerType(Worker.WorkerType.CARETAKER);
+        worker.setWorkerType(WorkerType.CARETAKER);
         worker.setAvailabilityStatus(Worker.AvailabilityStatus.AVAILABLE);
         worker.setPoliceVerificationStatus(Worker.VerificationStatus.PENDING);
         worker.setMedicalCertificateStatus(Worker.VerificationStatus.PENDING);
