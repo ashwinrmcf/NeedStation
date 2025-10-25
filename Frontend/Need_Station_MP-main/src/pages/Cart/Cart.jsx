@@ -1486,10 +1486,15 @@ const TrustIndicators = () => {
 
 // Pending Booking Card Component
 const PendingBookingCard = ({ booking, index }) => {
+  const navigate = useNavigate();
+  
   const getStatusColor = (status) => {
     const colors = {
       'PENDING_WORKER_ASSIGNMENT': 'bg-yellow-500',
       'CONFIRMED': 'bg-blue-500',
+      'QUOTATION_PROVIDED': 'bg-green-500',
+      'PAYMENT_PENDING': 'bg-orange-500',
+      'PAYMENT_COMPLETED': 'bg-green-600',
       'ASSIGNED': 'bg-green-500',
       'IN_PROGRESS': 'bg-purple-500',
       'COMPLETED': 'bg-gray-500',
@@ -1502,12 +1507,20 @@ const PendingBookingCard = ({ booking, index }) => {
     const texts = {
       'PENDING_WORKER_ASSIGNMENT': 'Finding Worker',
       'CONFIRMED': 'Worker Confirmed',
+      'QUOTATION_PROVIDED': 'Quotation Received',
+      'PAYMENT_PENDING': 'Payment Pending',
+      'PAYMENT_COMPLETED': 'Payment Completed',
       'ASSIGNED': 'Assigned',
       'IN_PROGRESS': 'In Progress',
       'COMPLETED': 'Completed',
       'CANCELLED': 'Cancelled'
     };
     return texts[status] || status;
+  };
+  
+  const handlePayment = () => {
+    // Navigate to payment page with booking details
+    navigate('/payment', { state: { booking } });
   };
   
   return (
@@ -1601,6 +1614,131 @@ const PendingBookingCard = ({ booking, index }) => {
           <CheckCircle className="w-4 h-4" style={{ color: '#22c55e' }} />
           <span style={{ fontSize: '0.875rem', color: '#22c55e' }}>
             Worker confirmed! Awaiting quotation...
+          </span>
+        </div>
+      )}
+      
+      {(booking.status === 'QUOTATION_PROVIDED' || booking.status === 'PAYMENT_PENDING') && booking.quotation && (
+        <div style={{ marginTop: '1rem' }}>
+          {/* Quotation Details */}
+          <div 
+            style={{
+              background: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '12px',
+              padding: '1rem',
+              marginBottom: '1rem'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#10b981' }}>
+                💰 Quotation Received
+              </h4>
+              {booking.assignedWorkerName && (
+                <span style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>
+                  by {booking.assignedWorkerName}
+                </span>
+              )}
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>Service Charge:</span>
+                <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>₹{booking.quotation.serviceCharge || booking.totalAmount}</span>
+              </div>
+              {booking.quotation.additionalCharges && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>Additional Charges:</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>₹{booking.quotation.additionalCharges}</span>
+                </div>
+              )}
+              {booking.quotation.discount && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.875rem', color: '#10b981' }}>Discount:</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#10b981' }}>-₹{booking.quotation.discount}</span>
+                </div>
+              )}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.5rem', marginTop: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '1rem', fontWeight: '600' }}>Total Amount:</span>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '700', color: '#10b981' }}>
+                    ₹{booking.quotation.totalAmount || booking.totalAmount}
+                  </span>
+                </div>
+              </div>
+              {booking.quotation.notes && (
+                <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.5rem', fontStyle: 'italic' }}>
+                  Note: {booking.quotation.notes}
+                </p>
+              )}
+            </div>
+          </div>
+          
+          {/* Payment Button */}
+          {booking.status === 'QUOTATION_PROVIDED' && (
+            <button
+              onClick={handlePayment}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: 'white',
+                padding: '1rem',
+                borderRadius: '12px',
+                border: 'none',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+            >
+              <CreditCard className="w-5 h-5" />
+              Proceed to Payment
+            </button>
+          )}
+          
+          {booking.status === 'PAYMENT_PENDING' && (
+            <div 
+              style={{
+                background: 'rgba(249, 115, 22, 0.1)',
+                border: '1px solid rgba(249, 115, 22, 0.3)',
+                borderRadius: '8px',
+                padding: '0.75rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <AlertCircle className="w-4 h-4" style={{ color: '#f97316' }} />
+              <span style={{ fontSize: '0.875rem', color: '#f97316' }}>
+                Payment pending. Please complete payment to proceed.
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {booking.status === 'PAYMENT_COMPLETED' && (
+        <div 
+          style={{
+            background: 'rgba(34, 197, 94, 0.1)',
+            border: '1px solid rgba(34, 197, 94, 0.3)',
+            borderRadius: '8px',
+            padding: '0.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            marginTop: '1rem'
+          }}
+        >
+          <CheckCircle className="w-4 h-4" style={{ color: '#22c55e' }} />
+          <span style={{ fontSize: '0.875rem', color: '#22c55e' }}>
+            Payment completed! Check your dashboard for service details.
           </span>
         </div>
       )}

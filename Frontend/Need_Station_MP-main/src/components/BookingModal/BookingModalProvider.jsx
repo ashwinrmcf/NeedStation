@@ -70,9 +70,8 @@ export const BookingModalProvider = ({ children }) => {
     // Store booking data in localStorage for persistence
     localStorage.setItem('needstation_latest_booking', JSON.stringify(bookingData));
     
-    // Navigate to user bookings page (or create a dedicated bookings page)
-    // For now, navigate to home with success state
-    navigate('/', {
+    // Navigate to cart page with success state
+    navigate('/cart', {
       state: {
         bookingSuccess: true,
         bookingData: bookingData

@@ -76,19 +76,8 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
           setApiServiceConfig(config);
         } catch (error) {
           console.error('❌ Error loading service config:', error);
-          // Create a fallback config with dummy service ID
-          const fallbackConfig = {
-            service: {
-              id: 1, // Fallback ID - will need to be updated when services are added
-              serviceName: serviceName,
-              serviceCode: serviceCode,
-              basePrice: 500.00
-            },
-            subServices: [],
-            formalities: []
-          };
-          console.log('⚠️ Using fallback config:', fallbackConfig);
-          setApiServiceConfig(fallbackConfig);
+          // Don't use fallback - let user know service is not available
+          setApiServiceConfig(null);
         }
       }
     };
@@ -610,10 +599,17 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
       
       const serviceCode = serviceCodeMap[serviceName?.toUpperCase()] || serviceName?.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_');
       
+      // Check if service config is loaded
+      if (!apiServiceConfig || !apiServiceConfig.service || !apiServiceConfig.service.id) {
+        alert('Service configuration not found. Please try again or contact support.');
+        setIsSubmitting(false);
+        return;
+      }
+      
       // Prepare booking data for new API
       const bookingData = {
         userId: parseInt(userId),
-        serviceId: apiServiceConfig?.service?.id || 1,
+        serviceId: apiServiceConfig.service.id,
         contactInfo: {
           phone: formData.phone,
           alternatePhone: formData.alternatePhone || null,

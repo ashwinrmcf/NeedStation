@@ -10,16 +10,22 @@ const API_BASE_URL = 'http://localhost:8080/api';
  */
 export const getServiceConfiguration = async (serviceCode) => {
   try {
+    console.log('🔍 Fetching service config from API:', `${API_BASE_URL}/services/${serviceCode}`);
     const response = await fetch(`${API_BASE_URL}/services/${serviceCode}`);
+    console.log('📥 Response status:', response.status);
+    
     const data = await response.json();
+    console.log('📥 Response data:', data);
     
     if (!data.success) {
       throw new Error(data.message || 'Failed to fetch service configuration');
     }
     
+    console.log('✅ Service config fetched successfully:', data.service);
     return data;
   } catch (error) {
-    console.error('Error fetching service configuration:', error);
+    console.error('❌ Error fetching service configuration:', error);
+    console.error('❌ Service code was:', serviceCode);
     throw error;
   }
 };

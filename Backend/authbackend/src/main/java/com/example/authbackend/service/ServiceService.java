@@ -27,11 +27,16 @@ public class ServiceService {
      * Get complete service configuration including subservices and formalities
      */
     public ServiceConfigDTO getServiceConfiguration(String serviceCode) {
+        System.out.println("🔍 Fetching service configuration for: " + serviceCode);
         com.example.authbackend.model.Service service = serviceRepository.findByServiceCodeNotDeleted(serviceCode)
                 .orElseThrow(() -> new RuntimeException("Service not found: " + serviceCode));
         
+        System.out.println("✅ Service found: ID=" + service.getId() + ", Name=" + service.getServiceName());
+        System.out.println("📋 Fetching subservices for service ID: " + service.getId());
+        
         // Get subservices
         List<SubService> subServices = subServiceRepository.findByServiceIdActive(service.getId());
+        System.out.println("✅ Found " + subServices.size() + " subservices");
         
         // Get formalities
         List<ServiceFormality> formalities = serviceFormalityRepository.findByServiceIdNotDeleted(service.getId());
