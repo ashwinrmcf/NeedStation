@@ -26,7 +26,7 @@ public class WorkerActiveBookingController {
         BookingNew activeBooking = bookingRepository
             .findFirstByAssignedWorkerIdAndStatusInOrderByScheduledAtDesc(
                 workerId, 
-                java.util.Arrays.asList("CONFIRMED", "IN_PROGRESS", "SCHEDULED")
+                java.util.Arrays.asList("ASSIGNED", "IN_PROGRESS", "SCHEDULED")
             )
             .orElse(null);
         
@@ -34,10 +34,31 @@ public class WorkerActiveBookingController {
             return ResponseEntity.ok(Map.of("hasActiveBooking", false));
         }
         
+        // Create a safe DTO to avoid lazy loading issues
+        Map<String, Object> bookingData = new HashMap<>();
+        bookingData.put("id", activeBooking.getId());
+        bookingData.put("bookingNumber", activeBooking.getBookingNumber());
+        bookingData.put("serviceName", activeBooking.getServiceName());
+        bookingData.put("customerName", activeBooking.getUserName());
+        bookingData.put("phone", activeBooking.getPhone());
+        bookingData.put("alternatePhone", activeBooking.getAlternatePhone());
+        bookingData.put("fullAddress", activeBooking.getFullAddress());
+        bookingData.put("landmark", activeBooking.getLandmark());
+        bookingData.put("city", activeBooking.getCity());
+        bookingData.put("state", activeBooking.getState());
+        bookingData.put("pincode", activeBooking.getPincode());
+        bookingData.put("preferredDate", activeBooking.getPreferredDate());
+        bookingData.put("preferredTime", activeBooking.getPreferredTime());
+        bookingData.put("preferredTimeSlot", activeBooking.getPreferredTimeSlot());
+        bookingData.put("specialInstructions", activeBooking.getSpecialInstructions());
+        bookingData.put("totalAmount", activeBooking.getTotalAmount());
+        bookingData.put("status", activeBooking.getStatus());
+        bookingData.put("urgency", activeBooking.getUrgency());
+        
         // Return full booking details
         Map<String, Object> response = new HashMap<>();
         response.put("hasActiveBooking", true);
-        response.put("booking", activeBooking);
+        response.put("booking", bookingData);
         
         return ResponseEntity.ok(response);
     }

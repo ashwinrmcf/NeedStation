@@ -88,30 +88,76 @@ public class WorkerAssignmentService {
         if (serviceCode == null) return WorkerType.NURSE;
         
         switch (serviceCode.toUpperCase()) {
+            // Elder Care services
+            case "PERSONAL_CARE":
+            case "COMPANION_CARE":
+            case "RESPITE_CARE":
+            case "DEMENTIA_CARE":
             case "ELDERLY_CARE":
             case "ELDERLY":
-                return WorkerType.CARETAKER; // Changed to CARETAKER to match your database
+                return WorkerType.ELDER_CARE;
+            
+            // Nursing services
             case "NURSING":
             case "NURSING_CARE":
             case "POST_SURGERY":
             case "POST_SURGERY_CARE":
                 return WorkerType.NURSE;
+            
+            // Physiotherapy
             case "PHYSIOTHERAPY":
             case "PHYSIO":
                 return WorkerType.PHYSIOTHERAPIST;
+            
+            // Diabetes care
             case "DIABETES":
             case "DIABETES_MANAGEMENT":
+            case "TYPE_1_DIABETES":
+            case "TYPE_2_DIABETES":
+            case "GESTATIONAL_DIABETES":
+            case "PREDIABETES":
                 return WorkerType.NURSE;
+            
+            // Caretaker services
             case "CARETAKER_AT_HOME":
+            case "LIVE_IN_CARETAKER":
+            case "PART_TIME_CARETAKER":
+            case "COOK":
+            case "NANNY":
                 return WorkerType.CARETAKER;
+            
+            // Bedridden patient care
             case "BEDRIDDEN_PATIENT_CARE":
+            case "BEDRIDDEN_CARE":
+            case "WOUND_CARE":
+            case "CATHETER_CARE":
+            case "FEEDING_ASSISTANCE":
                 return WorkerType.CARETAKER;
+            
+            // Mother and baby care
             case "MOTHER_AND_BABY_CARE":
+            case "NEWBORN_CARE":
+            case "POSTPARTUM_CARE":
+            case "LACTATION_SUPPORT":
+            case "BABY_MASSAGE":
                 return WorkerType.NURSE;
+            
+            // Paralysis care
             case "PARALYSIS_CARE":
+            case "STROKE_REHABILITATION":
+            case "MOBILITY_ASSISTANCE":
+            case "SPEECH_THERAPY":
+            case "OCCUPATIONAL_THERAPY":
                 return WorkerType.CARETAKER;
+            
+            // Parkinsons care
             case "PARKINSONS_CARE":
+            case "MEDICATION_MANAGEMENT":
+            case "EXERCISE_THERAPY":
+            case "NUTRITION_COUNSELING":
+            case "FAMILY_SUPPORT_CARE":
                 return WorkerType.CARETAKER;
+            
             default:
                 return WorkerType.NURSE;
         }

@@ -149,9 +149,8 @@ const CartNew = () => {
 
     setCancellingBookingId(bookingToCancel.id);
     try {
-      const response = await axios.put(
+      const response = await axios.delete(
         `${API_URL}/bookings/${bookingToCancel.id}/cancel`,
-        {},
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -161,9 +160,10 @@ const CartNew = () => {
 
       if (response.data.success) {
         // Refresh bookings list
-        fetchUserBookings();
+        await fetchUserBookings();
         setShowCancelConfirm(false);
         setBookingToCancel(null);
+        alert('Booking cancelled successfully!');
       }
     } catch (error) {
       console.error('Error cancelling booking:', error);

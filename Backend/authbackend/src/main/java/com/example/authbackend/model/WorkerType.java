@@ -4,6 +4,7 @@ public enum WorkerType {
     NURSE,
     CAREGIVER,
     CARETAKER,
+    ELDER_CARE,
     PHYSIOTHERAPIST,
     ATTENDANT,
     MEDICAL_ASSISTANT,

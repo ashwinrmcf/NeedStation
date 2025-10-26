@@ -26,6 +26,9 @@ public class WorkerDashboardService {
     private com.example.authbackend.repository.WorkerRepository workerRepository;
     
     @Autowired
+    private com.example.authbackend.repository.ServiceRepository serviceRepository;
+    
+    @Autowired
     private WorkerAssignmentService workerAssignmentService;
     
     /**
@@ -37,23 +40,32 @@ public class WorkerDashboardService {
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
         
         System.out.println("✅ Fetching available bookings for worker: " + workerId + ", Type: " + worker.getWorkerType());
+        System.out.println("📋 Worker services: " + worker.getServices());
         
         // Get all PENDING_WORKER_ASSIGNMENT bookings
         List<BookingNew> pendingBookings = bookingRepository.findByStatus("PENDING_WORKER_ASSIGNMENT");
         
         System.out.println("📋 Found " + pendingBookings.size() + " pending bookings");
         
-        // Filter by worker type only (no location check)
+        // Filter by worker's selected services
         return pendingBookings.stream()
                 .filter(booking -> {
-                    // Check if worker type matches service
-                    com.example.authbackend.model.WorkerType requiredType = 
-                        workerAssignmentService.mapServiceCodeToWorkerType(booking.getServiceCode());
+                    // Get service category from service_id
+                    String serviceCategory = getServiceCategory(booking.getServiceId());
+                    String serviceCode = booking.getServiceCode();
                     
-                    boolean matches = worker.getWorkerType() != null && worker.getWorkerType().equals(requiredType);
+                    System.out.println("🔍 Checking booking: " + booking.getBookingNumber() + 
+                                     ", Service: " + booking.getServiceName() +
+                                     ", Category: " + serviceCategory + 
+                                     ", Code: " + serviceCode);
+                    
+                    // Check if worker has this service category enabled
+                    boolean matches = workerHasServiceEnabled(worker, serviceCategory, serviceCode);
                     
                     if (matches) {
-                        System.out.println("✅ Booking " + booking.getBookingNumber() + " matches worker type");
+                        System.out.println("✅ Booking " + booking.getBookingNumber() + " matches worker's services");
+                    } else {
+                        System.out.println("❌ Booking " + booking.getBookingNumber() + " does NOT match worker's services");
                     }
                     
                     return matches;
@@ -66,6 +78,85 @@ public class WorkerDashboardService {
                 })
                 .map(this::convertToTaskDTO)
                 .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get service category from service ID
+     */
+    private String getServiceCategory(Long serviceId) {
+        try {
+            return serviceRepository.findById(serviceId)
+                    .map(com.example.authbackend.model.Service::getCategory)
+                    .orElse("");
+        } catch (Exception e) {
+            System.err.println("❌ Error fetching service category: " + e.getMessage());
+            return "";
+        }
+    }
+    
+    /**
+     * Check if worker has a specific service category enabled
+     */
+    private boolean workerHasServiceEnabled(com.example.authbackend.model.Worker worker, String serviceCategory, String serviceCode) {
+        String servicesJson = worker.getServices();
+        if (servicesJson == null || servicesJson.isEmpty()) {
+            return false;
+        }
+        
+        try {
+            // Parse the services JSON
+            // Expected format: {"elderlyCare": true, "nursingCare": false, ...}
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            java.util.Map<String, Boolean> servicesMap = mapper.readValue(servicesJson, 
+                new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Boolean>>() {});
+            
+            // Map service category to JSON key
+            String serviceKey = mapCategoryToServiceKey(serviceCategory);
+            
+            Boolean isEnabled = servicesMap.get(serviceKey);
+            return isEnabled != null && isEnabled;
+        } catch (Exception e) {
+            System.err.println("❌ Error parsing worker services JSON: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Map service category to the JSON key in worker's services
+     */
+    private String mapCategoryToServiceKey(String category) {
+        if (category == null) return "";
+        
+        switch (category.toLowerCase()) {
+            case "elder care":
+                return "elderlyCare";
+            case "nursing care":
+                return "nursingCare";
+            case "caretaker at home":
+                return "caretakerAtHome";
+            case "diabetes care":
+                return "diabetesManagement";
+            case "bedridden patient care":
+                return "bedriddenPatientCare";
+            case "mother and baby care":
+                return "motherBabyCare";
+            case "paralysis care":
+                return "paralysisCare";
+            case "parkinsons care":
+                return "parkinsonsCare";
+            case "post surgery care":
+                return "postSurgeryCare";
+            case "physiotherapy":
+                return "physiotherapy";
+            case "pathology care":
+                return "pathologyCare";
+            case "home security guard":
+                return "homeSecurityGuard";
+            case "health checkup services":
+                return "healthCheckUpServices";
+            default:
+                return category.replaceAll(" ", "");
+        }
     }
     
     private int compareUrgency(String urgency1, String urgency2) {
@@ -167,14 +258,45 @@ public class WorkerDashboardService {
     }
     
     /**
-     * Get today's tasks
+     * Get today's tasks (includes assigned tasks for today + all new available bookings)
      */
     public List<WorkerTaskDTO> getTodaysTasks(Long workerId) {
         LocalDate today = LocalDate.now();
-        List<BookingNew> bookings = bookingRepository.findByAssignedWorkerIdAndPreferredDate(workerId, today);
         
-        return bookings.stream()
+        // Get worker details
+        com.example.authbackend.model.Worker worker = workerRepository.findById(workerId)
+                .orElseThrow(() -> new RuntimeException("Worker not found"));
+        
+        // Get assigned tasks for today
+        List<BookingNew> assignedBookings = bookingRepository.findByAssignedWorkerIdAndPreferredDate(workerId, today);
+        
+        // Get ALL available bookings that match worker's services (not just today's)
+        // This ensures workers see new requests immediately in Overview
+        List<BookingNew> availableBookings = bookingRepository.findByStatus("PENDING_WORKER_ASSIGNMENT").stream()
+                .filter(booking -> {
+                    // Check if worker has this service enabled
+                    String serviceCategory = getServiceCategory(booking.getServiceId());
+                    return workerHasServiceEnabled(worker, serviceCategory, booking.getServiceCode());
+                })
+                .limit(5) // Limit to 5 most recent new requests
+                .collect(Collectors.toList());
+        
+        // Combine both lists
+        List<BookingNew> allTodayBookings = new java.util.ArrayList<>(availableBookings);
+        allTodayBookings.addAll(assignedBookings);
+        
+        return allTodayBookings.stream()
                 .filter(b -> !"CANCELLED".equals(b.getStatus()) && !"COMPLETED".equals(b.getStatus()))
+                .sorted((a, b) -> {
+                    // Show new requests first, then sort by date
+                    if ("PENDING_WORKER_ASSIGNMENT".equals(a.getStatus()) && !"PENDING_WORKER_ASSIGNMENT".equals(b.getStatus())) {
+                        return -1;
+                    } else if (!"PENDING_WORKER_ASSIGNMENT".equals(a.getStatus()) && "PENDING_WORKER_ASSIGNMENT".equals(b.getStatus())) {
+                        return 1;
+                    }
+                    // Sort by preferred date
+                    return a.getPreferredDate().compareTo(b.getPreferredDate());
+                })
                 .map(this::convertToTaskDTO)
                 .collect(Collectors.toList());
     }

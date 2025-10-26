@@ -284,4 +284,33 @@ public class BookingNewController {
             return ResponseEntity.status(500).body(errorResponse);
         }
     }
+    
+    /**
+     * Cancel a booking (DELETE from database)
+     * DELETE /api/bookings/{bookingId}/cancel
+     */
+    @DeleteMapping("/{bookingId}/cancel")
+    public ResponseEntity<Map<String, Object>> cancelBooking(@PathVariable Long bookingId) {
+        try {
+            bookingService.deleteBooking(bookingId);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Booking cancelled and deleted successfully");
+            
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            
+            return ResponseEntity.status(404).body(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Failed to cancel booking: " + e.getMessage());
+            
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
 }

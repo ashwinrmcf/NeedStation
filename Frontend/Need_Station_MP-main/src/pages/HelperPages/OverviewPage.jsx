@@ -164,21 +164,44 @@ const OverviewPage = () => {
 					</h3>
 					<div className='space-y-3'>
 						{todaysTasks.map((task) => (
-							<div key={task.id} className='bg-gray-700 rounded-lg p-4 flex items-center justify-between'>
-								<div className='flex items-center gap-4'>
-									<div className='bg-[#00E0B8] rounded-full p-2'>
-										<Heart className='text-gray-900' size={20} />
+							<div key={task.id} className='bg-gray-700 rounded-lg p-4 border border-gray-600 hover:border-[#00E0B8] transition-colors'>
+								<div className='flex items-center justify-between mb-3'>
+									<div className='flex items-center gap-3'>
+										<div className='bg-[#00E0B8] rounded-full p-2'>
+											<Heart className='text-gray-900' size={18} />
+										</div>
+										<div>
+											<p className='text-white font-medium'>{task.customerName || 'Customer'}</p>
+											<p className='text-[#00E0B8] text-sm font-medium'>{task.serviceName}</p>
+										</div>
 									</div>
-									<div>
-										<p className='text-white font-medium'>{task.customerName || 'Customer'}</p>
-										<p className='text-gray-300 text-sm'>{task.serviceName}</p>
-										{task.city && <p className='text-gray-400 text-xs'>{task.city}</p>}
+									<div className='text-right'>
+										<p className='text-green-400 font-bold text-lg'>₹{task.totalAmount}</p>
+										<p className='text-gray-400 text-xs'>{task.preferredTime || task.preferredTimeSlot}</p>
 									</div>
 								</div>
-								<div className='text-right'>
-									<p className='text-[#00E0B8] font-semibold'>{task.preferredTime || task.preferredTimeSlot}</p>
-									<p className='text-gray-400 text-sm'>₹{task.totalAmount}</p>
+								
+								{/* Task Details */}
+								<div className='grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-600'>
+									<div className='flex items-center gap-2 text-gray-400 text-xs'>
+										<MapPin size={12} className='text-[#00E0B8]' />
+										<span>{task.city}</span>
+									</div>
+									<div className='flex items-center gap-2 text-gray-400 text-xs'>
+										<Phone size={12} className='text-[#00E0B8]' />
+										<span>{task.phone}</span>
+									</div>
 								</div>
+								
+								{/* Status Badge */}
+								{(task.status === 'CONFIRMED' || task.status === 'PENDING_WORKER_ASSIGNMENT') && (
+									<div className='mt-3 flex items-center gap-2'>
+										<div className='bg-blue-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1'>
+											<AlertTriangle size={12} />
+											<span>New Request - Action Required</span>
+										</div>
+									</div>
+								)}
 							</div>
 						))}
 						{todaysTasks.length === 0 && (

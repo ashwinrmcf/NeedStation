@@ -171,6 +171,7 @@ const UpcomingTaskPage = () => {
 	];
 
 	const statusConfig = {
+		'PENDING_WORKER_ASSIGNMENT': { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
 		'CONFIRMED': { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
 		'ASSIGNED': { color: 'bg-yellow-600', icon: Clock, label: 'Accepted' },
 		'IN_PROGRESS': { color: 'bg-orange-600', icon: Clock, label: 'In Progress' },
@@ -257,28 +258,73 @@ const UpcomingTaskPage = () => {
 					</div>
 				</div>
 
-				<p className="text-gray-300 mb-4">{task.specialInstructions || task.description || 'No description provided'}</p>
+				{/* Special Instructions */}
+				{task.specialInstructions && (
+					<div className="bg-gray-700 rounded-lg p-3 mb-4">
+						<p className="text-sm text-gray-300">
+							<span className="font-medium text-[#00E0B8]">Special Instructions:</span> {task.specialInstructions}
+						</p>
+					</div>
+				)}
 
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-					<div className="flex items-center gap-2 text-gray-400">
-						<Calendar size={16} />
-						<span>{task.preferredDate} {task.preferredTime && `at ${task.preferredTime}`}</span>
+				{/* Task Details Grid */}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+					{/* Date & Time */}
+					<div className="bg-gray-700 rounded-lg p-3">
+						<div className="flex items-center gap-2 text-gray-400 mb-1">
+							<Calendar size={14} className="text-[#00E0B8]" />
+							<span className="text-xs font-medium text-gray-500">Date & Time</span>
+						</div>
+						<p className="text-white text-sm font-medium">
+							{task.preferredDate}
+							{task.preferredTime && ` • ${task.preferredTime}`}
+							{task.preferredTimeSlot && ` (${task.preferredTimeSlot})`}
+						</p>
 					</div>
-					<div className="flex items-center gap-2 text-gray-400">
-						<MapPin size={16} />
-						<span>{task.city || task.fullAddress}</span>
+
+					{/* Location */}
+					<div className="bg-gray-700 rounded-lg p-3">
+						<div className="flex items-center gap-2 text-gray-400 mb-1">
+							<MapPin size={14} className="text-[#00E0B8]" />
+							<span className="text-xs font-medium text-gray-500">Location</span>
+						</div>
+						<p className="text-white text-sm font-medium">{task.city}</p>
+						{task.landmark && (
+							<p className="text-gray-400 text-xs mt-1">Near {task.landmark}</p>
+						)}
 					</div>
-					<div className="flex items-center gap-2 text-gray-400">
-						<Phone size={16} />
-						<span>{task.phone}</span>
+
+					{/* Contact */}
+					<div className="bg-gray-700 rounded-lg p-3">
+						<div className="flex items-center gap-2 text-gray-400 mb-1">
+							<Phone size={14} className="text-[#00E0B8]" />
+							<span className="text-xs font-medium text-gray-500">Primary Contact</span>
+						</div>
+						<p className="text-white text-sm font-medium">{task.phone}</p>
 					</div>
+
+					{/* Alternate Contact */}
 					{task.alternatePhone && (
-						<div className="flex items-center gap-2 text-gray-400">
-							<Phone size={16} />
-							<span>{task.alternatePhone}</span>
+						<div className="bg-gray-700 rounded-lg p-3">
+							<div className="flex items-center gap-2 text-gray-400 mb-1">
+								<Phone size={14} className="text-[#00E0B8]" />
+								<span className="text-xs font-medium text-gray-500">Alternate Contact</span>
+							</div>
+							<p className="text-white text-sm font-medium">{task.alternatePhone}</p>
 						</div>
 					)}
 				</div>
+
+				{/* Full Address - Only shown after accepting */}
+				{task.status !== 'CONFIRMED' && task.fullAddress && (
+					<div className="bg-gray-700 rounded-lg p-3 mb-4">
+						<div className="flex items-center gap-2 text-gray-400 mb-1">
+							<MapPin size={14} className="text-[#00E0B8]" />
+							<span className="text-xs font-medium text-gray-500">Full Address</span>
+						</div>
+						<p className="text-white text-sm">{task.fullAddress}</p>
+					</div>
+				)}
 
 				{/* Completed Task Additional Info */}
 				{task.status === 'COMPLETED' && (
@@ -339,18 +385,20 @@ const UpcomingTaskPage = () => {
 				<div className="flex justify-between items-center">
 					<span className="text-green-400 font-semibold text-lg">₹{task.totalAmount}</span>
 					<div className="flex gap-2">
-						{task.status === 'CONFIRMED' && (
+						{(task.status === 'CONFIRMED' || task.status === 'PENDING_WORKER_ASSIGNMENT') && (
 							<>
 								<button 
 									onClick={() => handleAcceptTask(task.id)}
-									className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+									className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
 								>
+									<CheckCircle size={18} />
 									Accept
 								</button>
 								<button 
 									onClick={() => handleDeclineTask(task.id)}
-									className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+									className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
 								>
+									<XCircle size={18} />
 									Decline
 								</button>
 							</>

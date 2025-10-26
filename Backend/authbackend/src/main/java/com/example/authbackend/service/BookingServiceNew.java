@@ -453,4 +453,37 @@ public class BookingServiceNew {
         
         return dto;
     }
+    
+    /**
+     * Delete a booking (permanent deletion from database)
+     */
+    @Transactional
+    public void deleteBooking(Long bookingId) {
+        System.out.println("🗑️ Attempting to delete booking ID: " + bookingId);
+        
+        // Check if booking exists
+        BookingNew booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+        
+        System.out.println("✅ Found booking: " + booking.getBookingNumber());
+        
+        // Delete related records first (to avoid foreign key constraints)
+        // 1. Delete sub-services
+        List<BookingSubService> subServices = bookingSubServiceRepository.findByBookingId(bookingId);
+        if (!subServices.isEmpty()) {
+            bookingSubServiceRepository.deleteAll(subServices);
+            System.out.println("🗑️ Deleted " + subServices.size() + " sub-services");
+        }
+        
+        // 2. Delete formality data
+        List<BookingFormalityData> formalityData = bookingFormalityDataRepository.findByBookingId(bookingId);
+        if (!formalityData.isEmpty()) {
+            bookingFormalityDataRepository.deleteAll(formalityData);
+            System.out.println("🗑️ Deleted " + formalityData.size() + " formality data records");
+        }
+        
+        // 3. Delete the booking itself
+        bookingRepository.delete(booking);
+        System.out.println("✅ Booking deleted successfully: " + booking.getBookingNumber());
+    }
 }
