@@ -23,4 +23,9 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     
     @Query("SELECT s FROM Service s WHERE s.serviceCode = :serviceCode AND s.deletedAt IS NULL")
     Optional<Service> findByServiceCodeNotDeleted(String serviceCode);
+    
+    @Query("SELECT s FROM Service s WHERE s.category = :category AND s.isActive = true AND s.deletedAt IS NULL")
+    List<Service> findByCategoryActive(String category);
+    
+    List<Service> findByServiceNameIn(List<String> serviceNames);
 }

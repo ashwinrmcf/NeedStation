@@ -24,6 +24,10 @@ public class ServiceConfigDTO {
         private String serviceCode;
         private String description;
         private BigDecimal basePrice;
+        private String category;
+        private String imageUrl;
+        private String minicardImageUrl;
+        private Boolean isActive;
     }
     
     @Data

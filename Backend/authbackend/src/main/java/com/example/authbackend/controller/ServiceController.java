@@ -78,6 +78,64 @@ public class ServiceController {
     }
     
     /**
+     * Get service by ID
+     * GET /api/services/id/{id}
+     */
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Map<String, Object>> getServiceById(@PathVariable Long id) {
+        try {
+            ServiceConfigDTO.ServiceDTO service = serviceService.getServiceById(id);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("service", service);
+            
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            
+            return ResponseEntity.status(404).body(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Failed to fetch service: " + e.getMessage());
+            
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+    
+    /**
+     * Get service by name
+     * GET /api/services/name/{serviceName}
+     */
+    @GetMapping("/name/{serviceName}")
+    public ResponseEntity<Map<String, Object>> getServiceByName(@PathVariable String serviceName) {
+        try {
+            ServiceConfigDTO.ServiceDTO service = serviceService.getServiceByName(serviceName);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("service", service);
+            
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            
+            return ResponseEntity.status(404).body(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Failed to fetch service: " + e.getMessage());
+            
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+    
+    /**
      * Populate sub-services data
      * POST /api/services/populate-subservices
      * 

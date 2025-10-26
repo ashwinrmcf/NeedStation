@@ -12,7 +12,7 @@ import { FaBell, FaUser, FaCog, FaHistory, FaSignOutAlt, FaBars, FaTimes, FaHand
 
 const Header = () => {
   const { user, logout } = useAuth();
-  const { cartCount } = useCart();
+  const { cartCount, pendingBookingsCount } = useCart();
   const navigate = useNavigate();
   console.log("AuthContext user:", user);
 
@@ -172,20 +172,8 @@ const Header = () => {
 
   const handleCartClick = (e) => {
     e.preventDefault();
-    if (cartCount === 0) {
-      // Show message and redirect to services page
-      setShowCartMessage(true);
-      setTimeout(() => {
-        navigate('/services');
-      }, 500);
-      // Hide message after 3 seconds
-      setTimeout(() => {
-        setShowCartMessage(false);
-      }, 3500);
-    } else {
-      // Navigate to cart if items exist
-      navigate('/cart');
-    }
+    // Always navigate to cart - it will show either bookings or empty message
+    navigate('/cart');
   };
 
   const toggleMobileMenu = () => {

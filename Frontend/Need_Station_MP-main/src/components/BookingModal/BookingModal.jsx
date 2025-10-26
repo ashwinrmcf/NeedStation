@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, ArrowLeft, ArrowRight, MapPin, Clock, User, Phone, Calendar, Shield } from 'lucide-react';
-import { getServiceConfiguration } from '../../data/ServiceConfigurations';
-import { getServiceConfiguration as getServiceConfigFromAPI, createBooking } from '../../services/bookingApi';
+import { SERVICE_CONFIGURATIONS } from '../../data/ServiceConfigurations';
+import { createBooking } from '../../services/bookingApi';
 import LeafletMapPicker from '../Map/LeafletMapPicker';
 import styles from './BookingModal.module.css';
 
@@ -36,60 +36,32 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [isSavingLocation, setIsSavingLocation] = useState(false);
   const [locationSaved, setLocationSaved] = useState(false);
-  const [apiServiceConfig, setApiServiceConfig] = useState(null);
-  const [selectedSubServices, setSelectedSubServices] = useState([]);
 
-  // Get service configuration for dynamic fields (fallback to local config)
-  // Remove apostrophes and special characters before converting to config key
-  const serviceConfig = getServiceConfiguration(
-    serviceName?.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_') || ''
-  );
-
-  // Fetch service configuration from API
-  useEffect(() => {
-    const fetchServiceConfig = async () => {
-      if (isOpen && serviceName) {
-        try {
-          const serviceCodeMap = {
-            'HOME SECURITY GUARD': 'HOME_SECURITY_GUARD',
-            'ELDERLY CARE': 'ELDERLY_CARE',
-            'NURSING CARE': 'NURSING_CARE',
-            'PATHOLOGY CARE': 'PATHOLOGY_CARE',
-            'DIABETES MANAGEMENT': 'DIABETES_MANAGEMENT',
-            'HEALTH CHECK-UP SERVICES': 'HEALTH_CHECKUP_SERVICES',
-            'PHYSIOTHERAPY': 'PHYSIOTHERAPY',
-            'POST-SURGERY CARE': 'POST_SURGERY_CARE',
-            'CARETAKER AT HOME': 'CARETAKER_AT_HOME',
-            "PARKINSON'S CARE": 'PARKINSONS_CARE',
-            'PARKINSONS CARE': 'PARKINSONS_CARE',
-            'BEDRIDDEN PATIENT CARE': 'BEDRIDDEN_PATIENT_CARE',
-            'MOTHER AND BABY CARE': 'MOTHER_AND_BABY_CARE',
-            'PARALYSIS CARE': 'PARALYSIS_CARE'
-          };
-          
-          const serviceCode = serviceCodeMap[serviceName.toUpperCase()] || serviceName.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_');
-          console.log('🔍 Fetching service config for:', serviceCode);
-          
-          const config = await getServiceConfigFromAPI(serviceCode);
-          console.log('✅ Service config loaded:', config);
-          
-          setApiServiceConfig(config);
-        } catch (error) {
-          console.error('❌ Error loading service config:', error);
-          // Don't use fallback - let user know service is not available
-          setApiServiceConfig(null);
-        }
-      }
-    };
+  // Get service configuration - memoized to prevent re-calculation
+  const serviceConfig = useMemo(() => {
+    if (!serviceName) {
+      console.warn('⚠️ No serviceName provided to BookingModal');
+      return {};
+    }
     
-    fetchServiceConfig();
-  }, [isOpen, serviceName]);
+    const serviceKey = serviceName.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_');
+    console.log('✅ Loading config for:', serviceName, '→', serviceKey);
+    
+    const config = SERVICE_CONFIGURATIONS[serviceKey];
+    if (!config) {
+      console.error('❌ No configuration found for:', serviceKey);
+      console.log('Available keys:', Object.keys(SERVICE_CONFIGURATIONS));
+    } else {
+      console.log('✅ Config loaded:', Object.keys(config));
+    }
+    
+    return config || {};
+  }, [serviceName]);
 
   // Auto-fill phone number and location data from database first, then fall back to profile
   useEffect(() => {
     if (isOpen) {
       setCurrentStep(1);
-      setSelectedSubServices([]); // Reset subservices
       
       // Reset form first
       setErrors({});
@@ -599,17 +571,27 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
       
       const serviceCode = serviceCodeMap[serviceName?.toUpperCase()] || serviceName?.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_');
       
-      // Check if service config is loaded
-      if (!apiServiceConfig || !apiServiceConfig.service || !apiServiceConfig.service.id) {
-        alert('Service configuration not found. Please try again or contact support.');
-        setIsSubmitting(false);
-        return;
-      }
+      // Map service names to service IDs (hardcoded for now)
+      const serviceIdMap = {
+        'COMPANION_CARE': 14,
+        'PERSONAL_CARE': 15,
+        'DEMENTIA_CARE': 16,
+        'RESPITE_CARE': 17,
+        'ELDERLY_CARE': 2,
+        'NURSING_CARE': 3,
+        'CARETAKER_AT_HOME': 9,
+        'PARKINSONS_CARE': 10,
+        'BEDRIDDEN_PATIENT_CARE': 11,
+        'PHYSIOTHERAPY': 7,
+        'POST_SURGERY_CARE': 8
+      };
+      
+      const serviceId = serviceIdMap[serviceCode] || 1; // Default to 1 if not found
       
       // Prepare booking data for new API
       const bookingData = {
         userId: parseInt(userId),
-        serviceId: apiServiceConfig.service.id,
+        serviceId: serviceId,
         contactInfo: {
           phone: formData.phone,
           alternatePhone: formData.alternatePhone || null,
@@ -627,8 +609,8 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
           preferredTimeSlot: formData.preferredTimeSlot || formData.preferredTime || 'Morning',
           urgency: formData.urgency?.toUpperCase() || 'NORMAL'
         },
-        selectedSubServices: selectedSubServices, // Array of subservice IDs
-        formalityData: formData.serviceDetails, // Dynamic formality fields
+        selectedSubServices: [], // No subservices for now
+        formalityData: formData.serviceDetails, // Service-specific fields from Step 2
         specialInstructions: formData.specialInstructions || null
       };
       
@@ -639,15 +621,17 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
       
       console.log('✅ Booking created:', result);
       
-      // Call parent callback with booking data
+      // Call parent callback with booking data (this will handle redirect)
       onBookingComplete({
         ...result.booking,
         serviceName,
         bookingNumber: result.bookingNumber
       });
       
-      // Close modal without showing alert
-      onClose();
+      // Close modal after a short delay to allow redirect to complete
+      setTimeout(() => {
+        onClose();
+      }, 100);
     } catch (error) {
       console.error('❌ Booking failed:', error);
       alert('Failed to create booking: ' + error.message);
@@ -951,132 +935,330 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
             <div>
               <h3 className={styles.stepTitle}>Service Requirements</h3>
               
-              {/* Subservice Selection */}
-              {apiServiceConfig?.subServices && apiServiceConfig.subServices.length > 0 && (
-                <div className={styles.subservicesSection}>
-                  <h4 className={styles.sectionTitle}>
-                    Select Additional Services (Optional)
-                  </h4>
-                  <p className={styles.sectionDescription}>
-                    Choose any additional services you need. Prices will be added to your total.
-                  </p>
-                  
-                  <div className={styles.subservicesList}>
-                    {apiServiceConfig.subServices.map((subService) => (
-                      <label 
-                        key={subService.id} 
-                        className={`${styles.subserviceCard} ${
-                          selectedSubServices.includes(subService.id) ? styles.selected : ''
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedSubServices.includes(subService.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedSubServices([...selectedSubServices, subService.id]);
-                            } else {
-                              setSelectedSubServices(selectedSubServices.filter(id => id !== subService.id));
-                            }
-                          }}
-                          className={styles.subserviceCheckbox}
-                        />
-                        <div className={styles.subserviceInfo}>
-                          <div className={styles.subserviceName}>{subService.subServiceName}</div>
-                          {subService.description && (
-                            <div className={styles.subserviceDescription}>{subService.description}</div>
-                          )}
-                        </div>
-                        <div className={styles.subservicePrice}>
-                          {subService.additionalPrice > 0 ? (
-                            <span className={styles.priceTag}>+₹{subService.additionalPrice}</span>
-                          ) : (
-                            <span className={styles.freeTag}>Included</span>
-                          )}
-                        </div>
-                      </label>
-                    ))}
+              {/* COMPANION CARE */}
+              {serviceName === 'Companion Care' && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Age (Years)</label>
+                    <input type="number" className={styles.formInput} placeholder="Enter age" 
+                      value={formData.serviceDetails.patient_age || ''} 
+                      onChange={(e) => handleServiceDetailChange('patient_age', e.target.value)} />
                   </div>
                   
-                  {selectedSubServices.length > 0 && (
-                    <div className={styles.selectedSummary}>
-                      ✓ {selectedSubServices.length} additional service{selectedSubServices.length > 1 ? 's' : ''} selected
-                    </div>
-                  )}
-                </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Gender</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.patient_gender || ''} 
+                      onChange={(e) => handleServiceDetailChange('patient_gender', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Current Health Status</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.health_status || ''} 
+                      onChange={(e) => handleServiceDetailChange('health_status', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="good">Good - Independent</option>
+                      <option value="fair">Fair - Needs Some Help</option>
+                      <option value="poor">Poor - Needs Significant Help</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Interests & Activities</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="List activities, hobbies, and interests"
+                      value={formData.serviceDetails.interests_hobbies || ''} 
+                      onChange={(e) => handleServiceDetailChange('interests_hobbies', e.target.value)} />
+                    <small className={styles.helpText}>Information for engagement and therapeutic interaction</small>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Required Hours Per Day</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.companionship_hours || ''} 
+                      onChange={(e) => handleServiceDetailChange('companionship_hours', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="4">4 Hours</option>
+                      <option value="8">8 Hours</option>
+                      <option value="12">12 Hours</option>
+                      <option value="24">24 Hours</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Communication Capability</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.communication_ability || ''} 
+                      onChange={(e) => handleServiceDetailChange('communication_ability', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="fully_verbal">Fully Verbal</option>
+                      <option value="limited_verbal">Limited Verbal</option>
+                      <option value="non_verbal">Non-Verbal</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Additional Care Requirements</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="Specify any special needs or considerations"
+                      value={formData.serviceDetails.special_requirements || ''} 
+                      onChange={(e) => handleServiceDetailChange('special_requirements', e.target.value)} />
+                    <small className={styles.helpText}>Any specific requirements for the companion caregiver</small>
+                  </div>
+                </>
               )}
               
-              {/* Dynamic service fields based on service configuration */}
-              {Object.entries(serviceConfig).map(([sectionKey, sectionConfig]) => (
-                <div key={sectionKey} className={styles.formGroup}>
-                  <h4 className={styles.formLabel} style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', textTransform: 'capitalize' }}>
-                    {sectionKey.replace(/_/g, ' ')}
-                  </h4>
+              {/* PERSONAL CARE */}
+              {serviceName === 'Personal Care' && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Age (Years)</label>
+                    <input type="number" className={styles.formInput} placeholder="Enter age" 
+                      value={formData.serviceDetails.patient_age || ''} 
+                      onChange={(e) => handleServiceDetailChange('patient_age', e.target.value)} />
+                  </div>
                   
-                  {Object.entries(sectionConfig).map(([fieldKey, fieldConfig]) => {
-                    const fieldName = `${sectionKey}_${fieldKey}`;
-                    
-                    if (typeof fieldConfig === 'string' && fieldConfig.includes('/')) {
-                      // Dropdown
-                      const options = fieldConfig.split('/');
-                      
-                      // Special handling for therapy_type to add descriptions
-                      const getOptionDisplay = (option, fieldKey) => {
-                        if (fieldKey === 'therapy_type') {
-                          const therapyDescriptions = {
-                            'orthopedic': 'Orthopedic - Bone/Joint',
-                            'neurological': 'Neurological - Brain/Nerve',
-                            'pediatric': 'Pediatric - Child Care',
-                            'geriatric': 'Geriatric - Elder Care',
-                            'chest': 'Chest - Breathing/Lung'
-                          };
-                          return therapyDescriptions[option] || option.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        }
-                        return option.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                      };
-                      
-                      return (
-                        <div key={fieldName} className={styles.formGroup}>
-                          <label className={styles.formLabel}>
-                            {fieldKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </label>
-                          <select
-                            value={formData.serviceDetails[fieldName] || ''}
-                            onChange={(e) => handleServiceDetailChange(fieldName, e.target.value)}
-                            className={styles.formSelect}
-                          >
-                            <option value="">Select {fieldKey.replace(/_/g, ' ')}</option>
-                            {options.map(option => (
-                              <option key={option} value={option}>
-                                {getOptionDisplay(option, fieldKey)}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      );
-                    }
-                    
-                    // Regular input
-                    return (
-                      <div key={fieldName} className={styles.formGroup}>
-                        <label className={styles.formLabel}>
-                          {fieldKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </label>
-                        <input
-                          type={fieldConfig === 'number' ? 'number' : 'text'}
-                          value={formData.serviceDetails[fieldName] || ''}
-                          onChange={(e) => handleServiceDetailChange(fieldName, e.target.value)}
-                          placeholder={`Enter ${fieldKey.replace(/_/g, ' ')}`}
-                          className={styles.formInput}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Gender</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.patient_gender || ''} 
+                      onChange={(e) => handleServiceDetailChange('patient_gender', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Mobility Level</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.mobility_level || ''} 
+                      onChange={(e) => handleServiceDetailChange('mobility_level', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="fully_mobile">Fully Mobile</option>
+                      <option value="limited_mobility">Limited Mobility</option>
+                      <option value="wheelchair">Wheelchair Bound</option>
+                      <option value="bedridden">Bedridden</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Care Activities Required</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="List required care activities (bathing, dressing, grooming, etc.)"
+                      value={formData.serviceDetails.care_activities || ''} 
+                      onChange={(e) => handleServiceDetailChange('care_activities', e.target.value)} />
+                    <small className={styles.helpText}>Specify daily personal care needs</small>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Required Hours Per Day</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.care_hours || ''} 
+                      onChange={(e) => handleServiceDetailChange('care_hours', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="4">4 Hours</option>
+                      <option value="8">8 Hours</option>
+                      <option value="12">12 Hours</option>
+                      <option value="24">24 Hours</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Medical Conditions</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="List any medical conditions or health concerns"
+                      value={formData.serviceDetails.medical_conditions || ''} 
+                      onChange={(e) => handleServiceDetailChange('medical_conditions', e.target.value)} />
+                    <small className={styles.helpText}>Important for caregiver awareness and safety</small>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Special Care Requirements</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="Any special needs or preferences"
+                      value={formData.serviceDetails.special_requirements || ''} 
+                      onChange={(e) => handleServiceDetailChange('special_requirements', e.target.value)} />
+                    <small className={styles.helpText}>Additional care instructions or preferences</small>
+                  </div>
+                </>
+              )}
               
-              {Object.keys(serviceConfig).length === 0 && (
-                <div className={styles.emptyState}>
+              {/* DEMENTIA CARE */}
+              {serviceName === 'Dementia Care' && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Age (Years)</label>
+                    <input type="number" className={styles.formInput} placeholder="Enter age" 
+                      value={formData.serviceDetails.patient_age || ''} 
+                      onChange={(e) => handleServiceDetailChange('patient_age', e.target.value)} />
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Gender</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.patient_gender || ''} 
+                      onChange={(e) => handleServiceDetailChange('patient_gender', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Dementia Stage</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.dementia_stage || ''} 
+                      onChange={(e) => handleServiceDetailChange('dementia_stage', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="early">Early Stage - Mild Symptoms</option>
+                      <option value="moderate">Moderate Stage - Increased Support Needed</option>
+                      <option value="advanced">Advanced Stage - Full-Time Care Required</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Diagnosis Type</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.diagnosis_type || ''} 
+                      onChange={(e) => handleServiceDetailChange('diagnosis_type', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="alzheimers">Alzheimer's Disease</option>
+                      <option value="vascular">Vascular Dementia</option>
+                      <option value="lewy_body">Lewy Body Dementia</option>
+                      <option value="frontotemporal">Frontotemporal Dementia</option>
+                      <option value="other">Other/Mixed</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Behavioral Symptoms</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="Describe behavioral patterns, wandering, agitation, etc."
+                      value={formData.serviceDetails.behavioral_symptoms || ''} 
+                      onChange={(e) => handleServiceDetailChange('behavioral_symptoms', e.target.value)} />
+                    <small className={styles.helpText}>Helps caregiver prepare for specific behaviors</small>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Supervision Level Required</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.supervision_level || ''} 
+                      onChange={(e) => handleServiceDetailChange('supervision_level', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="periodic">Periodic Check-ins</option>
+                      <option value="frequent">Frequent Monitoring</option>
+                      <option value="constant">Constant Supervision (24/7)</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Safety Concerns & Triggers</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="List safety risks, triggers, or calming techniques"
+                      value={formData.serviceDetails.safety_concerns || ''} 
+                      onChange={(e) => handleServiceDetailChange('safety_concerns', e.target.value)} />
+                    <small className={styles.helpText}>Critical information for patient safety and comfort</small>
+                  </div>
+                </>
+              )}
+              
+              {/* RESPITE CARE */}
+              {serviceName === 'Respite Care' && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Age (Years)</label>
+                    <input type="number" className={styles.formInput} placeholder="Enter age" 
+                      value={formData.serviceDetails.patient_age || ''} 
+                      onChange={(e) => handleServiceDetailChange('patient_age', e.target.value)} />
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient Gender</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.patient_gender || ''} 
+                      onChange={(e) => handleServiceDetailChange('patient_gender', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Care Duration Needed</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.care_duration || ''} 
+                      onChange={(e) => handleServiceDetailChange('care_duration', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="few_hours">Few Hours (2-4 hours)</option>
+                      <option value="half_day">Half Day (4-8 hours)</option>
+                      <option value="full_day">Full Day (8-12 hours)</option>
+                      <option value="overnight">Overnight (12-24 hours)</option>
+                      <option value="multiple_days">Multiple Days</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Primary Caregiver Relationship</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.caregiver_relationship || ''} 
+                      onChange={(e) => handleServiceDetailChange('caregiver_relationship', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="spouse">Spouse</option>
+                      <option value="child">Adult Child</option>
+                      <option value="sibling">Sibling</option>
+                      <option value="other_family">Other Family Member</option>
+                      <option value="friend">Friend/Neighbor</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Patient's Current Care Needs</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="Describe daily care routine and needs"
+                      value={formData.serviceDetails.care_needs || ''} 
+                      onChange={(e) => handleServiceDetailChange('care_needs', e.target.value)} />
+                    <small className={styles.helpText}>Help us understand the care routine to maintain</small>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Reason for Respite Care</label>
+                    <select className={styles.formSelect}
+                      value={formData.serviceDetails.respite_reason || ''} 
+                      onChange={(e) => handleServiceDetailChange('respite_reason', e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="personal_time">Personal Time/Rest</option>
+                      <option value="work">Work Commitments</option>
+                      <option value="travel">Travel/Vacation</option>
+                      <option value="medical">Medical Appointment</option>
+                      <option value="emergency">Emergency Situation</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Special Instructions for Caregiver</label>
+                    <textarea className={styles.formTextarea} rows={3}
+                      placeholder="Important routines, preferences, or emergency contacts"
+                      value={formData.serviceDetails.special_instructions || ''} 
+                      onChange={(e) => handleServiceDetailChange('special_instructions', e.target.value)} />
+                    <small className={styles.helpText}>Any specific care instructions or emergency information</small>
+                  </div>
+                </>
+              )}
+              
+              {/* Fallback for other services */}
+              {!['Companion Care', 'Personal Care', 'Dementia Care', 'Respite Care'].includes(serviceName) && (
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
                   <p>Service details will be collected after booking confirmation.</p>
                 </div>
               )}

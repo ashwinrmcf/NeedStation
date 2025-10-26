@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
+import axios from 'axios';
 
 // Cart Context
 const CartContext = createContext();
@@ -86,6 +87,8 @@ const initialState = {
 // Cart Provider Component
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const [pendingBookingsCount, setPendingBookingsCount] = useState(0);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -104,6 +107,34 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('needstation_cart', JSON.stringify(state.items));
   }, [state.items]);
+
+  // Fetch pending bookings count
+  useEffect(() => {
+    const fetchPendingBookings = async () => {
+      try {
+        const userId = localStorage.getItem('userId');
+        if (!userId) return;
+
+        const response = await axios.get(`${API_URL}/bookings/user/${userId}`);
+        if (response.data.success) {
+          const bookings = response.data.bookings || [];
+          // Count bookings that are pending or in progress
+          const pendingCount = bookings.filter(b => 
+            ['PENDING_WORKER_ASSIGNMENT', 'CONFIRMED', 'QUOTATION_PROVIDED', 'PAYMENT_PENDING'].includes(b.status)
+          ).length;
+          setPendingBookingsCount(pendingCount);
+        }
+      } catch (error) {
+        console.error('Error fetching pending bookings:', error);
+      }
+    };
+
+    fetchPendingBookings();
+    
+    // Refetch every 30 seconds to keep count updated
+    const interval = setInterval(fetchPendingBookings, 30000);
+    return () => clearInterval(interval);
+  }, [API_URL]);
 
   // Cart Actions
   const addToCart = (service) => {
@@ -149,8 +180,9 @@ export const CartProvider = ({ children }) => {
   const value = {
     // State
     cartItems: state.items,
-    cartCount: getCartItemCount(),
+    cartCount: getCartItemCount() + pendingBookingsCount, // Include pending bookings in count
     cartTotal: getCartTotal(),
+    pendingBookingsCount, // Expose pending bookings count separately
     
     // Actions
     addToCart,

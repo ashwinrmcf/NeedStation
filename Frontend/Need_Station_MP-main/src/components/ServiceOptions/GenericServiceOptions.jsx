@@ -193,9 +193,7 @@ const GenericServiceOptions = ({
     });
   }, [trustIndicators]);
 
-  const handleBookNow = (e) => {
-    if (e) e.preventDefault();
-    
+  const handleBookNow = (service = null) => {
     // Check if user is logged in
     if (!user) {
       // Redirect to login page if not logged in
@@ -203,8 +201,12 @@ const GenericServiceOptions = ({
       return;
     }
     
+    // Use specific service name if provided, otherwise use category name
+    const serviceToBook = service?.title || service?.name || serviceName;
+    console.log('📞 handleBookNow called with:', { service, serviceToBook, serviceName });
+    
     // Open booking modal if user is logged in
-    openBookingModal(serviceName);
+    openBookingModal(serviceToBook);
   };
 
   const handleAddToCart = (service) => {
@@ -398,7 +400,7 @@ const GenericServiceOptions = ({
             </button>
             
             <button 
-              onClick={handleBookNow}
+              onClick={() => handleBookNow(service)}
               className="px-6 py-3 font-semibold text-white transition-all duration-200 hover:opacity-90"
               style={{
                 backgroundColor: 'var(--accent-secondary)',
@@ -1027,7 +1029,7 @@ const GenericServiceOptions = ({
                 className={styles.bookNowBtn}
                 onClick={() => {
                   closeBottomSheet();
-                  handleBookNow();
+                  handleBookNow(bottomSheetService);
                 }}
               >
                 Book Now

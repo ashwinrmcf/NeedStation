@@ -165,6 +165,75 @@ export const SERVICE_CONFIGURATIONS = {
       care_duration: "days/weeks/months",
       wound_care_needed: "yes/no"
     }
+  },
+
+  // COMPANION CARE
+  "COMPANION_CARE": {
+    patient_info: {
+      patient_age: "number",
+      patient_gender: "male/female/other",
+      health_status: "good_independent/fair_needs_some_help/poor_needs_significant_help"
+    },
+    care_details: {
+      interests_hobbies: "textarea|List activities, hobbies, and interests|Information for engagement and therapeutic interaction",
+      companionship_hours: "4_hours/8_hours/12_hours/24_hours",
+      communication_ability: "fully_verbal/limited_verbal/non_verbal",
+      special_requirements: "textarea|Specify any special needs or considerations|Any specific requirements for the companion caregiver"
+    }
+  },
+
+  // PERSONAL CARE
+  "PERSONAL_CARE": {
+    patient_info: {
+      patient_age: "number",
+      patient_gender: "male/female/other",
+      mobility_assessment: "fully_mobile/needs_walker/wheelchair_bound/bedridden"
+    },
+    care_needs: {
+      bathing_assistance: "full_assistance/partial_assistance/supervision_only/independent",
+      grooming_hygiene: "textarea|Describe grooming and hygiene needs|Specific requirements for personal hygiene care",
+      care_hours_per_day: "4_hours/8_hours/12_hours/24_hours",
+      toileting_assistance: "full_assistance/partial_assistance/supervision_only/independent",
+      incontinence_care: "yes_diapers/yes_catheter/no"
+    }
+  },
+
+  // DEMENTIA CARE
+  "DEMENTIA_CARE": {
+    patient_info: {
+      patient_age: "number",
+      patient_gender: "male/female/other",
+      dementia_diagnosis: "alzheimers/vascular/lewy_body/frontotemporal/mixed/unspecified"
+    },
+    disease_info: {
+      progression_stage: "early_mild/moderate/advanced_severe",
+      years_since_diagnosis: "number",
+      cognitive_function: "textarea|Describe memory, orientation, and cognitive abilities|Assessment of current cognitive function",
+      behavioral_symptoms: "textarea|List behavioral and psychological symptoms|Wandering, aggression, anxiety, sleep issues, etc.",
+      safety_risks: "textarea|Describe safety concerns and risks|Fall risk, wandering risk, medication management needs"
+    },
+    care_requirements: {
+      supervision_hours: "8_hours/12_hours/16_hours/24_hours"
+    }
+  },
+
+  // RESPITE CARE
+  "RESPITE_CARE": {
+    patient_info: {
+      patient_age: "number",
+      patient_gender: "male/female/other",
+      respite_period: "few_hours/full_day/overnight/weekend/week_or_more"
+    },
+    medical_care: {
+      medical_history: "textarea|List current medical conditions and history|Chronic conditions, recent hospitalizations, etc.",
+      medication_protocol: "textarea|List all medications with dosage and timing|Complete medication schedule and administration instructions",
+      daily_care_protocol: "textarea|Describe daily care routine and schedule|Meal times, activity schedule, rest periods, etc."
+    },
+    care_instructions: {
+      care_tasks: "textarea|List specific care tasks and responsibilities|Feeding, mobility assistance, medication, etc.",
+      emergency_contacts: "textarea|Provide emergency contact information|Family members, doctors, hospitals with phone numbers",
+      special_instructions: "textarea|Any additional care instructions or preferences|Dietary restrictions, likes/dislikes, comfort measures"
+    }
   }
 };
 

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import BookingModal from './BookingModal';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../store/AuthContext';
@@ -16,6 +16,7 @@ export const useBookingModal = () => {
 export const BookingModalProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentService, setCurrentService] = useState(null);
+  const serviceNameRef = useRef(null);
   const [userProfileData, setUserProfileData] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -55,13 +56,19 @@ export const BookingModalProvider = ({ children }) => {
   console.log('🔍 BookingModalProvider - localStorage userId:', localStorage.getItem('userId'));
 
   const openBookingModal = (serviceName) => {
+    console.log('🚀 Opening modal with service:', serviceName);
+    serviceNameRef.current = serviceName;
     setCurrentService(serviceName);
     setIsModalOpen(true);
   };
 
   const closeBookingModal = () => {
     setIsModalOpen(false);
-    setCurrentService(null);
+    // Don't reset immediately
+    setTimeout(() => {
+      setCurrentService(null);
+      serviceNameRef.current = null;
+    }, 300);
   };
 
   const handleBookingComplete = (bookingData) => {
@@ -93,7 +100,7 @@ export const BookingModalProvider = ({ children }) => {
       <BookingModal
         isOpen={isModalOpen}
         onClose={closeBookingModal}
-        serviceName={currentService}
+        serviceName={serviceNameRef.current || currentService}
         onBookingComplete={handleBookingComplete}
         userProfile={userProfile}
       />

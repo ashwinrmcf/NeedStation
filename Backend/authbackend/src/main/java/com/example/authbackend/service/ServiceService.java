@@ -40,6 +40,7 @@ public class ServiceService {
         
         // Get formalities
         List<ServiceFormality> formalities = serviceFormalityRepository.findByServiceIdNotDeleted(service.getId());
+        System.out.println("✅ Found " + formalities.size() + " formalities for service ID: " + service.getId());
         
         // Convert to DTOs
         ServiceConfigDTO.ServiceDTO serviceDTO = new ServiceConfigDTO.ServiceDTO(
@@ -47,7 +48,11 @@ public class ServiceService {
                 service.getServiceName(),
                 service.getServiceCode(),
                 service.getDescription(),
-                service.getBasePrice()
+                service.getBasePrice(),
+                service.getCategory(),
+                service.getImageUrl(),
+                service.getMinicardImageUrl(),
+                service.getIsActive()
         );
         
         List<ServiceConfigDTO.SubServiceDTO> subServiceDTOs = subServices.stream()
@@ -91,17 +96,53 @@ public class ServiceService {
                         s.getServiceName(),
                         s.getServiceCode(),
                         s.getDescription(),
-                        s.getBasePrice()
+                        s.getBasePrice(),
+                        s.getCategory(),
+                        s.getImageUrl(),
+                        s.getMinicardImageUrl(),
+                        s.getIsActive()
                 ))
                 .collect(Collectors.toList());
     }
     
     /**
-     * Get service by ID
+     * Get service by ID (returns DTO)
      */
-    public com.example.authbackend.model.Service getServiceById(Long serviceId) {
-        return serviceRepository.findById(serviceId)
+    public ServiceConfigDTO.ServiceDTO getServiceById(Long serviceId) {
+        com.example.authbackend.model.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new RuntimeException("Service not found with ID: " + serviceId));
+        
+        return new ServiceConfigDTO.ServiceDTO(
+                service.getId(),
+                service.getServiceName(),
+                service.getServiceCode(),
+                service.getDescription(),
+                service.getBasePrice(),
+                service.getCategory(),
+                service.getImageUrl(),
+                service.getMinicardImageUrl(),
+                service.getIsActive()
+        );
+    }
+    
+    /**
+     * Get service by name (returns DTO)
+     */
+    public ServiceConfigDTO.ServiceDTO getServiceByName(String serviceName) {
+        com.example.authbackend.model.Service service = serviceRepository.findByServiceName(serviceName)
+                .orElseThrow(() -> new RuntimeException("Service not found with name: " + serviceName));
+        
+        return new ServiceConfigDTO.ServiceDTO(
+                service.getId(),
+                service.getServiceName(),
+                service.getServiceCode(),
+                service.getDescription(),
+                service.getBasePrice(),
+                service.getCategory(),
+                service.getImageUrl(),
+                service.getMinicardImageUrl(),
+                service.getIsActive()
+        );
     }
     
     /**

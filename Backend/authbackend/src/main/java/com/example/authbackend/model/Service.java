@@ -32,6 +32,15 @@ public class Service {
     @Column(name = "base_price", precision = 10, scale = 2)
     private BigDecimal basePrice;
     
+    @Column(name = "category", length = 100)
+    private String category;
+    
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+    
+    @Column(name = "minicard_image_url", length = 500)
+    private String minicardImageUrl;
+    
     @Column(name = "is_active")
     private Boolean isActive = true;
     

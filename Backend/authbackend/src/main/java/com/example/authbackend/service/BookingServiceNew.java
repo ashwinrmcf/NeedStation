@@ -37,6 +37,9 @@ public class BookingServiceNew {
     private ServiceService serviceService;
     
     @Autowired
+    private ServiceRepository serviceRepository;
+    
+    @Autowired
     private UserRepository userRepository;
     
     @Autowired
@@ -53,7 +56,8 @@ public class BookingServiceNew {
             System.out.println("📝 Creating booking for userId: " + dto.getUserId() + ", serviceId: " + dto.getServiceId());
             
             // 1. Get service details
-            com.example.authbackend.model.Service service = serviceService.getServiceById(dto.getServiceId());
+            com.example.authbackend.model.Service service = serviceRepository.findById(dto.getServiceId())
+                    .orElseThrow(() -> new RuntimeException("Service not found with ID: " + dto.getServiceId()));
             System.out.println("✅ Service found: " + service.getServiceName());
             
             // 2. Get user details
