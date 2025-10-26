@@ -27,6 +27,9 @@ const CartNew = () => {
   const [loadingBookings, setLoadingBookings] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successBookingData, setSuccessBookingData] = useState(null);
+  const [cancellingBookingId, setCancellingBookingId] = useState(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState(null);
   
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
@@ -46,43 +49,44 @@ const CartNew = () => {
     }
   }, [location.state]);
 
-  // Fetch user's bookings
-  useEffect(() => {
-    const fetchUserBookings = async () => {
-      try {
-        setLoadingBookings(true);
-        const userId = localStorage.getItem('userId');
-        
-        console.log('🔍 CartNew: Fetching bookings for userId:', userId);
-        
-        if (!userId) {
-          console.log('❌ CartNew: No userId found in localStorage');
-          return;
-        }
-        
-        const url = `${API_URL}/bookings/user/${userId}`;
-        console.log('📡 CartNew: Fetching from:', url);
-        
-        const response = await axios.get(url);
-        console.log('📥 CartNew: Response:', response.data);
-        
-        if (response.data.success) {
-          const bookings = response.data.bookings || [];
-          console.log('✅ CartNew: Found', bookings.length, 'bookings');
-          setUserBookings(bookings);
-        } else {
-          console.log('⚠️ CartNew: API returned success=false');
-        }
-      } catch (error) {
-        console.error('❌ CartNew: Error fetching bookings:', error);
-        console.error('❌ CartNew: Error details:', error.response?.data);
-      } finally {
-        setLoadingBookings(false);
+  // Fetch user's bookings function (moved outside useEffect so it can be reused)
+  const fetchUserBookings = async () => {
+    try {
+      setLoadingBookings(true);
+      const userId = localStorage.getItem('userId');
+      
+      console.log('🔍 CartNew: Fetching bookings for userId:', userId);
+      
+      if (!userId) {
+        console.log('❌ CartNew: No userId found in localStorage');
+        return;
       }
-    };
-    
+      
+      const url = `${API_URL}/bookings/user/${userId}`;
+      console.log('📡 CartNew: Fetching from:', url);
+      
+      const response = await axios.get(url);
+      console.log('📥 CartNew: Response:', response.data);
+      
+      if (response.data.success) {
+        const bookings = response.data.bookings || [];
+        console.log('✅ CartNew: Found', bookings.length, 'bookings');
+        setUserBookings(bookings);
+      } else {
+        console.log('⚠️ CartNew: API returned success=false');
+      }
+    } catch (error) {
+      console.error('❌ CartNew: Error fetching bookings:', error);
+      console.error('❌ CartNew: Error details:', error.response?.data);
+    } finally {
+      setLoadingBookings(false);
+    }
+  };
+
+  // Fetch user's bookings on mount
+  useEffect(() => {
     fetchUserBookings();
-  }, [successBookingData, location.state, API_URL]);
+  }, [successBookingData, location.state]);
 
   // Promo codes
   const promoCodes = {
@@ -130,6 +134,42 @@ const CartNew = () => {
       removeFromCart(itemId);
     } else {
       updateQuantity(itemId, newQuantity);
+    }
+  };
+
+  // Handle cancel booking request
+  const handleCancelRequest = (booking) => {
+    setBookingToCancel(booking);
+    setShowCancelConfirm(true);
+  };
+
+  // Confirm cancel booking
+  const confirmCancelBooking = async () => {
+    if (!bookingToCancel) return;
+
+    setCancellingBookingId(bookingToCancel.id);
+    try {
+      const response = await axios.put(
+        `${API_URL}/bookings/${bookingToCancel.id}/cancel`,
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        // Refresh bookings list
+        fetchUserBookings();
+        setShowCancelConfirm(false);
+        setBookingToCancel(null);
+      }
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      alert('Failed to cancel booking. Please try again.');
+    } finally {
+      setCancellingBookingId(null);
     }
   };
 
@@ -369,7 +409,13 @@ const CartNew = () => {
                   </div>
                 ) : (
                   userBookings.map((booking, index) => (
-                    <BookingCard key={booking.id} booking={booking} index={index} />
+                    <BookingCard 
+                      key={booking.id} 
+                      booking={booking} 
+                      index={index}
+                      onCancelRequest={handleCancelRequest}
+                      cancellingBookingId={cancellingBookingId}
+                    />
                   ))
                 )}
               </div>
@@ -558,6 +604,18 @@ const CartNew = () => {
           </div>
         </aside>
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      <CancelConfirmModal
+        isOpen={showCancelConfirm}
+        onClose={() => {
+          setShowCancelConfirm(false);
+          setBookingToCancel(null);
+        }}
+        onConfirm={confirmCancelBooking}
+        booking={bookingToCancel}
+        isCancelling={cancellingBookingId !== null}
+      />
     </div>
   );
 };
@@ -769,8 +827,26 @@ const getServiceImage = (serviceName) => {
 };
 
 // Booking Card Component
-const BookingCard = ({ booking, index }) => {
+const BookingCard = ({ booking, index, onCancelRequest, cancellingBookingId }) => {
   const [serviceImage, setServiceImage] = useState(null);
+  
+  // Random motivational messages for pending bookings
+  const pendingMessages = [
+    "Finding the perfect tasker for your needs. You'll be notified soon.",
+    "Matching you with our top-rated taskers in your area.",
+    "Searching for verified professionals near you. Hang tight!",
+    "We're selecting the best tasker for your service.",
+    "Connecting you with experienced taskers nearby.",
+    "Finding a highly-rated tasker in your location.",
+    "Reviewing available taskers to ensure the best match.",
+    "Our team is finding the right professional for you.",
+    "Matching your requirements with qualified taskers.",
+    "Searching for the most suitable tasker in your area."
+  ];
+  
+  // Use booking ID to consistently show the same message for each booking
+  const messageIndex = booking.id % pendingMessages.length;
+  const pendingMessage = pendingMessages[messageIndex];
   
   // Load service image based on service name
   useEffect(() => {
@@ -894,13 +970,44 @@ const BookingCard = ({ booking, index }) => {
             marginTop: '0.75rem',
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
             gap: '0.75rem',
             color: '#2563eb',
             fontSize: '0.875rem',
             fontWeight: '500'
           }}>
-            <Loader2 className="w-4 h-4 animate-spin" style={{ flexShrink: 0 }} />
-            <span>Finding the best worker near you...</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
+              <span style={{ fontWeight: '600' }}>Matching you with verified professionals...</span>
+              <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                {pendingMessage}
+              </span>
+            </div>
+            <button
+              onClick={() => onCancelRequest(booking)}
+              disabled={cancellingBookingId === booking.id}
+              style={{
+                padding: '0.25rem 0.5rem',
+                fontSize: '0.7rem',
+                color: '#dc2626',
+                background: 'rgba(220, 38, 38, 0.1)',
+                border: '1px solid rgba(220, 38, 38, 0.3)',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontWeight: '500',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(220, 38, 38, 0.2)';
+                e.target.style.borderColor = 'rgba(220, 38, 38, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(220, 38, 38, 0.1)';
+                e.target.style.borderColor = 'rgba(220, 38, 38, 0.3)';
+              }}
+            >
+              {cancellingBookingId === booking.id ? 'Cancelling...' : 'Cancel'}
+            </button>
           </div>
         )}
         
@@ -933,6 +1040,149 @@ const BookingCard = ({ booking, index }) => {
         </span>
       </div>
     </motion.div>
+  );
+};
+
+// Cancel Confirmation Modal Component
+const CancelConfirmModal = ({ isOpen, onClose, onConfirm, booking, isCancelling }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      padding: '1rem'
+    }} onClick={onClose}>
+      <div style={{
+        background: 'var(--bg-primary)',
+        borderRadius: '16px',
+        padding: '2rem',
+        maxWidth: '400px',
+        width: '100%',
+        border: '1px solid rgba(220, 38, 38, 0.3)',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
+      }} onClick={(e) => e.stopPropagation()}>
+        
+        {/* Warning Icon */}
+        <div style={{
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          background: 'rgba(220, 38, 38, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 1.5rem'
+        }}>
+          <AlertCircle style={{ width: '32px', height: '32px', color: '#dc2626' }} />
+        </div>
+
+        {/* Title */}
+        <h3 style={{
+          fontSize: '1.5rem',
+          fontWeight: '700',
+          color: 'var(--text-primary)',
+          textAlign: 'center',
+          marginBottom: '0.75rem'
+        }}>
+          Cancel Booking?
+        </h3>
+
+        {/* Warning Message */}
+        <p style={{
+          fontSize: '0.95rem',
+          color: 'var(--text-secondary)',
+          textAlign: 'center',
+          marginBottom: '0.5rem',
+          lineHeight: '1.5'
+        }}>
+          Are you sure you want to cancel this booking?
+        </p>
+
+        <p style={{
+          fontSize: '0.875rem',
+          color: '#dc2626',
+          textAlign: 'center',
+          marginBottom: '1.5rem',
+          fontWeight: '500'
+        }}>
+          ⚠️ This action cannot be undone
+        </p>
+
+        {/* Booking Details */}
+        {booking && (
+          <div style={{
+            background: 'var(--bg-secondary)',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '1.5rem',
+            border: '1px solid var(--border-color)'
+          }}>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+              <strong style={{ color: 'var(--text-primary)' }}>{booking.serviceName}</strong>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              Booking #{booking.bookingNumber}
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+              Amount: ₹{booking.totalAmount?.toLocaleString()}
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div style={{
+          display: 'flex',
+          gap: '0.75rem'
+        }}>
+          <button
+            onClick={onClose}
+            disabled={isCancelling}
+            style={{
+              flex: 1,
+              padding: '0.875rem',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)',
+              background: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              fontSize: '0.95rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            Keep Booking
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isCancelling}
+            style={{
+              flex: 1,
+              padding: '0.875rem',
+              borderRadius: '8px',
+              border: 'none',
+              background: isCancelling ? '#9ca3af' : '#dc2626',
+              color: 'white',
+              fontSize: '0.95rem',
+              fontWeight: '600',
+              cursor: isCancelling ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s',
+              opacity: isCancelling ? 0.6 : 1
+            }}
+          >
+            {isCancelling ? 'Cancelling...' : 'Yes, Cancel'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

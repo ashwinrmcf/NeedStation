@@ -14,12 +14,12 @@
    HEADER
    =================================== */
 .header {
-  background: var(--bg-secondary);
-  border-bottom: 1px solid rgba(92, 225, 230, 0.1);
+  background: transparent;
+  border-bottom: none;
   padding: 1.5rem 0;
   position: sticky;
-  top: 0;
-  z-index: 100;
+  top: 80px;
+  z-index: 90;
   backdrop-filter: blur(10px);
 }
 

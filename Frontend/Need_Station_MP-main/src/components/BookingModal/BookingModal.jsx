@@ -3,6 +3,7 @@ import { X, ArrowLeft, ArrowRight, MapPin, Clock, User, Phone, Calendar, Shield 
 import { SERVICE_CONFIGURATIONS } from '../../data/ServiceConfigurations';
 import { createBooking } from '../../services/bookingApi';
 import LeafletMapPicker from '../Map/LeafletMapPicker';
+import { getServiceId } from '../../utils/serviceIdMapping';
 import styles from './BookingModal.module.css';
 
 const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userProfile }) => {
@@ -569,24 +570,17 @@ const BookingModal = ({ isOpen, onClose, serviceName, onBookingComplete, userPro
         'PARALYSIS CARE': 'PARALYSIS_CARE'
       };
       
-      const serviceCode = serviceCodeMap[serviceName?.toUpperCase()] || serviceName?.toUpperCase().replace(/[']/g, '').replace(/\s+/g, '_');
+      // Get service ID from mapping utility using the actual service name
+      const serviceId = getServiceId(serviceName);
       
-      // Map service names to service IDs (hardcoded for now)
-      const serviceIdMap = {
-        'COMPANION_CARE': 14,
-        'PERSONAL_CARE': 15,
-        'DEMENTIA_CARE': 16,
-        'RESPITE_CARE': 17,
-        'ELDERLY_CARE': 2,
-        'NURSING_CARE': 3,
-        'CARETAKER_AT_HOME': 9,
-        'PARKINSONS_CARE': 10,
-        'BEDRIDDEN_PATIENT_CARE': 11,
-        'PHYSIOTHERAPY': 7,
-        'POST_SURGERY_CARE': 8
-      };
+      if (!serviceId) {
+        console.error('❌ Service ID not found for:', serviceName);
+        alert(`Service "${serviceName}" is not configured. Please contact support.`);
+        setIsSubmitting(false);
+        return;
+      }
       
-      const serviceId = serviceIdMap[serviceCode] || 1; // Default to 1 if not found
+      console.log('✅ Using service ID:', serviceId, 'for service:', serviceName);
       
       // Prepare booking data for new API
       const bookingData = {
