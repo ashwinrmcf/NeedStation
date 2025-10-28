@@ -151,17 +151,17 @@ const OverviewPage = () => {
 					)}
 				</AnimatePresence>
 				
-				{/* TODAY'S TASKS */}
-				<motion.div
-					className='bg-gray-800 rounded-lg p-6 mb-6'
+				{/* MY TASKS */}
+				<motion.div 
+					className='bg-gray-800 rounded-lg p-6 border border-gray-700'
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5 }}
+					transition={{ delay: 0.3 }}
 				>
-					<h3 className='text-xl font-semibold text-white mb-4 flex items-center gap-2'>
+					<div className='flex items-center gap-2 mb-4'>
 						<ClipboardList className='text-[#00E0B8]' size={24} />
-						{t("todaysTasks")}
-					</h3>
+						<h2 className='text-xl font-semibold text-white'>My Tasks</h2>
+					</div>
 					<div className='space-y-3'>
 						{todaysTasks.map((task) => (
 							<div key={task.id} className='bg-gray-700 rounded-lg p-4 border border-gray-600 hover:border-[#00E0B8] transition-colors'>
@@ -194,11 +194,19 @@ const OverviewPage = () => {
 								</div>
 								
 								{/* Status Badge */}
-								{(task.status === 'CONFIRMED' || task.status === 'PENDING_WORKER_ASSIGNMENT') && (
+								{task.status === 'PENDING_WORKER_ASSIGNMENT' && (
 									<div className='mt-3 flex items-center gap-2'>
 										<div className='bg-blue-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1'>
 											<AlertTriangle size={12} />
 											<span>New Request - Action Required</span>
+										</div>
+									</div>
+								)}
+								{task.status === 'ASSIGNED' && (
+									<div className='mt-3 flex items-center gap-2'>
+										<div className='bg-green-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1'>
+											<CheckCircle size={12} />
+											<span>Accepted - Ready to Start</span>
 										</div>
 									</div>
 								)}
@@ -207,7 +215,7 @@ const OverviewPage = () => {
 						{todaysTasks.length === 0 && (
 							<div className='text-center py-8 text-gray-400'>
 								<Calendar size={48} className='mx-auto mb-2 opacity-50' />
-								<p>{t("noTasksToday")}</p>
+								<p>No tasks available at the moment</p>
 							</div>
 						)}
 					</div>

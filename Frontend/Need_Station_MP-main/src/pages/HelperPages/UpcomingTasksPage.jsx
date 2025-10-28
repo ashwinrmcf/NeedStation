@@ -185,7 +185,7 @@ const UpcomingTaskPage = () => {
 	};
 
 	const filteredTasks = allTasks.filter(task => {
-		const matchesFilter = activeFilter === 'all' || task.status === activeFilter.toUpperCase();
+		const matchesFilter = activeFilter === 'all' || task.status === activeFilter;
 		const matchesSearch = (task.customerName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
 							 (task.serviceName || '').toLowerCase().includes(searchTerm.toLowerCase());
 		return matchesFilter && matchesSearch;
@@ -385,7 +385,7 @@ const UpcomingTaskPage = () => {
 				<div className="flex justify-between items-center">
 					<span className="text-green-400 font-semibold text-lg">₹{task.totalAmount}</span>
 					<div className="flex gap-2">
-						{(task.status === 'CONFIRMED' || task.status === 'PENDING_WORKER_ASSIGNMENT') && (
+						{task.status === 'PENDING_WORKER_ASSIGNMENT' && (
 							<>
 								<button 
 									onClick={() => handleAcceptTask(task.id)}
@@ -394,22 +394,24 @@ const UpcomingTaskPage = () => {
 									<CheckCircle size={18} />
 									Accept
 								</button>
-								<button 
-									onClick={() => handleDeclineTask(task.id)}
-									className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
-								>
-									<XCircle size={18} />
-									Decline
-								</button>
 							</>
 						)}
 						{task.status === 'ASSIGNED' && (
-							<button 
-								onClick={() => handleCompleteTask(task.id)}
-								className="bg-[#00E0B8] hover:bg-[#00C4A0] text-gray-900 px-4 py-2 rounded-lg transition-colors"
-							>
-								Start Task
-							</button>
+							<>
+								<button 
+									onClick={() => handleDeclineTask(task.id)}
+									className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+								>
+									<XCircle size={16} />
+									Decline (15 min)
+								</button>
+								<button 
+									onClick={() => handleCompleteTask(task.id)}
+									className="bg-[#00E0B8] hover:bg-[#00C4A0] text-gray-900 px-4 py-2 rounded-lg transition-colors"
+								>
+									Start Task
+								</button>
+							</>
 						)}
 						{task.status === 'IN_PROGRESS' && (
 							<button 
@@ -465,7 +467,7 @@ const UpcomingTaskPage = () => {
 
 					{/* Status Filters */}
 					<div className="flex flex-wrap gap-2">
-						{['all', 'confirmed', 'assigned', 'in_progress', 'completed'].map((status) => (
+						{['all', 'PENDING_WORKER_ASSIGNMENT', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED'].map((status) => (
 							<button
 								key={status}
 								onClick={() => setActiveFilter(status)}
@@ -475,7 +477,7 @@ const UpcomingTaskPage = () => {
 										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
 								}`}
 							>
-								{status === 'all' ? 'All Tasks' : statusConfig[status.toUpperCase()]?.label || status}
+								{status === 'all' ? 'All Tasks' : statusConfig[status]?.label || status}
 							</button>
 						))}
 					</div>

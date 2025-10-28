@@ -258,20 +258,19 @@ public class WorkerDashboardService {
     }
     
     /**
-     * Get today's tasks (includes assigned tasks for today + all new available bookings)
+     * Get worker's tasks (includes all assigned tasks + new available bookings)
      */
     public List<WorkerTaskDTO> getTodaysTasks(Long workerId) {
-        LocalDate today = LocalDate.now();
-        
         // Get worker details
         com.example.authbackend.model.Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
         
-        // Get assigned tasks for today
-        List<BookingNew> assignedBookings = bookingRepository.findByAssignedWorkerIdAndPreferredDate(workerId, today);
+        // Get ALL assigned tasks (not just today's)
+        List<BookingNew> assignedBookings = bookingRepository.findByAssignedWorkerId(workerId).stream()
+                .filter(b -> "ASSIGNED".equals(b.getStatus()) || "IN_PROGRESS".equals(b.getStatus()))
+                .collect(Collectors.toList());
         
-        // Get ALL available bookings that match worker's services (not just today's)
-        // This ensures workers see new requests immediately in Overview
+        // Get ALL available bookings that match worker's services
         List<BookingNew> availableBookings = bookingRepository.findByStatus("PENDING_WORKER_ASSIGNMENT").stream()
                 .filter(booking -> {
                     // Check if worker has this service enabled
@@ -282,13 +281,13 @@ public class WorkerDashboardService {
                 .collect(Collectors.toList());
         
         // Combine both lists
-        List<BookingNew> allTodayBookings = new java.util.ArrayList<>(availableBookings);
-        allTodayBookings.addAll(assignedBookings);
+        List<BookingNew> allTaskBookings = new java.util.ArrayList<>(availableBookings);
+        allTaskBookings.addAll(assignedBookings);
         
-        return allTodayBookings.stream()
+        return allTaskBookings.stream()
                 .filter(b -> !"CANCELLED".equals(b.getStatus()) && !"COMPLETED".equals(b.getStatus()))
                 .sorted((a, b) -> {
-                    // Show new requests first, then sort by date
+                    // Show new requests first, then assigned tasks, sorted by date
                     if ("PENDING_WORKER_ASSIGNMENT".equals(a.getStatus()) && !"PENDING_WORKER_ASSIGNMENT".equals(b.getStatus())) {
                         return -1;
                     } else if (!"PENDING_WORKER_ASSIGNMENT".equals(a.getStatus()) && "PENDING_WORKER_ASSIGNMENT".equals(b.getStatus())) {
@@ -297,6 +296,7 @@ public class WorkerDashboardService {
                     // Sort by preferred date
                     return a.getPreferredDate().compareTo(b.getPreferredDate());
                 })
+                .limit(10) // Show max 10 tasks in overview
                 .map(this::convertToTaskDTO)
                 .collect(Collectors.toList());
     }
@@ -428,7 +428,7 @@ public class WorkerDashboardService {
         // Assign worker to booking
         booking.setAssignedWorkerId(workerId);
         booking.setAssignedWorkerName(worker.getFullName());
-        booking.setStatus("CONFIRMED");
+        booking.setStatus("ASSIGNED");
         booking.setScheduledAt(LocalDateTime.now());
         bookingRepository.save(booking);
         
@@ -436,24 +436,44 @@ public class WorkerDashboardService {
     }
     
     /**
-     * Decline a task
+     * Decline a task (within 10-15 minutes of accepting)
      */
     public void declineTask(Long bookingId, Long workerId, String reason) {
         BookingNew booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
         
-        if (!workerId.equals(booking.getAssignedWorkerId())) {
-            throw new RuntimeException("This task is not assigned to you");
+        // Check if this is an assigned task that can be declined
+        if ("ASSIGNED".equals(booking.getStatus())) {
+            // Worker can decline within 15 minutes of accepting
+            if (!workerId.equals(booking.getAssignedWorkerId())) {
+                throw new RuntimeException("This task is not assigned to you");
+            }
+            
+            // Check if within 15 minutes
+            if (booking.getScheduledAt() != null) {
+                long minutesSinceAccept = java.time.Duration.between(
+                    booking.getScheduledAt(), 
+                    LocalDateTime.now()
+                ).toMinutes();
+                
+                if (minutesSinceAccept > 15) {
+                    throw new RuntimeException("Cannot decline task after 15 minutes of accepting");
+                }
+            }
+            
+            // Unassign worker and set back to pending status
+            booking.setAssignedWorkerId(null);
+            booking.setAssignedWorkerName(null);
+            booking.setStatus("PENDING_WORKER_ASSIGNMENT");
+            booking.setScheduledAt(null);
+            if (reason != null) {
+                booking.setAdminNotes("Worker declined: " + reason);
+            }
+            bookingRepository.save(booking);
+            System.out.println("✅ Worker " + workerId + " declined booking " + bookingId + " (Reason: " + reason + ")");
+        } else {
+            throw new RuntimeException("Cannot decline a task that is not assigned to you");
         }
-        
-        // Unassign worker and set back to confirmed status
-        booking.setAssignedWorkerId(null);
-        booking.setAssignedWorkerName(null);
-        booking.setStatus("CONFIRMED");
-        if (reason != null) {
-            booking.setAdminNotes("Worker declined: " + reason);
-        }
-        bookingRepository.save(booking);
     }
     
     /**

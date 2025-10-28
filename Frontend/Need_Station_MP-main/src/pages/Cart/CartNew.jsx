@@ -887,7 +887,7 @@ const BookingCard = ({ booking, index, onCancelRequest, cancellingBookingId }) =
       'QUOTATION_PROVIDED': 'Quotation Received',
       'PAYMENT_PENDING': 'Payment Pending',
       'PAYMENT_COMPLETED': 'Payment Completed',
-      'ASSIGNED': 'Assigned',
+      'ASSIGNED': 'Worker Assigned',
       'IN_PROGRESS': 'In Progress',
       'COMPLETED': 'Completed',
       'CANCELLED': 'Cancelled'
