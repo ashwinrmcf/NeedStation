@@ -4,16 +4,21 @@ import { useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
 import TaskerDropdown from "../TaskerDropdown/TaskerDropdown.jsx";
 import ThemeToggle from "../ThemeToggle/ThemeToggle.jsx";
+import ConfirmationModal from "../ConfirmationModal/ConfirmationModal.jsx";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../store/AuthContext.jsx";
 import { useCart } from "../../store/CartContext.jsx";
 import PortalModal from "../common/PortalModal.jsx";
 import { FaBell, FaUser, FaCog, FaHistory, FaSignOutAlt, FaBars, FaTimes, FaHandsHelping, FaUserTie, FaShoppingCart } from "react-icons/fa";
+import { useLanguage } from "../../contexts/LanguageContext.jsx";
+import { headerTranslations } from "../../translations/headerFooter.js";
 
 const Header = () => {
   const { user, logout } = useAuth();
   const { cartCount, pendingBookingsCount } = useCart();
   const navigate = useNavigate();
+  const lang = useLanguage();
+  const t = headerTranslations[lang] || headerTranslations.en;
   console.log("AuthContext user:", user);
 
   const [isTaskerDropdownOpen, setTaskerDropdownOpen] = useState(false);
@@ -167,7 +172,8 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    logout();
+    setShowLogoutConfirmation(false); // Close the modal first
+    logout(); // Then logout
   };
 
   const handleCartClick = (e) => {
@@ -196,15 +202,15 @@ const Header = () => {
     <>
       <div className={styles.headerContainer}>
         <header className={styles.header}>
-          <Link to="/">
+          <Link to={lang === 'hi' ? "/hi" : "/"}>
             <div className={styles.logo} data-no-translate="true">
               <span className={styles.needText} data-no-translate="true">Need</span><span className={styles.stationText} data-no-translate="true">Station</span>
             </div>
           </Link>
           <nav className={styles.navLinks}>
-            <NavLink to="/services" className={({isActive}) => isActive ? styles.active : undefined}>Services</NavLink>
-            <NavLink to="/language-settings" className={({isActive}) => isActive ? styles.active : undefined}>
-              Languages
+            <NavLink to={lang === 'hi' ? "/hi/services" : "/services"} className={({isActive}) => isActive ? styles.active : undefined}>{t.services}</NavLink>
+            <NavLink to={lang === 'hi' ? "/hi/language-settings" : "/language-settings"} className={({isActive}) => isActive ? styles.active : undefined}>
+              {t.languages}
             </NavLink>
           </nav>
           <div className={styles.authButtons}>
@@ -231,11 +237,11 @@ const Header = () => {
                 </button>
                 {isWorkerDropdownOpen && (
                   <div className={styles.workerDropdown}>
-                    <Link to="/worker-login" className={styles.workerDropdownItem}>
-                      Worker Login
+                    <Link to={lang === 'hi' ? "/hi/worker-login" : "/worker-login"} className={styles.workerDropdownItem}>
+                      {t.workerLogin}
                     </Link>
                     <Link to="/worker-registration" className={styles.workerDropdownItem}>
-                      Become a Worker
+                      {t.becomeWorker}
                     </Link>
                   </div>
                 )}
@@ -300,24 +306,24 @@ const Header = () => {
                     <div className={styles.userDropdown}>
                       <Link to="/profile" className={styles.profileLink}>
                         <FaUser size={14} style={{ marginRight: '8px' }} />
-                        My Profile
+                        {t.profile}
                       </Link>
                       <Link to="/bookings" className={styles.profileLink}>
                         <FaHistory size={14} style={{ marginRight: '8px' }} />
-                        My Bookings
+                        {t.myBookings}
                       </Link>
                       <Link to="/notifications" className={styles.profileLink}>
                         <FaBell size={14} style={{ marginRight: '8px' }} />
-                        Notifications
+                        {t.notifications}
                         <div className={styles.notificationDot}></div>
                       </Link>
                       <Link to="/settings" className={styles.profileLink}>
                         <FaCog size={14} style={{ marginRight: '8px' }} />
-                        Settings
+                        {t.settings}
                       </Link>
                       <button className={styles.logoutButton} onClick={initiateLogout}>
                         <FaSignOutAlt size={14} />
-                        Logout
+                        {t.logout}
                       </button>
                     </div>
                   )}
@@ -325,11 +331,11 @@ const Header = () => {
               </div>
             ) : (
               <>
-                <Link to="/login">
-                  <button className={styles.login}>Log in</button>
+                <Link to={lang === 'hi' ? "/hi/login" : "/login"}>
+                  <button className={styles.login}>{t.login}</button>
                 </Link>
-                <Link to="/signup">
-                  <button className={styles.signup}>Sign up</button>
+                <Link to={lang === 'hi' ? "/hi/signup" : "/signup"}>
+                  <button className={styles.signup}>{t.signup}</button>
                 </Link>
                 <div 
                   className={styles.taskerContainer}
@@ -340,7 +346,7 @@ const Header = () => {
                   data-language={currentLanguage}
                 >
                   <button className={styles.becomeTasker}>
-                    Become a Tasker
+                    {t.becomeWorker}
                   </button>
                   <AnimatePresence>
                     {isTaskerDropdownOpen && <TaskerDropdown isVisible={true} />}
@@ -358,18 +364,18 @@ const Header = () => {
             <div className={styles.mobileMenu}>
               <div className={styles.mobileNavLinks}>
                 <NavLink 
-                  to="/services" 
+                  to={lang === 'hi' ? "/hi/services" : "/services"} 
                   className={({isActive}) => isActive ? styles.active : undefined}
                   onClick={closeMobileMenu}
                 >
-                  Services
+                  {t.services}
                 </NavLink>
                 <NavLink 
-                  to="/language-settings" 
+                  to={lang === 'hi' ? "/hi/language-settings" : "/language-settings"} 
                   className={({isActive}) => isActive ? styles.active : undefined}
                   onClick={closeMobileMenu}
                 >
-                  Languages
+                  {t.languages}
                 </NavLink>
               </div>
               
@@ -389,7 +395,7 @@ const Header = () => {
                         // Handle become tasker action
                       }}
                     >
-                      Become a Tasker
+                      {t.becomeWorker}
                     </button>
                   </div>
                 </div>
@@ -400,14 +406,14 @@ const Header = () => {
       </div>
 
       {/* Logout Confirmation Modal */}
-      <PortalModal
+      <ConfirmationModal
         isOpen={showLogoutConfirmation}
         onClose={() => setShowLogoutConfirmation(false)}
         onConfirm={handleLogout}
-        title="Confirm Logout"
-        message="Are you sure you want to log out? You will be logged out from your account."
-        confirmText="Yes, log out"
-        cancelText="Stay logged in"
+        title={t.confirmLogout}
+        message={t.logoutMessage}
+        confirmText={t.yesLogout}
+        cancelText={t.stayLoggedIn}
       />
 
       {/* Empty Cart Message */}

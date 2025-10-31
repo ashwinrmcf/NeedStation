@@ -7,8 +7,12 @@ import { FaLocationDot } from "react-icons/fa6";
 import { IoMdMail } from "react-icons/io";
 import { IoCall } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { footerTranslations } from "../../translations/headerFooter";
 
 const Footer = () => {
+  const lang = useLanguage();
+  const t = footerTranslations[lang] || footerTranslations.en;
   return (
     <>
       <footer className={`${styles["footer"]}`}>
@@ -18,25 +22,25 @@ const Footer = () => {
               Need<span>Station</span>
             </h2> </Link>
             <p className={`${styles["payment-tagline"]}`}>
-              Connecting Helpers and Clients for a Better Community
+              {lang === 'hi' ? 'बेहतर समुदाय के लिए सहायकों और ग्राहकों को जोड़ना' : 'Connecting Helpers and Clients for a Better Community'}
             </p>
           </div>
 
           <div className={`${styles["FirstBreakPoint"]}`}>
             <div className={`${styles["footer-links"]}`}>
-              <h3>Useful Links</h3>
+              <h3>{t.quickLinks}</h3>
               <ul>
-                <li><Link to="/about-us">About Us</Link></li>
-                <li><Link to="/contact-us">Contact Us</Link></li>
-                <li><Link to="/how-it-works">How it Works</Link></li>
-                <li><Link to="/faq">FAQ</Link></li>
-                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-                <li><Link to="/terms-and-services">Terms & Services</Link></li>
+                <li><Link to={lang === 'hi' ? "/hi/about-us" : "/about-us"}>{t.aboutUs}</Link></li>
+                <li><Link to={lang === 'hi' ? "/hi/contact-us" : "/contact-us"}>{t.contactUs}</Link></li>
+                <li><Link to={lang === 'hi' ? "/hi/how-it-works" : "/how-it-works"}>{t.howItWorks}</Link></li>
+                <li><Link to={lang === 'hi' ? "/hi/faq" : "/faq"}>{t.faq}</Link></li>
+                <li><Link to={lang === 'hi' ? "/hi/privacy-policy" : "/privacy-policy"}>{t.privacyPolicy}</Link></li>
+                <li><Link to={lang === 'hi' ? "/hi/terms-and-services" : "/terms-and-services"}>{t.termsAndServices}</Link></li>
               </ul>
             </div>
 
             <div className={`${styles["footer-contact"]}`}>
-              <h3>Contact</h3>
+              <h3>{lang === 'hi' ? 'संपर्क' : 'Contact'}</h3>
               <p>
                  <IoCall /> <span> +91 8357028350</span> 
               </p>
@@ -53,7 +57,7 @@ const Footer = () => {
 
         <div className={`${styles["footer-bottom"]}`}>
           <p className={`${styles["copyright"]}`}>
-            © Copyright All Rights Reserved.
+            © {lang === 'hi' ? 'कॉपीराइट' : 'Copyright'} {t.allRightsReserved}.
           </p>
           <div className={`${styles["social-media"]}`}>
             <a href="https://www.instagram.com/needstation.in?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">

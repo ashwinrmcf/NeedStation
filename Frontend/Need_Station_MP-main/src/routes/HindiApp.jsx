@@ -1,65 +1,35 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import './App.css';
-import '../styles/CommonSpacing.css';
-import '../styles/LanguageStyles.css';
+import { Outlet, useLocation } from 'react-router-dom';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
+import ScrollToTop from '../hooks/ScrollToTop';
+import { ToastContainer } from 'react-toastify';
+import NeedBot from '../components/NeedBot';
+import { BookingModalProvider } from '../components/BookingModal/BookingModalProvider';
+import { CartProvider } from '../store/CartContext';
+import MobileBackButton from '../components/MobileBackButton/MobileBackButton';
+import { LanguageProvider } from '../contexts/LanguageContext';
 
-import { Outlet, useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import HindiHeader from "../components/Hindi/HindiHeader.jsx";
-import HindiFooter from "../components/Hindi/HindiFooter.jsx";
-import ScrollToTop from "../hooks/ScrollToTop.jsx";
-import { ToastContainer } from "react-toastify";
-import NeedBot from "../components/NeedBot.jsx";
-
-// HindiApp is a wrapper that uses dedicated Hindi components
-function HindiApp() {
+export default function HindiApp() {
   const location = useLocation();
-
-  // Set HTML lang attribute to Hindi
-  useEffect(() => {
-    // Set language attribute
-    document.documentElement.lang = 'hi';
-    
-    // Use Noto Sans Devanagari font for Hindi
-    const fontLink = document.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap';
-    document.head.appendChild(fontLink);
-    
-    // Store the selected language for persistence
-    localStorage.setItem('needstation-language', 'hi');
-    
-    return () => {
-      // Clean up when unmounting
-      if (fontLink.parentNode) {
-        fontLink.parentNode.removeChild(fontLink);
-      }
-    };
-  }, []);
-
+  
+  // Hide header/footer for login and signup pages
+  const hideHeaderFooter = location.pathname === '/hi/login' || 
+                           location.pathname === '/hi/signup' ||
+                           location.pathname === '/hi/worker-login';
+  
   return (
-    <>
-      <ScrollToTop />
-      <HindiHeader />
-      <main>
-        <Outlet />
-      </main>
-      <HindiFooter />
-      <NeedBot />
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-    </>
+    <LanguageProvider language="hi">
+      <CartProvider>
+        <BookingModalProvider>
+          <ScrollToTop />
+          {!hideHeaderFooter && <Header />}
+          {!hideHeaderFooter && <MobileBackButton />}
+          <Outlet />
+          {!hideHeaderFooter && <Footer />}
+          {!hideHeaderFooter && <NeedBot />}
+          <ToastContainer />
+        </BookingModalProvider>
+      </CartProvider>
+    </LanguageProvider>
   );
 }
-
-export default HindiApp;

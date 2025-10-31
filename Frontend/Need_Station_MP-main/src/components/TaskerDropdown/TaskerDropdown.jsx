@@ -4,8 +4,12 @@ import { motion } from 'framer-motion';
 import { UserCircle2, LogIn, UserPlus, Briefcase } from 'lucide-react';
 import styles from './TaskerDropdown.module.css';
 import './force-dropdown.css'; // Import special styling for Hindi dropdown fix
+import { useLanguage } from '../../contexts/LanguageContext';
+import { headerTranslations } from '../../translations/headerFooter';
 
 const TaskerDropdown = ({ isVisible }) => {
+  const lang = useLanguage();
+  const t = headerTranslations[lang] || headerTranslations.en;
   // Animation variants
   const dropdownVariants = {
     hidden: { 
@@ -58,29 +62,29 @@ const TaskerDropdown = ({ isVisible }) => {
       <motion.div className={styles.dropdownContent}>
         <motion.div variants={itemVariants} className={styles.dropdownHeader}>
           <Briefcase size={20} />
-          <span>Helper Portal</span>
+          <span>{t.helperPortal}</span>
         </motion.div>
         
         <div className={styles.dropdownDivider}></div>
         
         <motion.div variants={itemVariants}>
-          <Link to="/worker-login" className={styles.dropdownItem}>
+          <Link to={lang === 'hi' ? "/hi/worker-login" : "/worker-login"} className={styles.dropdownItem}>
             <LogIn size={18} />
-            <span>Login as Helper</span>
+            <span>{t.loginAsHelper}</span>
           </Link>
         </motion.div>
         
         <motion.div variants={itemVariants}>
           <Link to="/worker-registration" state={{ fromHeader: true }} className={styles.dropdownItem}>
             <UserPlus size={18} />
-            <span>Register as Helper</span>
+            <span>{t.registerAsHelper}</span>
           </Link>
         </motion.div>
         
         <motion.div variants={itemVariants}>
           <Link to="/why-become-helper" className={`${styles.dropdownItem} ${styles.highlighted}`}>
             <UserCircle2 size={18} />
-            <span>Why become a Helper?</span>
+            <span>{t.whyBecomeHelper}</span>
           </Link>
         </motion.div>
       </motion.div>

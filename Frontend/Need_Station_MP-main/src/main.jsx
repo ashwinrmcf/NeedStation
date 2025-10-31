@@ -1,7 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./routes/App.jsx";
-import HindiApp from "./routes/HindiApp.jsx";
 import { AuthProvider } from "./store/AuthContext.jsx";
 import AuthLoader from "./components/AuthLoader.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
@@ -81,17 +80,17 @@ import Profile from "./pages/Profile/Profile.jsx";
 import MyBookings from "./pages/Bookings/MyBookings.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
 
-// Hindi components
-import HindiHome from "./pages/Hindi/Home.jsx";
-import HindiAboutUs from "./pages/Hindi/AboutUs.jsx";
-import HindiLogin from "./pages/Hindi/Login.jsx";
-import HindiSignup from "./pages/Hindi/Signup.jsx";
-import HindiWorkerLogin from "./pages/Hindi/WorkerLogin.jsx";
-import HindiContactUs from "./pages/Hindi/ContactUs.jsx";
-import HindiHowItWorks from "./pages/Hindi/HowItWorks.jsx";
-import HindiFAQ from "./pages/Hindi/FAQ.jsx";
-import HindiPrivacyPolicy from "./pages/Hindi/PrivacyPolicy.jsx";
-import HindiTermsAndServices from "./pages/Hindi/TermsAndServices.jsx";
+// Hindi Pages
+import HindiApp from "./routes/HindiApp.jsx";
+import HindiHome from "./pages/Hindi/HomePage/Home.jsx";
+import HindiServices from "./pages/Hindi/Services/Services.jsx";
+import HindiAboutUs from "./pages/Hindi/AboutUs/AboutUs.jsx";
+import HindiContactUs from "./pages/Hindi/ContactUs/ContactUs.jsx";
+import HindiHowItWorks from "./pages/Hindi/HowItWorks/HowItWorks.jsx";
+import HindiFAQ from "./pages/Hindi/FAQ/FAQ.jsx";
+import HindiLogin from "./pages/Hindi/LoginPage/Login.jsx";
+import HindiSignup from "./pages/Hindi/SignupPage/Signup.jsx";
+import HindiWorkerLogin from "./pages/Hindi/WorkerLogin/WorkerLogin.jsx";
 
 
 const router = createBrowserRouter([
@@ -222,27 +221,26 @@ const router = createBrowserRouter([
     ],
   },
 
-  // Hindi routes under /hi path
+  // Hindi routes
   {
-    path: "hi",
+    path: "/hi",
     element: <HindiApp />,
     children: [
       { path: "", element: <HindiHome /> },
+      { path: "services", element: <HindiServices /> },
       { path: "language-settings", element: <TranslationCenter /> },
+      { path: "login", element: <HindiLogin /> },
+      { path: "signup", element: <HindiSignup /> },
+      { path: "worker-login", element: <HindiWorkerLogin /> },
       { path: "about-us", element: <HindiAboutUs /> },
       { path: "contact-us", element: <HindiContactUs /> },
       { path: "how-it-works", element: <HindiHowItWorks /> },
       { path: "faq", element: <HindiFAQ /> },
-      { path: "privacy-policy", element: <HindiPrivacyPolicy /> },
-      { path: "terms-and-services", element: <HindiTermsAndServices /> },
+      { path: "privacy-policy", element: <PrivacyPolicy /> },
+      { path: "terms-and-services", element: <TermsAndServices /> },
     ],
   },
 
-  // Standalone Hindi auth pages (without header/footer)
-  { path: "/hi/login", element: <HindiLogin /> },
-  { path: "/hi/signup", element: <HindiSignup /> },
-  { path: "/hi/worker-login", element: <HindiWorkerLogin /> },
-  
 ]);
 
 createRoot(document.getElementById("root")).render(

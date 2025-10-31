@@ -183,17 +183,17 @@ const UpcomingTaskPage = () => {
 	];
 
 	const statusConfig = {
-		'PENDING_WORKER_ASSIGNMENT': { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
-		'CONFIRMED': { color: 'bg-yellow-600', icon: CheckCircle, label: 'Accepted' },
-		'ASSIGNED': { color: 'bg-yellow-600', icon: CheckCircle, label: 'Accepted' },
-		'IN_PROGRESS': { color: 'bg-orange-600', icon: Clock, label: 'In Progress' },
-		'COMPLETED': { color: 'bg-green-600', icon: CheckCircle, label: 'Completed' },
-		'CANCELLED': { color: 'bg-red-600', icon: XCircle, label: 'Cancelled' },
-		new: { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
-		accepted: { color: 'bg-yellow-600', icon: CheckCircle, label: 'Accepted' },
-		'in-progress': { color: 'bg-orange-600', icon: Clock, label: 'In Progress' },
-		completed: { color: 'bg-green-600', icon: CheckCircle, label: 'Completed' },
-		cancelled: { color: 'bg-red-600', icon: XCircle, label: 'Cancelled' }
+		'PENDING_WORKER_ASSIGNMENT': { color: 'bg-blue-600', icon: AlertCircle, label: t("newRequestShort") },
+		'CONFIRMED': { color: 'bg-yellow-600', icon: CheckCircle, label: t("acceptedShort") },
+		'ASSIGNED': { color: 'bg-yellow-600', icon: CheckCircle, label: t("acceptedShort") },
+		'IN_PROGRESS': { color: 'bg-orange-600', icon: Clock, label: t("inProgress") },
+		'COMPLETED': { color: 'bg-green-600', icon: CheckCircle, label: t("completed") },
+		'CANCELLED': { color: 'bg-red-600', icon: XCircle, label: t("cancelled") },
+		new: { color: 'bg-blue-600', icon: AlertCircle, label: t("newRequestShort") },
+		accepted: { color: 'bg-yellow-600', icon: CheckCircle, label: t("acceptedShort") },
+		'in-progress': { color: 'bg-orange-600', icon: Clock, label: t("inProgress") },
+		completed: { color: 'bg-green-600', icon: CheckCircle, label: t("completed") },
+		cancelled: { color: 'bg-red-600', icon: XCircle, label: t("cancelled") }
 	};
 
 	const filteredTasks = allTasks.filter(task => {
@@ -490,7 +490,7 @@ const UpcomingTaskPage = () => {
 		<div className='flex-1 flex flex-col h-full'>
 			{/* Header with language selector */}
 			<div className="flex items-center justify-between p-4 bg-gray-900 border-b border-gray-700">
-				<DashboardHeader title="All Tasks" />
+				<DashboardHeader title={t("allTasks")} />
 				<LanguageSelector />
 			</div>
 
@@ -524,7 +524,7 @@ const UpcomingTaskPage = () => {
 										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
 								}`}
 							>
-								{status === 'all' ? 'All Tasks' : statusConfig[status]?.label || status}
+								{status === 'all' ? t("allTasks") : statusConfig[status]?.label || status}
 							</button>
 						))}
 					</div>

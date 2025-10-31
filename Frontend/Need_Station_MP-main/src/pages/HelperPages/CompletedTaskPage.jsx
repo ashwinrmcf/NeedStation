@@ -68,7 +68,7 @@ const CompletedTaskPage = () => {
 		<div className='flex-1 flex flex-col h-full'>
 			{/* Header with language selector */}
 			<div className="flex items-center justify-between p-4 bg-gray-900 border-b border-gray-700">
-				<DashboardHeader title='Completed Tasks' />
+				<DashboardHeader title={t("completedTasks")} />
 				<LanguageSelector />
 			</div>
 

@@ -20,6 +20,7 @@ import { AdvancedImage } from '@cloudinary/react';
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import MobileBackButton from "../components/MobileBackButton/MobileBackButton.jsx";
+import { LanguageProvider } from "../contexts/LanguageContext.jsx";
 
 function App() {
   const location = useLocation();
@@ -322,20 +323,22 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <CartProvider>
-      <BookingModalProvider>
-        <ScrollToTop />
-        <Header />
-        <MobileBackButton />
-        <div className="container my-4">
-          <AdvancedImage cldImg={img} />
-        </div>
-        <Outlet />
-        <Footer />
-        <NeedBot />
-        <ToastContainer />
-      </BookingModalProvider>
-    </CartProvider>
+    <LanguageProvider language="en">
+      <CartProvider>
+        <BookingModalProvider>
+          <ScrollToTop />
+          <Header />
+          <MobileBackButton />
+          <div className="container my-4">
+            <AdvancedImage cldImg={img} />
+          </div>
+          <Outlet />
+          <Footer />
+          <NeedBot />
+          <ToastContainer />
+        </BookingModalProvider>
+      </CartProvider>
+    </LanguageProvider>
   );
 }
 

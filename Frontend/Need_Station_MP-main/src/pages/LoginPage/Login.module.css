@@ -28,12 +28,14 @@
 }
 
 .account-text {
-  width: 22.326vw;
+  max-width: 35vw;
   font-size: 1rem;
   font-weight: 500;
-  line-height: 2.925vh;
+  line-height: 1.5;
   color: #fff;
-  text-align: left;
+  text-align: right;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 /* Light mode - Account text */
@@ -261,7 +263,9 @@
   position: relative;
   display: flex;
   align-items: center;
-  width: 35vw;
+  width: 100%;
+  max-width: 500px;
+  gap: 10px;
 }
 
 .input-verified {
@@ -277,8 +281,9 @@
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   cursor: pointer;
-  margin-left: 10px;
-  height: 5vh;
+  min-width: 120px;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: background-color 0.3s;
 }
 
@@ -548,5 +553,15 @@
 
   .g_id_signin iframe {
     width: 100% !important;
+  }
+
+  .account-text {
+    max-width: 50vw;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .header-container {
+    padding: 1vh 2vw;
   }
 }

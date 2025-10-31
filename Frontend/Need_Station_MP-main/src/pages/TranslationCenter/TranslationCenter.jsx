@@ -130,10 +130,12 @@ export default function TranslationCenter() {
       // Set the HTML lang attribute for proper language styling
       document.documentElement.lang = langCode;
       
-      // For Hindi, use the dedicated Hindi frontend (more reliable)
+      // For Hindi, redirect to dedicated Hindi pages
       if (langCode === 'hi') {
-        // Redirect to Hindi version of the site
-        window.location.href = '/hi';
+        setTranslating(true);
+        setTimeout(() => {
+          window.location.href = '/hi';
+        }, 500);
         return;
       }
       

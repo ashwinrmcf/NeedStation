@@ -129,7 +129,6 @@ const NeedBot = () => {
   // Language mapping
   const languages = {
     'english': 'en',
-    'hindi': 'hi', 
     'tamil': 'ta',
     'bengali': 'bn',
     'malayalam': 'ml',
@@ -174,15 +173,7 @@ const NeedBot = () => {
       document.documentElement.lang = langCode;
       setCurrentLanguage(langCode);
       
-      if (langCode === 'hi') {
-        setMessages(prev => [...prev, { 
-          text: "Switching to Hindi version...", 
-          sender: 'bot'
-        }]);
-        setTimeout(() => {
-          window.location.href = '/hi';
-        }, 1500);
-      } else if (langCode === 'en') {
+      if (langCode === 'en') {
         setMessages(prev => [...prev, { 
           text: "Switching to English...", 
           sender: 'bot'
@@ -211,13 +202,11 @@ const NeedBot = () => {
   const getLanguageName = (code) => {
     const languageNames = {
       'en': 'English',
-      'hi': 'Hindi',
       'ta': 'Tamil',
       'bn': 'Bengali',
       'ml': 'Malayalam',
       'te': 'Telugu',
-      'kn': 'Kannada',
-      'gu': 'Gujarati'
+      'kn': 'Kannada'
     };
     return languageNames[code] || code;
   };
