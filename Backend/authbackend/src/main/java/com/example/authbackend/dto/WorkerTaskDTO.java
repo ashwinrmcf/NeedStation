@@ -37,4 +37,15 @@ public class WorkerTaskDTO {
     private LocalDateTime scheduledAt;
     private LocalDateTime completedAt;
     private LocalDateTime createdAt;
+    
+    // Step 2 formality data (JSON)
+    private String formalityDataJson;
+    private String paymentStatus;
+    private String userEmail;
+    private String userName;
+    private BigDecimal quotationAmount;
+    
+    // Location coordinates for map
+    private BigDecimal locationLat;
+    private BigDecimal locationLng;
 }

@@ -14,88 +14,83 @@ const MyBookings = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock booking data - replace with API call
-  const [bookings] = useState([
-    {
-      id: 'BK001',
-      serviceName: 'Elder Care - Companion Care',
-      serviceType: 'elder-care',
-      providerName: 'Priya Sharma',
-      providerImage: null,
-      providerRating: 4.8,
-      bookingDate: '2024-01-15',
-      serviceDate: '2024-01-20',
-      serviceTime: '09:00 AM - 05:00 PM',
-      duration: '8 hours',
-      status: 'completed',
-      amount: 1200,
-      address: '123 MG Road, Bangalore, Karnataka 560001',
-      phone: '+91 98765 43210',
-      specialInstructions: 'Patient has mild dementia, needs gentle care',
-      rating: 5,
-      review: 'Excellent service, very caring and professional',
-      canRebook: true,
-      canCancel: false
-    },
-    {
-      id: 'BK002',
-      serviceName: 'Nursing Care - General Nursing',
-      serviceType: 'nursing-care',
-      providerName: 'Dr. Rajesh Kumar',
-      providerImage: null,
-      providerRating: 4.9,
-      bookingDate: '2024-01-18',
-      serviceDate: '2024-01-25',
-      serviceTime: '10:00 AM - 02:00 PM',
-      duration: '4 hours',
-      status: 'confirmed',
-      amount: 800,
-      address: '456 Brigade Road, Bangalore, Karnataka 560025',
-      phone: '+91 87654 32109',
-      specialInstructions: 'Post-surgery wound care required',
-      canRebook: false,
-      canCancel: true
-    },
-    {
-      id: 'BK003',
-      serviceName: 'Physiotherapy - Orthopedic',
-      serviceType: 'physiotherapy',
-      providerName: 'Anita Desai',
-      providerImage: null,
-      providerRating: 4.7,
-      bookingDate: '2024-01-20',
-      serviceDate: '2024-01-28',
-      serviceTime: '06:00 PM - 07:00 PM',
-      duration: '1 hour',
-      status: 'pending',
-      amount: 600,
-      address: '789 Koramangala, Bangalore, Karnataka 560034',
-      phone: '+91 76543 21098',
-      specialInstructions: 'Knee replacement recovery therapy',
-      canRebook: false,
-      canCancel: true
-    },
-    {
-      id: 'BK004',
-      serviceName: 'Diabetes Management - Type 2',
-      serviceType: 'diabetes-care',
-      providerName: 'Nurse Meera',
-      providerImage: null,
-      providerRating: 4.6,
-      bookingDate: '2024-01-10',
-      serviceDate: '2024-01-15',
-      serviceTime: '08:00 AM - 09:00 AM',
-      duration: '1 hour',
-      status: 'cancelled',
-      amount: 400,
-      address: '321 Indiranagar, Bangalore, Karnataka 560038',
-      phone: '+91 65432 10987',
-      specialInstructions: 'Blood sugar monitoring and medication',
-      canRebook: true,
-      canCancel: false
-    }
-  ]);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
+  // Fetch paid bookings from backend
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const userId = user.id || user.userId || user.user_id;
+        
+        const response = await fetch(`${API_URL}/bookings/user/${userId}`);
+        const data = await response.json();
+        
+        if (data.success && data.bookings) {
+          // Filter only paid bookings (PAYMENT_COMPLETED status)
+          const paidBookings = data.bookings.filter(booking => 
+            booking.paymentStatus === 'PAID' || booking.status === 'PAYMENT_COMPLETED'
+          );
+          
+          // Transform backend data to match frontend format
+          const transformedBookings = paidBookings.map(booking => ({
+            id: booking.bookingNumber,
+            serviceName: booking.serviceName,
+            serviceType: booking.serviceCategory?.toLowerCase().replace(/\s+/g, '-'),
+            providerName: booking.assignedWorkerName || 'Not Assigned',
+            providerImage: null,
+            providerRating: 4.5,
+            bookingDate: new Date(booking.createdAt).toLocaleDateString('en-GB'),
+            serviceDate: booking.preferredDate,
+            serviceTime: booking.preferredTime || booking.preferredTimeSlot,
+            duration: '4 hours',
+            status: mapStatus(booking.status),
+            amount: booking.quotationAmount || booking.totalAmount,
+            address: booking.fullAddress,
+            phone: booking.phone,
+            specialInstructions: booking.specialInstructions || '',
+            rating: booking.customerRating,
+            review: booking.customerFeedback,
+            canRebook: booking.status === 'COMPLETED',
+            canCancel: false, // Can't cancel paid bookings
+            workerPhone: booking.workerPhone,
+            bookingId: booking.id
+          }));
+          
+          setBookings(transformedBookings);
+        }
+        
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching bookings:', err);
+        setError('Failed to load bookings');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [user]);
+
+  // Map backend status to frontend status
+  const mapStatus = (backendStatus) => {
+    const statusMap = {
+      'PAYMENT_COMPLETED': 'confirmed',
+      'IN_PROGRESS': 'confirmed',
+      'COMPLETED': 'completed',
+      'CANCELLED': 'cancelled'
+    };
+    return statusMap[backendStatus] || 'pending';
+  };
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -215,11 +210,23 @@ const MyBookings = () => {
 
       {/* Bookings List */}
       <div className={styles.bookingsList}>
-        {filteredBookings.length === 0 ? (
+        {loading ? (
+          <div className={styles.emptyState}>
+            <div className={styles.loader}></div>
+            <h3>Loading your bookings...</h3>
+            <p>Please wait while we fetch your booking history</p>
+          </div>
+        ) : error ? (
+          <div className={styles.emptyState}>
+            <FaExclamationTriangle size={48} className={styles.emptyIcon} style={{color: '#ef4444'}} />
+            <h3>Error loading bookings</h3>
+            <p>{error}</p>
+          </div>
+        ) : filteredBookings.length === 0 ? (
           <div className={styles.emptyState}>
             <FaCalendarAlt size={48} className={styles.emptyIcon} />
-            <h3>No bookings found</h3>
-            <p>You haven't made any bookings yet or no bookings match your search.</p>
+            <h3>No paid bookings found</h3>
+            <p>Complete a payment to see your bookings here. Unpaid bookings are shown in the Cart page.</p>
           </div>
         ) : (
           filteredBookings.map(booking => (

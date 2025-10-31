@@ -12,4 +12,14 @@ public class PaymentVerificationRequest {
     private Long userId;
     private List<Map<String, Object>> cartItems;
     private Integer amount;
+    
+    // Payment breakdown
+    private Integer subtotal;
+    private Integer platformFee;
+    private Integer gst;
+    private Integer discountAmount;
+    private String promoCode;
+    
+    // Accepted quotations (booking IDs)
+    private List<Long> acceptedQuotations;
 }

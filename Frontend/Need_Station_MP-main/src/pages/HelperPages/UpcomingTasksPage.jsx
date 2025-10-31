@@ -1,15 +1,16 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { 
   Clock, CheckCircle, XCircle, AlertCircle, 
   Filter, Search, Calendar, MapPin, Phone, Mail,
-  Star, MessageCircle, Receipt, Eye, Download, Loader2
+  Star, MessageCircle, Receipt, Eye, Download, Loader2, User, X, Home
 } from "lucide-react";
 
 import DashboardHeader from "../../components/common/DashboardHeader";
 import LanguageSelector from "../../components/common/LanguageSelector";
+import CustomerDetailsModal from "../../components/WorkerDashboard/CustomerDetailsModal";
 
 const UpcomingTaskPage = () => {
 	const { t } = useTranslation();
@@ -18,6 +19,7 @@ const UpcomingTaskPage = () => {
 	const [allTasks, setAllTasks] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
 	
 	const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 	
@@ -56,6 +58,16 @@ const UpcomingTaskPage = () => {
 		};
 		
 		fetchTasks();
+	}, []);
+	
+	// Auto-refresh every minute to update decline button visibility
+	useEffect(() => {
+		const interval = setInterval(() => {
+			// Force re-render to update button visibility
+			setAllTasks(prevTasks => [...prevTasks]);
+		}, 60000); // Refresh every 60 seconds
+		
+		return () => clearInterval(interval);
 	}, []);
 	
 	// Sample fallback data structure (not used anymore)
@@ -172,20 +184,30 @@ const UpcomingTaskPage = () => {
 
 	const statusConfig = {
 		'PENDING_WORKER_ASSIGNMENT': { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
-		'CONFIRMED': { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
-		'ASSIGNED': { color: 'bg-yellow-600', icon: Clock, label: 'Accepted' },
+		'CONFIRMED': { color: 'bg-yellow-600', icon: CheckCircle, label: 'Accepted' },
+		'ASSIGNED': { color: 'bg-yellow-600', icon: CheckCircle, label: 'Accepted' },
 		'IN_PROGRESS': { color: 'bg-orange-600', icon: Clock, label: 'In Progress' },
 		'COMPLETED': { color: 'bg-green-600', icon: CheckCircle, label: 'Completed' },
 		'CANCELLED': { color: 'bg-red-600', icon: XCircle, label: 'Cancelled' },
 		new: { color: 'bg-blue-600', icon: AlertCircle, label: 'New Request' },
-		accepted: { color: 'bg-yellow-600', icon: Clock, label: 'Accepted' },
+		accepted: { color: 'bg-yellow-600', icon: CheckCircle, label: 'Accepted' },
 		'in-progress': { color: 'bg-orange-600', icon: Clock, label: 'In Progress' },
 		completed: { color: 'bg-green-600', icon: CheckCircle, label: 'Completed' },
 		cancelled: { color: 'bg-red-600', icon: XCircle, label: 'Cancelled' }
 	};
 
 	const filteredTasks = allTasks.filter(task => {
-		const matchesFilter = activeFilter === 'all' || task.status === activeFilter;
+		let matchesFilter = false;
+		
+		if (activeFilter === 'all') {
+			matchesFilter = true;
+		} else if (activeFilter === 'ASSIGNED') {
+			// "Accepted" tab should show both ASSIGNED and CONFIRMED statuses
+			matchesFilter = task.status === 'ASSIGNED' || task.status === 'CONFIRMED';
+		} else {
+			matchesFilter = task.status === activeFilter;
+		}
+		
 		const matchesSearch = (task.customerName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
 							 (task.serviceName || '').toLowerCase().includes(searchTerm.toLowerCase());
 		return matchesFilter && matchesSearch;
@@ -205,6 +227,17 @@ const UpcomingTaskPage = () => {
 		}
 	};
 	
+	// Check if 15 minutes have passed since task was assigned
+	const canDeclineTask = (task) => {
+		if (!task.createdAt && !task.updatedAt) return true; // If no timestamp, allow decline
+		
+		const assignedTime = new Date(task.updatedAt || task.createdAt);
+		const currentTime = new Date();
+		const diffInMinutes = (currentTime - assignedTime) / (1000 * 60);
+		
+		return diffInMinutes <= 15;
+	};
+
 	const handleDeclineTask = async (taskId) => {
 		try {
 			const workerId = localStorage.getItem('workerId');
@@ -384,7 +417,18 @@ const UpcomingTaskPage = () => {
 
 				<div className="flex justify-between items-center">
 					<span className="text-green-400 font-semibold text-lg">₹{task.totalAmount}</span>
-					<div className="flex gap-2">
+					<div className="flex gap-2 flex-wrap">
+						{/* View Customer Details button - show for paid bookings */}
+						{(task.paymentStatus === 'PAID' || task.status === 'PAYMENT_COMPLETED') && (
+							<button 
+								onClick={() => setSelectedTaskDetails(task)}
+								className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+							>
+								<User size={16} />
+								Customer Details
+							</button>
+						)}
+						
 						{task.status === 'PENDING_WORKER_ASSIGNMENT' && (
 							<>
 								<button 
@@ -396,20 +440,23 @@ const UpcomingTaskPage = () => {
 								</button>
 							</>
 						)}
-						{task.status === 'ASSIGNED' && (
+						{(task.status === 'ASSIGNED' || task.status === 'CONFIRMED') && (
 							<>
+								{task.status === 'ASSIGNED' && canDeclineTask(task) && (
+									<button 
+										onClick={() => handleDeclineTask(task.id)}
+										className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+									>
+										<XCircle size={16} />
+										Decline (15 min)
+									</button>
+								)}
 								<button 
-									onClick={() => handleDeclineTask(task.id)}
-									className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm"
+									disabled
+									className="bg-gray-500 text-white px-4 py-2 rounded-lg cursor-not-allowed flex items-center gap-2"
 								>
-									<XCircle size={16} />
-									Decline (15 min)
-								</button>
-								<button 
-									onClick={() => handleCompleteTask(task.id)}
-									className="bg-[#00E0B8] hover:bg-[#00C4A0] text-gray-900 px-4 py-2 rounded-lg transition-colors"
-								>
-									Start Task
+									<Clock size={16} />
+									Waiting for User Confirmation
 								</button>
 							</>
 						)}
@@ -508,7 +555,18 @@ const UpcomingTaskPage = () => {
 					</div>
 				)}
 			</main>
+			
+			{/* Customer Details Modal */}
+			<AnimatePresence>
+				{selectedTaskDetails && (
+					<CustomerDetailsModal 
+						task={selectedTaskDetails} 
+						onClose={() => setSelectedTaskDetails(null)} 
+					/>
+				)}
+			</AnimatePresence>
 		</div>
 	);
 };
+
 export default UpcomingTaskPage;

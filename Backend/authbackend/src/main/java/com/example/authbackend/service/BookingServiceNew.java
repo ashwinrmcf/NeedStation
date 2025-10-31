@@ -406,6 +406,12 @@ public class BookingServiceNew {
         dto.setCustomerRating(booking.getCustomerRating());
         dto.setCustomerFeedback(booking.getCustomerFeedback());
         
+        // Quotation fields
+        dto.setQuotationAmount(booking.getQuotationAmount());
+        dto.setQuotationDetails(booking.getQuotationDetails());
+        dto.setQuotationProvidedAt(booking.getQuotationProvidedAt());
+        dto.setQuotationStatus(booking.getQuotationStatus());
+        
         // Parse subservices summary
         if (booking.getSubservicesSummary() != null) {
             try {
@@ -456,6 +462,7 @@ public class BookingServiceNew {
     
     /**
      * Delete a booking (permanent deletion from database)
+     * Only allowed if payment is not completed
      */
     @Transactional
     public void deleteBooking(Long bookingId) {
@@ -466,6 +473,13 @@ public class BookingServiceNew {
                 .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
         
         System.out.println("✅ Found booking: " + booking.getBookingNumber());
+        
+        // Prevent deletion if payment is completed
+        if ("PAYMENT_COMPLETED".equals(booking.getStatus()) || "PAID".equals(booking.getPaymentStatus())) {
+            throw new RuntimeException("Cannot cancel booking - payment has been completed");
+        }
+        
+        System.out.println("✅ Payment not completed, proceeding with deletion");
         
         // Delete related records first (to avoid foreign key constraints)
         // 1. Delete sub-services

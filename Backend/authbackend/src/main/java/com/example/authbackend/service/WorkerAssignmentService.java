@@ -182,7 +182,7 @@ public class WorkerAssignmentService {
         // Assign worker
         booking.setAssignedWorkerId(workerId);
         booking.setAssignedWorkerName(worker.getFullName());
-        booking.setStatus("ASSIGNED");
+        booking.setStatus("CONFIRMED");
         booking.setScheduledAt(LocalDateTime.now());
         
         bookingRepository.save(booking);

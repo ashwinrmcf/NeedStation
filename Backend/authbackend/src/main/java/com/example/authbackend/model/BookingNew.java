@@ -110,6 +110,19 @@ public class BookingNew {
     @Column(name = "total_amount", precision = 10, scale = 2, nullable = false)
     private BigDecimal totalAmount;
     
+    // Quotation
+    @Column(name = "quotation_amount", precision = 10, scale = 2)
+    private BigDecimal quotationAmount;
+    
+    @Column(name = "quotation_details", columnDefinition = "TEXT")
+    private String quotationDetails;
+    
+    @Column(name = "quotation_provided_at")
+    private LocalDateTime quotationProvidedAt;
+    
+    @Column(name = "quotation_status", length = 50)
+    private String quotationStatus; // PENDING, PROVIDED, ACCEPTED, REJECTED
+    
     // Payment
     @Column(name = "payment_status", length = 50)
     private String paymentStatus = "PENDING"; // PENDING, PAID, REFUNDED

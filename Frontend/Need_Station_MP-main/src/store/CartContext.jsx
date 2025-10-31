@@ -118,9 +118,9 @@ export const CartProvider = ({ children }) => {
         const response = await axios.get(`${API_URL}/bookings/user/${userId}`);
         if (response.data.success) {
           const bookings = response.data.bookings || [];
-          // Count bookings that are pending or in progress
+          // Count bookings that are unpaid (all statuses except COMPLETED, CANCELLED, PAYMENT_COMPLETED)
           const pendingCount = bookings.filter(b => 
-            ['PENDING_WORKER_ASSIGNMENT', 'CONFIRMED', 'QUOTATION_PROVIDED', 'PAYMENT_PENDING'].includes(b.status)
+            !['COMPLETED', 'CANCELLED', 'PAYMENT_COMPLETED'].includes(b.status)
           ).length;
           setPendingBookingsCount(pendingCount);
         }

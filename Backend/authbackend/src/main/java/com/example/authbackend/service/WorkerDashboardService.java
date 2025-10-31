@@ -267,7 +267,7 @@ public class WorkerDashboardService {
         
         // Get ALL assigned tasks (not just today's)
         List<BookingNew> assignedBookings = bookingRepository.findByAssignedWorkerId(workerId).stream()
-                .filter(b -> "ASSIGNED".equals(b.getStatus()) || "IN_PROGRESS".equals(b.getStatus()))
+                .filter(b -> "ASSIGNED".equals(b.getStatus()) || "CONFIRMED".equals(b.getStatus()) || "IN_PROGRESS".equals(b.getStatus()))
                 .collect(Collectors.toList());
         
         // Get ALL available bookings that match worker's services
@@ -430,6 +430,22 @@ public class WorkerDashboardService {
         booking.setAssignedWorkerName(worker.getFullName());
         booking.setStatus("ASSIGNED");
         booking.setScheduledAt(LocalDateTime.now());
+        
+        // Automatically set quotation from service base price
+        if (booking.getServiceId() != null) {
+            com.example.authbackend.model.Service service = serviceRepository.findById(booking.getServiceId())
+                    .orElse(null);
+            
+            if (service != null && service.getBasePrice() != null) {
+                booking.setQuotationAmount(service.getBasePrice());
+                booking.setQuotationDetails("Standard service quotation for " + service.getServiceName());
+                booking.setQuotationStatus("PROVIDED");
+                booking.setQuotationProvidedAt(LocalDateTime.now());
+                
+                System.out.println("✅ Auto-set quotation: ₹" + service.getBasePrice() + " from service base price");
+            }
+        }
+        
         bookingRepository.save(booking);
         
         System.out.println("✅ Worker " + workerId + " accepted booking " + bookingId);
@@ -522,6 +538,18 @@ public class WorkerDashboardService {
         dto.setScheduledAt(booking.getScheduledAt());
         dto.setCompletedAt(booking.getCompletedAt());
         dto.setCreatedAt(booking.getCreatedAt());
+        
+        // Add formality data and other missing fields
+        dto.setFormalityDataJson(booking.getFormalityDataJson());
+        dto.setPaymentStatus(booking.getPaymentStatus());
+        dto.setUserEmail(booking.getUserEmail());
+        dto.setUserName(booking.getUserName());
+        dto.setQuotationAmount(booking.getQuotationAmount());
+        
+        // Add location coordinates for map
+        dto.setLocationLat(booking.getLocationLat());
+        dto.setLocationLng(booking.getLocationLng());
+        
         return dto;
     }
 }

@@ -1,15 +1,24 @@
 package com.example.authbackend.service;
 
+import com.example.authbackend.model.Payment;
+import com.example.authbackend.model.BookingNew;
+import com.example.authbackend.repository.PaymentRepository;
+import com.example.authbackend.repository.BookingNewRepository;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +31,12 @@ public class PaymentService {
 
     @Value("${razorpay.key.secret:YOUR_KEY_SECRET}")
     private String razorpayKeySecret;
+    
+    @Autowired
+    private PaymentRepository paymentRepository;
+    
+    @Autowired
+    private BookingNewRepository bookingRepository;
 
     /**
      * Create Razorpay order
@@ -108,5 +123,116 @@ public class PaymentService {
         response.put("created_at", payment.get("created_at"));
         
         return response;
+    }
+    
+    /**
+     * Create payment record when Razorpay order is created
+     */
+    public Payment createPaymentRecord(Long bookingId, Long userId, BigDecimal subtotal, 
+                                      BigDecimal platformFee, BigDecimal gstAmount, 
+                                      BigDecimal discountAmount, String promoCode, 
+                                      BigDecimal totalAmount, String razorpayOrderId) {
+        Payment payment = new Payment();
+        
+        // Generate payment number
+        String paymentNumber = generatePaymentNumber();
+        payment.setPaymentNumber(paymentNumber);
+        
+        // Set booking and user
+        payment.setBookingId(bookingId);
+        payment.setUserId(userId);
+        
+        // Set amounts
+        payment.setSubtotal(subtotal);
+        payment.setPlatformFee(platformFee);
+        payment.setGstAmount(gstAmount);
+        payment.setDiscountAmount(discountAmount);
+        payment.setPromoCode(promoCode);
+        payment.setTotalAmount(totalAmount);
+        
+        // Set payment details
+        payment.setPaymentMethod("RAZORPAY");
+        payment.setPaymentGateway("RAZORPAY");
+        payment.setPaymentStatus("PENDING");
+        payment.setRazorpayOrderId(razorpayOrderId);
+        payment.setPaymentInitiatedAt(LocalDateTime.now());
+        
+        // Get booking details for denormalization
+        BookingNew booking = bookingRepository.findById(bookingId).orElse(null);
+        if (booking != null) {
+            payment.setCustomerName(booking.getUserName());
+            payment.setCustomerEmail(booking.getUserEmail());
+            payment.setCustomerPhone(booking.getPhone());
+            payment.setPaymentDescription("Payment for " + booking.getServiceName());
+        }
+        
+        return paymentRepository.save(payment);
+    }
+    
+    /**
+     * Update payment record on successful payment
+     */
+    public Payment updatePaymentOnSuccess(String razorpayOrderId, String razorpayPaymentId, 
+                                         String razorpaySignature) {
+        Payment payment = paymentRepository.findByRazorpayOrderId(razorpayOrderId)
+            .orElseThrow(() -> new RuntimeException("Payment not found for order: " + razorpayOrderId));
+        
+        payment.setPaymentStatus("COMPLETED");
+        payment.setRazorpayPaymentId(razorpayPaymentId);
+        payment.setRazorpaySignature(razorpaySignature);
+        payment.setTransactionId(razorpayPaymentId);
+        payment.setPaymentCompletedAt(LocalDateTime.now());
+        
+        Payment savedPayment = paymentRepository.save(payment);
+        
+        // Update booking status
+        if (payment.getBookingId() != null) {
+            BookingNew booking = bookingRepository.findById(payment.getBookingId()).orElse(null);
+            if (booking != null) {
+                booking.setPaymentStatus("PAID");
+                booking.setStatus("PAYMENT_COMPLETED");
+                booking.setTransactionId(razorpayPaymentId);
+                bookingRepository.save(booking);
+            }
+        }
+        
+        return savedPayment;
+    }
+    
+    /**
+     * Update payment record on failure
+     */
+    public Payment updatePaymentOnFailure(String razorpayOrderId, String failureReason) {
+        Payment payment = paymentRepository.findByRazorpayOrderId(razorpayOrderId)
+            .orElseThrow(() -> new RuntimeException("Payment not found for order: " + razorpayOrderId));
+        
+        payment.setPaymentStatus("FAILED");
+        payment.setFailureReason(failureReason);
+        payment.setPaymentFailedAt(LocalDateTime.now());
+        
+        return paymentRepository.save(payment);
+    }
+    
+    /**
+     * Generate unique payment number
+     */
+    private String generatePaymentNumber() {
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        Long count = paymentRepository.count() + 1;
+        return String.format("PAY-%s-%05d", date, count);
+    }
+    
+    /**
+     * Get payment by booking ID
+     */
+    public Payment getPaymentByBookingId(Long bookingId) {
+        return paymentRepository.findByBookingId(bookingId).orElse(null);
+    }
+    
+    /**
+     * Get all payments by user
+     */
+    public List<Payment> getPaymentsByUser(Long userId) {
+        return paymentRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 }

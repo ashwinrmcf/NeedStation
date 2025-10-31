@@ -51,10 +51,14 @@ const OverviewPage = () => {
 				setStats(statsResponse.data);
 				setTodaysTasks(tasksResponse.data);
 				
-				// Handle active booking
+				// Handle active booking - only show if payment is completed
 				if (activeBookingResponse.data.hasActiveBooking) {
-					setHasActiveBooking(true);
-					setActiveBooking(activeBookingResponse.data.booking);
+					const booking = activeBookingResponse.data.booking;
+					// Only show if payment status is PAID or PAYMENT_COMPLETED
+					if (booking.paymentStatus === 'PAID' || booking.status === 'PAYMENT_COMPLETED') {
+						setHasActiveBooking(true);
+						setActiveBooking(booking);
+					}
 				}
 				
 				setError(null);
@@ -202,7 +206,7 @@ const OverviewPage = () => {
 										</div>
 									</div>
 								)}
-								{task.status === 'ASSIGNED' && (
+								{(task.status === 'ASSIGNED' || task.status === 'CONFIRMED') && (
 									<div className='mt-3 flex items-center gap-2'>
 										<div className='bg-green-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1'>
 											<CheckCircle size={12} />

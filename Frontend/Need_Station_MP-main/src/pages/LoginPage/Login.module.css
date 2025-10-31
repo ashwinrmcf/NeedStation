@@ -328,8 +328,8 @@
 }
 
 [data-theme="light"] .otp-container {
-  background-color: #F8F9FA;
-  border: 2px solid #E0E0E0;
+  background-color: #FFF8E7;
+  border: 2px solid #F0E5C9;
 }
 
 .otp-instruction {
@@ -337,6 +337,10 @@
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
   text-align: left;
+}
+
+[data-theme="light"] .otp-instruction {
+  color: #4A4A4A;
 }
 
 .otp-input-group {

@@ -7,18 +7,21 @@ import styles from './BookingSuccess.module.css';
 const BookingSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { bookingId, amount, services } = location.state || {};
+  const { bookingId, bookingIds, amount, services, paymentDetails } = location.state || {};
 
   useEffect(() => {
     // Redirect if no booking data
-    if (!bookingId) {
+    if (!bookingId && !bookingIds) {
       navigate('/');
     }
-  }, [bookingId, navigate]);
+  }, [bookingId, bookingIds, navigate]);
 
-  if (!bookingId) {
+  if (!bookingId && !bookingIds) {
     return null;
   }
+
+  const displayBookingId = bookingId || (bookingIds && bookingIds[0]);
+  const bookingCount = bookingIds?.length || 1;
 
   return (
     <div className={styles.container}>
@@ -58,23 +61,50 @@ const BookingSuccess = () => {
         >
           <div className={styles.bookingHeader}>
             <h3>Booking Details</h3>
-            <span className={styles.bookingId}>#{bookingId}</span>
+            <span className={styles.bookingId}>#{displayBookingId}</span>
           </div>
 
           <div className={styles.bookingInfo}>
-            <div className={styles.infoRow}>
-              <span className={styles.label}>Amount Paid</span>
-              <span className={styles.value}>₹{amount?.toLocaleString()}</span>
-            </div>
+            {paymentDetails ? (
+              <>
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>Subtotal</span>
+                  <span className={styles.value}>₹{paymentDetails.subtotal?.toLocaleString()}</span>
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>Platform Fee</span>
+                  <span className={styles.value}>₹{paymentDetails.platformFee?.toLocaleString()}</span>
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>GST (18%)</span>
+                  <span className={styles.value}>₹{paymentDetails.gst?.toLocaleString()}</span>
+                </div>
+                {paymentDetails.discount > 0 && (
+                  <div className={styles.infoRow}>
+                    <span className={styles.label}>Discount</span>
+                    <span className={styles.value} style={{color: '#10b981'}}>-₹{paymentDetails.discount?.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className={styles.infoRow} style={{borderTop: '1px solid #e5e7eb', paddingTop: '0.75rem', marginTop: '0.5rem'}}>
+                  <span className={styles.label} style={{fontWeight: '600'}}>Total Paid</span>
+                  <span className={styles.value} style={{fontWeight: '600', fontSize: '1.25rem'}}>₹{paymentDetails.total?.toLocaleString()}</span>
+                </div>
+              </>
+            ) : (
+              <div className={styles.infoRow}>
+                <span className={styles.label}>Amount Paid</span>
+                <span className={styles.value}>₹{amount?.toLocaleString()}</span>
+              </div>
+            )}
 
             <div className={styles.infoRow}>
               <span className={styles.label}>Services Booked</span>
-              <span className={styles.value}>{services?.length || 0}</span>
+              <span className={styles.value}>{bookingCount}</span>
             </div>
 
             <div className={styles.infoRow}>
               <span className={styles.label}>Status</span>
-              <span className={`${styles.value} ${styles.confirmed}`}>Confirmed</span>
+              <span className={`${styles.value} ${styles.confirmed}`}>Payment Completed</span>
             </div>
           </div>
 
@@ -83,8 +113,12 @@ const BookingSuccess = () => {
               <h4>Your Services</h4>
               {services.map((service, index) => (
                 <div key={index} className={styles.serviceItem}>
-                  <div className={styles.serviceName}>{service.name}</div>
-                  <div className={styles.serviceQty}>Qty: {service.quantity}</div>
+                  <div className={styles.serviceName}>
+                    {service.serviceName || service.name}
+                  </div>
+                  <div className={styles.serviceAmount}>
+                    ₹{(service.quotationAmount || service.amount || 0).toLocaleString()}
+                  </div>
                 </div>
               ))}
             </div>

@@ -50,4 +50,10 @@ public class BookingResponseDTO {
     // Feedback
     private Integer customerRating;
     private String customerFeedback;
+    
+    // Quotation
+    private BigDecimal quotationAmount;
+    private String quotationDetails;
+    private LocalDateTime quotationProvidedAt;
+    private String quotationStatus;
 }
