@@ -1,0 +1,16 @@
+BEDRIDDEN PATIENT CARE FORMS (4 Services):
+
+1. COMPLETE BEDRIDDEN CARE
+2. STROKE PATIENT CARE  
+3. COMA PATIENT CARE
+4. PALLIATIVE CARE
+
+PARKINSON'S CARE FORMS (4 Services):
+
+1. EARLY STAGE CARE
+2. ADVANCED STAGE CARE
+3. THERAPY SUPPORT
+4. FAMILY SUPPORT CARE
+
+These forms need to be added to BookingModal.jsx at line 1912 before the Fallback section.
+Each service should have 7 fields matching the quality of elder care, nursing care, and caretaker forms.
